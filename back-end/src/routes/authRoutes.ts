@@ -25,7 +25,7 @@ interface User {
  * @access  Public
  */
 router.post(
-    '/auth/register',
+    '/register',
     [
         // Validation middleware
         body('username').notEmpty().withMessage('Username is required'),
@@ -108,7 +108,7 @@ router.post(
  * @access  Public
  */
 router.post(
-    '/auth/login',
+    '/login',
     [
         // Validation middleware
         body('email').isEmail().withMessage('Please include a valid email'),
