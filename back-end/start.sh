@@ -3,7 +3,7 @@ set -e
 
 # Environment variables
 DB_PATH="./TEMP/app/data/onlyfans.db"
-LITESTREAM_CONFIG="/app/litestream.yml"
+LITESTREAM_CONFIG="./litestream.yml"
 
 # Create data directory if it doesn't exist
 mkdir -p ./TEMP/app/data
