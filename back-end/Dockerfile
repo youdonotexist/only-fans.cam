@@ -5,8 +5,17 @@ FROM node:18-alpine
 RUN apk add --no-cache bash curl unzip
 
 # Install Litestream
-RUN curl -L https://github.com/benbjohnson/litestream/releases/download/v0.3.9/litestream-v0.3.9-linux-amd64.tar.gz | tar -xz && \
-    mv litestream /usr/local/bin/litestream
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then \
+        curl -L https://github.com/benbjohnson/litestream/releases/download/v0.3.13/litestream-v0.3.13-linux-amd64.tar.gz | tar -xz; \
+    elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then \
+        curl -L https://github.com/benbjohnson/litestream/releases/download/v0.3.13/litestream-v0.3.13-linux-arm64.tar.gz | tar -xz; \
+    else \
+        echo "Unsupported architecture: $ARCH"; \
+        exit 1; \
+    fi && \
+    mv litestream /usr/local/bin/litestream && \
+    chmod +x /usr/local/bin/litestream
 
 # Set working directory
 WORKDIR /app
