@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: onlyfans-backend
+  labels:
+    app: onlyfans-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: onlyfans-backend
+  template:
+    metadata:
+      labels:
+        app: onlyfans-backend
+    spec:
+      containers:
+      - name: onlyfans-backend
+        image: ${DOCKER_REGISTRY}/onlyfans-backend:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3000"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: onlyfans-secrets
+              key: jwt-secret
+        - name: LITESTREAM_BUCKET
+          valueFrom:
+            configMapKeyRef:
+              name: onlyfans-config
+              key: litestream-bucket
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: onlyfans-secrets
+              key: aws-access-key-id
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: onlyfans-secrets
+              key: aws-secret-access-key
+        - name: AWS_REGION
+          valueFrom:
+            configMapKeyRef:
+              name: onlyfans-config
+              key: aws-region
+        volumeMounts:
+        - name: data
+          mountPath: /app/data
+        - name: uploads
+          mountPath: /app/uploads
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: onlyfans-data-pvc
+      - name: uploads
+        persistentVolumeClaim:
+          claimName: onlyfans-uploads-pvc

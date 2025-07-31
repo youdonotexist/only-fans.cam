@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: onlyfans-config
+data:
+  litestream-bucket: "onlyfans-db-backup"
+  aws-region: "us-east-1"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: onlyfans-secrets
+type: Opaque
+data:
+  # These are example values. In a real deployment, you should generate these values securely.
+  # The values below are base64 encoded placeholders.
+  jwt-secret: "Y2hhbmdlLXRoaXMtaW4tcHJvZHVjdGlvbg=="  # change-this-in-production
+  aws-access-key-id: "QUtJQVhYWFhYWFhYWFhYWFhYWA=="  # AKIAXXXXXXXXXXXX
+  aws-secret-access-key: "eW91ci1hd3Mtc2VjcmV0LWFjY2Vzcy1rZXk="  # your-aws-secret-access-key

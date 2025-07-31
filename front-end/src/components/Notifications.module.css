@@ -1,0 +1,41 @@
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #f4f4f4;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.sidebar nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar nav ul li {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.sidebar nav ul li svg {
+    margin-right: 8px;
+}
+
+.mainContent {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+.active svg {
+    color: #4CAF50; /* Highlight active icon */
+}

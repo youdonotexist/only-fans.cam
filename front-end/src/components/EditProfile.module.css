@@ -1,0 +1,92 @@
+.container {
+    display: flex;
+    font-family: Arial, sans-serif;
+}
+
+.mainContent {
+    flex: 1;
+    padding: 20px;
+    max-width: 700px;
+}
+
+.coverPhoto {
+    background-color: #ddd;
+    height: 200px;
+    position: relative;
+    border-radius: 8px;
+    margin-bottom: 60px;
+}
+
+.editCoverBtn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 8px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.avatarSection {
+    position: relative;
+    margin-top: -60px;
+    display: flex;
+    justify-content: center;
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    background-color: #aaa;
+    border-radius: 50%;
+    position: relative;
+}
+
+.editAvatarBtn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 6px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form label {
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.form input,
+.form textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.form textarea {
+    resize: vertical;
+    height: 100px;
+}
+
+.saveBtn {
+    margin-top: 20px;
+    align-self: flex-end;
+    padding: 10px 20px;
+    background-color: #00aff0;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+}

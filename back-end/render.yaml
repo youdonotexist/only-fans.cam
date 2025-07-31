@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: onlyfans-backend
+    env: docker
+    dockerfilePath: ./Dockerfile
+    region: oregon # Change to your preferred region
+    plan: standard # Change to your preferred plan
+    branch: main # Change to your deployment branch
+    numInstances: 1
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: JWT_SECRET
+        sync: false # This will be set manually in the Render dashboard
+      - key: LITESTREAM_BUCKET
+        sync: false # This will be set manually in the Render dashboard
+      - key: AWS_ACCESS_KEY_ID
+        sync: false # This will be set manually in the Render dashboard
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false # This will be set manually in the Render dashboard
+      - key: AWS_REGION
+        value: us-east-1 # Change to your preferred region
+    disk:
+      name: data
+      mountPath: /app/data
+      sizeGB: 1
+    disk:
+      name: uploads
+      mountPath: /app/uploads
+      sizeGB: 10
