@@ -106,4 +106,3 @@ fabric.properties
 /.idea/
 /deployment/node_modules/
 /front-end/node_modules/
-/back-end/TEMP/
