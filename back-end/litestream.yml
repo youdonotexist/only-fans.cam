@@ -1,5 +1,5 @@
 dbs:
-  - path: /app/data/onlyfans.db
+  - path: /data/onlyfans.db
     replicas:
       - url: s3://${LITESTREAM_BUCKET}/onlyfans.db
         access-key-id: ${AWS_ACCESS_KEY_ID}
