@@ -25,7 +25,7 @@ interface User {
  * @access  Public
  */
 router.post(
-    '/register',
+    '/auth/register',
     [
         // Validation middleware
         body('username').notEmpty().withMessage('Username is required'),
@@ -91,6 +91,78 @@ router.post(
                                     res.json({ token });
                                 }
                             );
+                        }
+                    );
+                }
+            );
+        } catch (err: unknown) {
+            console.error(err);
+            res.status(500).json({ message: 'Server error' });
+        }
+    }
+);
+
+/**
+ * @route   POST /api/auth/login
+ * @desc    Authenticate user & get token
+ * @access  Public
+ */
+router.post(
+    '/auth/login',
+    [
+        // Validation middleware
+        body('email').isEmail().withMessage('Please include a valid email'),
+        body('password').exists().withMessage('Password is required'),
+    ],
+    async (req: Request, res: Response) => {
+        // Check for validation errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { email, password } = req.body;
+        const db = getDatabase();
+
+        try {
+            // Check if user exists
+            db.get(
+                'SELECT * FROM users WHERE email = ?',
+                [email],
+                async (err: Error | null, user: User | undefined) => {
+                    if (err) {
+                        console.error(err.message);
+                        return res.status(500).json({ message: 'Server error' });
+                    }
+
+                    if (!user) {
+                        return res
+                            .status(400)
+                            .json({ message: 'Invalid credentials' });
+                    }
+
+                    // Verify password
+                    const isMatch = await bcrypt.compare(password, user.password);
+                    if (!isMatch) {
+                        return res
+                            .status(400)
+                            .json({ message: 'Invalid credentials' });
+                    }
+
+                    // Create JWT token
+                    const payload = {
+                        user: {
+                            id: user.id,
+                        },
+                    };
+
+                    jwt.sign(
+                        payload,
+                        JWT_SECRET,
+                        { expiresIn: '1d' },
+                        (err: Error | null, token: string | undefined) => {
+                            if (err) throw err;
+                            res.json({ token });
                         }
                     );
                 }
