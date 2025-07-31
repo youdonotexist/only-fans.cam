@@ -14,15 +14,10 @@ if [ ! -f "$DB_PATH" ] && [ -n "$LITESTREAM_BUCKET" ]; then
   litestream restore -config "$LITESTREAM_CONFIG" "$DB_PATH" || true
 fi
 
-const testFolder = '.';
-const fs = require('fs');
+# Print out files in current directory
+echo "Current directory contents:"
+ls -la
 
-fs.readdir(testFolder, (err, files) => {
-  files.forEach(file => {
-    // will also include directory names
-    console.log(file);
-  });
-});
 
 # Start Litestream replication in the background if bucket is configured
 if [ -n "$LITESTREAM_BUCKET" ]; then
