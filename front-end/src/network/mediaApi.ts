@@ -123,18 +123,23 @@ export const deleteMedia = async (id: number, token: string): Promise<{ message:
 
 /**
  * Get full media URL
- * @param filePath Relative file path
+ * @param filePath File path or URL
  * @returns Full URL to media file
  */
 export const getMediaUrl = (filePath: string): string => {
-  // If the path already starts with http, return it as is
+  // If the path already starts with http, it's either an S3 URL or a full URL, so return it as is
   if (filePath.startsWith('http')) {
     return filePath;
   }
   
-  // Remove leading slash if present
+  // If it's an S3 path (unlikely but possible)
+  if (filePath.includes('s3.amazonaws.com')) {
+    return filePath;
+  }
+  
+  // Remove leading slash if present for local paths
   const cleanPath = filePath.startsWith('/') ? filePath.substring(1) : filePath;
   
-  // Construct the full URL
+  // Construct the full URL for local paths
   return `${API_URL.replace('/api', '')}/${cleanPath}`;
 };
