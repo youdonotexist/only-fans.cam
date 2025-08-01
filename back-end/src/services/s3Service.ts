@@ -43,14 +43,25 @@ export const uploadFileToS3 = async (
   };
   
   try {
+    // Log AWS configuration for debugging
+    console.log('AWS Config:', {
+      region: process.env.AWS_REGION || 'us-east-1',
+      bucket: BUCKET_NAME,
+      hasAccessKey: !!process.env.AWS_ACCESS_KEY_ID,
+      hasSecretKey: !!process.env.AWS_SECRET_ACCESS_KEY
+    });
+    
     // Upload the file to S3
     const data = await s3.upload(params).promise();
+    
+    console.log('S3 Upload successful:', data.Location);
     
     // Return the URL of the uploaded file
     return data.Location;
   } catch (error) {
     console.error('Error uploading file to S3:', error);
-    throw new Error('Failed to upload file to S3');
+    console.error('Error details:', JSON.stringify(error, null, 2));
+    throw new Error(`Failed to upload file to S3: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
 
@@ -73,6 +84,6 @@ export const deleteFileFromS3 = async (fileUrl: string): Promise<void> => {
     await s3.deleteObject(params).promise();
   } catch (error) {
     console.error('Error deleting file from S3:', error);
-    throw new Error('Failed to delete file from S3');
+    throw new Error(`Failed to delete file from S3: ${error instanceof Error ? error.message : String(error)}`);
   }
 };

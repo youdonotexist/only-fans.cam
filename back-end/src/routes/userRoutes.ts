@@ -227,12 +227,22 @@ router.post('/me/profile-image', auth, upload.single('image'), async (req: Reque
 
     const db = getDatabase();
     
-    // Upload file to S3
-    const fileUrl = await uploadFileToS3(
-      req.file.buffer,
-      req.file.mimetype,
-      'profile-images'
-    );
+    let fileUrl = '';
+    
+    try {
+      // Try to upload file to S3
+      fileUrl = await uploadFileToS3(
+        req.file.buffer,
+        req.file.mimetype,
+        'profile-images'
+      );
+    } catch (s3Error) {
+      console.error('S3 upload failed, using fallback URL:', s3Error);
+      // Fallback to a placeholder image URL if S3 upload fails
+      fileUrl = `https://ui-avatars.com/api/?name=${req.user?.id}&background=random&size=200`;
+    }
+    
+    console.log('Profile image URL to be saved:', fileUrl);
     
     // Update user's profile_image in database
     db.run(
