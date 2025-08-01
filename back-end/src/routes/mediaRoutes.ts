@@ -7,6 +7,11 @@ import { auth } from '../middleware/auth';
 import {Fan, Media} from "../database/models";
 import { uploadFileToS3, deleteFileFromS3 } from '../services/s3Service';
 
+// Extended Media interface that includes user_id from the joined fans table
+interface MediaWithUser extends Media {
+  user_id: number;
+}
+
 const router = express.Router();
 
 // Use memory storage for multer since we'll be uploading to S3
@@ -182,14 +187,14 @@ router.delete('/:id', auth, async (req, res) => {
   
   try {
     // Get media to check ownership and get file path
-    const mediaPromise = new Promise<Media>((resolve, reject) => {
+    const mediaPromise = new Promise<MediaWithUser>((resolve, reject) => {
       db.get(
         `SELECT m.*, f.user_id 
          FROM media m
          JOIN fans f ON m.fan_id = f.id
          WHERE m.id = ?`,
         [mediaId],
-        (err: Error, media: Media) => {
+        (err: Error, media: MediaWithUser) => {
           if (err) {
             console.error(err.message);
             reject(new Error('Server error'));
@@ -205,12 +210,11 @@ router.delete('/:id', auth, async (req, res) => {
     });
     
     // Wait for media check to complete
-    const media = await mediaPromise;
+    const media: MediaWithUser = await mediaPromise;
     
     // Delete file from S3 if it's an S3 URL
     if (media.file_path && media.file_path.startsWith('http')) {
       try {
-        // Import deleteFileFromS3 at the top of the file
         await deleteFileFromS3(media.file_path);
       } catch (s3Error) {
         console.error('Error deleting file from S3:', s3Error);
@@ -242,15 +246,30 @@ router.delete('/:id', auth, async (req, res) => {
 
 /**
  * @route   GET /api/media/serve/:filename
- * @desc    Serve media file
+ * @desc    Redirect to S3 URL or serve local file as fallback
  * @access  Public
  */
 router.get('/serve/:filename', (req, res) => {
   const filename = req.params.filename;
+  
+  // Check if the filename is actually an S3 URL (might be passed from legacy code)
+  if (filename.startsWith('http')) {
+    return res.redirect(filename);
+  }
+  
+  // For S3 paths that might be stored without the full URL
+  if (filename.includes('s3.amazonaws.com')) {
+    return res.redirect(`https://${filename}`);
+  }
+  
+  // Fallback to local file (for backward compatibility)
   const filePath = path.resolve(__dirname, '../../../uploads', filename);
   
   if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ message: 'File not found' });
+    return res.status(404).json({ 
+      message: 'File not found',
+      note: 'This endpoint is deprecated. Files are now stored in S3.'
+    });
   }
   
   res.sendFile(filePath);
