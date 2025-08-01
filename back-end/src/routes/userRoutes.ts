@@ -34,7 +34,7 @@ router.get('/me', auth, (req, res) => {
   const db = getDatabase();
   
   db.get(
-    'SELECT id, username, email, bio, profile_image, created_at FROM users WHERE id = ?',
+    'SELECT id, username, email, bio, profile_image, cover_image, created_at FROM users WHERE id = ?',
     [req.user?.id],
     (err, user) => {
       if (err) {
@@ -147,7 +147,7 @@ router.put(
       
       // Return updated user
       db.get(
-        'SELECT id, username, email, bio, profile_image, created_at, updated_at FROM users WHERE id = ?',
+        'SELECT id, username, email, bio, profile_image, cover_image, created_at, updated_at FROM users WHERE id = ?',
         [req.user?.id],
         (err, user) => {
           if (err) {
@@ -260,7 +260,7 @@ router.post('/me/profile-image', auth, upload.single('image'), async (req: Reque
         
         // Return updated user
         db.get(
-          'SELECT id, username, email, bio, profile_image, created_at, updated_at FROM users WHERE id = ?',
+          'SELECT id, username, email, bio, profile_image, cover_image, created_at, updated_at FROM users WHERE id = ?',
           [req.user?.id],
           (err, user) => {
             if (err) {

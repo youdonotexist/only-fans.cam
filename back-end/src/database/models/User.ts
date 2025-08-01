@@ -8,6 +8,7 @@ export class User {
   password: string;
   bio: string | null;
   profile_image: string | null;
+  cover_image: string | null;
   created_at: string;
   updated_at: string;
 
@@ -18,6 +19,7 @@ export class User {
     password: string,
     bio: string | null = null,
     profile_image: string | null = null,
+    cover_image: string | null = null,
     created_at: string = new Date().toISOString(),
     updated_at: string = new Date().toISOString()
   ) {
@@ -27,6 +29,7 @@ export class User {
     this.password = password;
     this.bio = bio;
     this.profile_image = profile_image;
+    this.cover_image = cover_image;
     this.created_at = created_at;
     this.updated_at = updated_at;
   }
