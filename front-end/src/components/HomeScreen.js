@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { FaHeart, FaComment, FaShare, FaPlus, FaImage, FaSpinner } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from 'react';
+import { FaHeart, FaComment, FaShare, FaPlus, FaImage, FaSpinner, FaTimes } from 'react-icons/fa';
 import styles from './HomeScreen.module.css';
 import Sidebar from "./Sidebar";
 import { createFan } from '../network/fanApi.ts';
+import { uploadMedia } from '../network/mediaApi.ts';
 
 const fansData = [
     {
@@ -68,9 +69,12 @@ const HomeScreen = () => {
         title: '',
         description: ''
     });
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [previewUrls, setPreviewUrls] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const fileInputRef = useRef(null);
     
     // Handle form input changes
     const handleInputChange = (e) => {
@@ -79,6 +83,34 @@ const HomeScreen = () => {
             ...prev,
             [name]: value
         }));
+    };
+    
+    // Handle file selection
+    const handleFileSelect = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
+        
+        // Validate files (only images)
+        const validFiles = files.filter(file => file.type.startsWith('image/'));
+        if (validFiles.length !== files.length) {
+            setError('Only image files are allowed');
+            return;
+        }
+        
+        // Create preview URLs for selected files
+        const newPreviewUrls = validFiles.map(file => URL.createObjectURL(file));
+        
+        setSelectedFiles(prev => [...prev, ...validFiles]);
+        setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
+    };
+    
+    // Remove a selected file
+    const removeFile = (index) => {
+        // Revoke the object URL to avoid memory leaks
+        URL.revokeObjectURL(previewUrls[index]);
+        
+        setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+        setPreviewUrls(prev => prev.filter((_, i) => i !== index));
     };
     
     // Handle form submission
@@ -103,13 +135,31 @@ const HomeScreen = () => {
             }
             
             // Create fan post
-            await createFan(newPost, token);
+            const createdFan = await createFan(newPost, token);
+            
+            // Upload images if any are selected
+            if (selectedFiles.length > 0) {
+                try {
+                    await uploadMedia(createdFan.id, selectedFiles, token);
+                } catch (uploadError) {
+                    console.error('Error uploading images:', uploadError);
+                    setError(`Post created but failed to upload images: ${uploadError.message}`);
+                    setIsSubmitting(false);
+                    return;
+                }
+            }
             
             // Reset form
             setNewPost({
                 title: '',
                 description: ''
             });
+            setSelectedFiles([]);
+            
+            // Revoke all object URLs to avoid memory leaks
+            previewUrls.forEach(url => URL.revokeObjectURL(url));
+            setPreviewUrls([]);
+            
             setShowPostForm(false);
             setSuccess('Post created successfully!');
             
@@ -175,11 +225,53 @@ const HomeScreen = () => {
                                     />
                                 </div>
                                 
+                                <div className={styles.formGroup}>
+                                    <label>
+                                        <span>Add Photos</span>
+                                        <div className={styles.uploadButton} onClick={() => fileInputRef.current.click()}>
+                                            <FaImage /> Add Photos
+                                        </div>
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            onChange={handleFileSelect}
+                                            accept="image/*"
+                                            multiple
+                                            style={{ display: 'none' }}
+                                            disabled={isSubmitting}
+                                        />
+                                    </label>
+                                    
+                                    {previewUrls.length > 0 && (
+                                        <div className={styles.imagePreviewContainer}>
+                                            {previewUrls.map((url, index) => (
+                                                <div key={index} className={styles.imagePreview}>
+                                                    <img src={url} alt={`Preview ${index + 1}`} />
+                                                    <button
+                                                        type="button"
+                                                        className={styles.removeImageButton}
+                                                        onClick={() => removeFile(index)}
+                                                        disabled={isSubmitting}
+                                                    >
+                                                        <FaTimes />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                
                                 <div className={styles.formActions}>
                                     <button 
                                         type="button" 
                                         className={styles.cancelButton}
-                                        onClick={() => setShowPostForm(false)}
+                                        onClick={() => {
+                                            // Clean up preview URLs before closing
+                                            previewUrls.forEach(url => URL.revokeObjectURL(url));
+                                            setPreviewUrls([]);
+                                            setSelectedFiles([]);
+                                            setShowPostForm(false);
+                                        }}
                                         disabled={isSubmitting}
                                     >
                                         Cancel

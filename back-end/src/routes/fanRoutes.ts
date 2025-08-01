@@ -35,7 +35,7 @@ router.post(
     db.run(
       'INSERT INTO fans (user_id, title, description) VALUES (?, ?, ?)',
       [req.user?.id, title, description],
-      function (err) {
+      function (this: { lastID: number }, err) {
         if (err) {
           console.error(err.message);
           return res.status(500).json({ message: 'Server error' });
@@ -495,7 +495,7 @@ router.post(
       db.run(
         'INSERT INTO comments (user_id, fan_id, content) VALUES (?, ?, ?)',
         [req.user?.id, req.params.id, content],
-        function (err) {
+        function (this: { lastID: number }, err) {
           if (err) {
             console.error(err.message);
             return res.status(500).json({ message: 'Server error' });
