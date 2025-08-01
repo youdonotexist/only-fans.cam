@@ -1,68 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaHeart, FaComment, FaShare, FaPlus, FaImage, FaSpinner, FaTimes } from 'react-icons/fa';
+import { FaHeart, FaComment, FaShare, FaPlus, FaImage, FaSpinner, FaTimes, FaFan } from 'react-icons/fa';
 import styles from './HomeScreen.module.css';
 import Sidebar from "./Sidebar";
-import { createFan } from '../network/fanApi.ts';
+import { createFan, getAllFans } from '../network/fanApi.ts';
 import { uploadMedia } from '../network/mediaApi.ts';
-
-const fansData = [
-    {
-        category: "Industrial Fans",
-        items: [
-            {
-                name: "Big Bertha",
-                image: require('../assets/fan1.png'),
-                specs: {
-                    RPMs: 2000,
-                    airflow: "50 CFM",
-                    energyUsage: "3W"
-                }
-            }
-        ]
-    },
-    {
-        category: "Ceiling Fans",
-        items: [ {
-            name: "Nano Fan",
-            image: require('../assets/fan2.png'),
-            specs: {
-                RPMs: 1500,
-                airflow: "100 CFM",
-                energyUsage: "8W"
-            }
-        }]
-    },
-    {
-        category: "Table Fans",
-        items: [
-            {
-                name: "Standard Table Fan",
-                image: require('../assets/fan3.png'),
-                specs: {
-                    RPMs: 2500,
-                    airflow: "200 CFM",
-                    energyUsage: "12W"
-                }
-            }
-        ]
-    },
-    {
-        category: "Floor Fans",
-        items: [
-            {
-                name: "Luxury Floor Fan",
-                image: require('../assets/fan4.png'),
-                specs: {
-                    RPMs: 3000,
-                    airflow: "300 CFM",
-                    energyUsage: "15W"
-                }
-            }
-        ]
-    }
-];
+import { getMediaUrl } from '../network/mediaApi.ts';
 
 const HomeScreen = () => {
+    // State for fans from backend
+    const [fans, setFans] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [loadError, setLoadError] = useState('');
+    
     // State for new post form
     const [showPostForm, setShowPostForm] = useState(false);
     const [newPost, setNewPost] = useState({
@@ -75,6 +24,25 @@ const HomeScreen = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const fileInputRef = useRef(null);
+    
+    // Fetch fans from backend
+    useEffect(() => {
+        const fetchFans = async () => {
+            try {
+                setLoading(true);
+                setLoadError('');
+                const response = await getAllFans(1, 20);
+                setFans(response.fans || []);
+            } catch (err) {
+                console.error('Error fetching fans:', err);
+                setLoadError(err.message || 'Failed to load fans');
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchFans();
+    }, [success]); // Refetch when a new post is created successfully
     
     // Handle form input changes
     const handleInputChange = (e) => {
@@ -311,34 +279,79 @@ const HomeScreen = () => {
                 </div>
 
                 {/* Fans Feed */}
-                {fansData.map((category, index) => (
-                    category.items.map((fan, fanIndex) => (
-                        <div key={fanIndex} className={styles.fanPost}>
-                            {/* Fake User Info */}
+                {loadError && (
+                    <div className={styles.error}>
+                        {loadError}
+                    </div>
+                )}
+                
+                {loading ? (
+                    <div className={styles.loadingContainer}>
+                        <FaSpinner className={styles.spinner} />
+                        <p>Loading fans...</p>
+                    </div>
+                ) : fans.length === 0 ? (
+                    <div className={styles.emptyState}>
+                        <FaFan size={40} />
+                        <h3>No fans found</h3>
+                        <p>Be the first to create a fan post!</p>
+                    </div>
+                ) : (
+                    fans.map((fan) => (
+                        <div key={fan.id} className={styles.fanPost}>
+                            {/* User Info */}
                             <div className={styles.postHeader}>
-                                <img src="https://via.placeholder.com/40" alt="User Avatar" className={styles.avatar} />
+                                <img 
+                                    src={fan.user_profile_image || "https://via.placeholder.com/40"} 
+                                    alt={`${fan.username}'s avatar`} 
+                                    className={styles.avatar} 
+                                />
                                 <div>
-                                    <h4 className={styles.username}>Fan Enthusiast</h4>
-                                    <span className={styles.postDate}>2 hours ago</span>
+                                    <h4 className={styles.username}>{fan.username || "Anonymous"}</h4>
+                                    <span className={styles.postDate}>
+                                        {new Date(fan.created_at).toLocaleDateString()} at {new Date(fan.created_at).toLocaleTimeString()}
+                                    </span>
                                 </div>
                             </div>
 
                             {/* Fan Image & Details */}
-                            <img src={fan.image} alt={fan.name} className={styles.fanImage} />
+                            {fan.media_count > 0 ? (
+                                <div className={styles.fanImageContainer}>
+                                    {/* We don't have direct access to media in this response, so using a placeholder based on ID */}
+                                    <img 
+                                        src={require(`../assets/fan${(fan.id % 4) + 1}.png`)} 
+                                        alt={fan.title} 
+                                        className={styles.fanImage} 
+                                    />
+                                </div>
+                            ) : (
+                                <div className={styles.noImagePlaceholder}>
+                                    <FaFan size={40} />
+                                    <p>No image available</p>
+                                </div>
+                            )}
+                            
                             <div className={styles.fanDetails}>
-                                <h3>{fan.name}</h3>
-                                <p>💨 {fan.specs.airflow} | ⚡ {fan.specs.energyUsage} | 🔄 {fan.specs.RPMs} RPM</p>
+                                <h3>{fan.title}</h3>
+                                <p>{fan.description || "No description provided."}</p>
                             </div>
 
                             {/* Interaction Buttons */}
                             <div className={styles.interactionButtons}>
-                                <FaHeart className={styles.icon} /> Like
-                                <FaComment className={styles.icon} /> Comment
-                                <FaShare className={styles.icon} /> Share
+                                <div>
+                                    <FaHeart className={styles.icon} /> 
+                                    {fan.likes_count || 0} Like
+                                </div>
+                                <div>
+                                    <FaComment className={styles.icon} /> Comment
+                                </div>
+                                <div>
+                                    <FaShare className={styles.icon} /> Share
+                                </div>
                             </div>
                         </div>
                     ))
-                ))}
+                )}
             </main>
         </div>
     );
