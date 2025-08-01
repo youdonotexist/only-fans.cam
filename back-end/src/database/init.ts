@@ -34,6 +34,7 @@ export function initializeDatabase(): Database {
       password TEXT NOT NULL,
       bio TEXT,
       profile_image TEXT,
+      cover_image TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )

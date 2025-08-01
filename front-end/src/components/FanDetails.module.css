@@ -1,0 +1,221 @@
+.container {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--background);
+    color: var(--foreground);
+}
+
+.mainContent {
+    flex: 1;
+    padding: var(--space-lg);
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+    font-size: 2rem;
+    margin-bottom: var(--space-sm);
+    color: var(--primary);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    margin: var(--space-lg) 0;
+    text-align: center;
+}
+
+.notFound {
+    text-align: center;
+    padding: var(--space-2xl) 0;
+}
+
+.fanDetailsContainer {
+    background-color: var(--background-light);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+    border: 1px solid var(--background-lighter);
+}
+
+.header {
+    margin-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--background-lighter);
+    padding-bottom: var(--space-md);
+}
+
+.header h1 {
+    margin: 0 0 var(--space-sm) 0;
+    font-size: 1.8rem;
+    color: var(--foreground);
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 0.9rem;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+    border: 2px solid var(--background-lighter);
+}
+
+.postDate {
+    color: var(--foreground-dim);
+    margin-left: auto;
+}
+
+.fanContent {
+    margin-bottom: var(--space-lg);
+}
+
+.mediaContainer {
+    margin-bottom: var(--space-md);
+    text-align: center;
+}
+
+.fanImage {
+    max-width: 100%;
+    max-height: 500px;
+    border-radius: var(--radius-md);
+    object-fit: contain;
+}
+
+.noImagePlaceholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-lighter);
+    height: 300px;
+    border-radius: var(--radius-md);
+    color: var(--foreground-dim);
+    margin-bottom: var(--space-md);
+}
+
+.description {
+    margin-bottom: var(--space-md);
+    line-height: 1.5;
+}
+
+.stats {
+    display: flex;
+    gap: var(--space-lg);
+    color: var(--foreground-dim);
+    font-size: 0.9rem;
+}
+
+.stats div {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.commentsSection {
+    margin-top: var(--space-xl);
+    border-top: 1px solid var(--background-lighter);
+    padding-top: var(--space-lg);
+}
+
+.commentsSection h3 {
+    margin-bottom: var(--space-md);
+    color: var(--foreground);
+}
+
+.comment {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--background-lighter);
+}
+
+.commentAvatar {
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-full);
+    object-fit: cover;
+}
+
+.commentContent {
+    flex: 1;
+}
+
+.commentHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-xs);
+}
+
+.commentUsername {
+    font-weight: var(--font-semibold);
+    font-size: 0.9rem;
+    color: var(--foreground);
+}
+
+.commentDate {
+    font-size: 0.8rem;
+    color: var(--foreground-dim);
+}
+
+.backButton {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: var(--space-lg);
+    transition: background-color var(--transition-normal);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-medium);
+}
+
+.backButton:hover {
+    background-color: var(--primary-dark);
+}
+
+/* Style for buttons in error and notFound sections */
+.error button,
+.notFound button {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: var(--space-md);
+    transition: background-color var(--transition-normal);
+}
+
+.error button:hover,
+.notFound button:hover {
+    background-color: var(--primary-dark);
+}

@@ -279,4 +279,70 @@ router.post('/me/profile-image', auth, upload.single('image'), async (req: Reque
   }
 });
 
+/**
+ * @route   POST /api/users/me/cover-image
+ * @desc    Upload cover image
+ * @access  Private
+ */
+router.post('/me/cover-image', auth, upload.single('image'), async (req: Request, res: Response) => {
+  try {
+    // Check if file exists
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image file provided' });
+    }
+
+    const db = getDatabase();
+    
+    let fileUrl = '';
+    
+    try {
+      // Try to upload file to S3
+      fileUrl = await uploadFileToS3(
+        req.file.buffer,
+        req.file.mimetype,
+        'cover-images'
+      );
+    } catch (s3Error) {
+      console.error('S3 upload failed, using fallback URL:', s3Error);
+      // Fallback to a placeholder image URL if S3 upload fails
+      fileUrl = `https://ui-avatars.com/api/?name=${req.user?.id}-cover&background=random&size=800x200`;
+    }
+    
+    console.log('Cover image URL to be saved:', fileUrl);
+    
+    // Update user's cover_image in database
+    db.run(
+      'UPDATE users SET cover_image = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [fileUrl, req.user?.id],
+      function(err) {
+        if (err) {
+          console.error(err.message);
+          return res.status(500).json({ message: 'Server error' });
+        }
+        
+        if (this.changes === 0) {
+          return res.status(404).json({ message: 'User not found' });
+        }
+        
+        // Return updated user
+        db.get(
+          'SELECT id, username, email, bio, profile_image, cover_image, created_at, updated_at FROM users WHERE id = ?',
+          [req.user?.id],
+          (err, user) => {
+            if (err) {
+              console.error(err.message);
+              return res.status(500).json({ message: 'Server error' });
+            }
+            
+            res.json(user);
+          }
+        );
+      }
+    );
+  } catch (error) {
+    console.error('Error uploading cover image:', error);
+    res.status(500).json({ message: 'Failed to upload cover image' });
+  }
+});
+
 export const userRoutes = router;

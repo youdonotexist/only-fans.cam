@@ -61,6 +61,25 @@
     gap: var(--space-sm);
 }
 
+.editCoverButton {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 0.9rem;
+    transition: all var(--transition-normal);
+}
+
+.editCoverButton:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
 .coverImg {
     height: 100%;
     width: 100%;

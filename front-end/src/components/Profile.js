@@ -11,7 +11,7 @@ import styles from './Profile.module.css';
 import Sidebar from "./Sidebar";
 import { useParams, useNavigate } from 'react-router-dom';
 import { getFansByUser } from '../network/fanApi';
-import { uploadProfileImage } from '../network/userApi.ts';
+import { uploadProfileImage, uploadCoverImage } from '../network/userApi.ts';
 
 // Import user API functions directly from the file
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
@@ -186,9 +186,8 @@ const Profile = () => {
                         return;
                     }
                     
-                    // Use the same uploadProfileImage function
-                    // The backend will still update the profile_image field
-                    const updatedUser = await uploadProfileImage(file, token);
+                    // Use the dedicated uploadCoverImage function
+                    const updatedUser = await uploadCoverImage(file, token);
                     setUser(updatedUser);
                     setSuccessMessage('Cover photo updated successfully!');
                     
@@ -343,7 +342,12 @@ const Profile = () => {
                 <div className={styles.profileHeader}>
                     <div className={styles.coverPhoto} onClick={!uploadingCover ? handleEditCoverPress : undefined}>
                         {/* Cover Photo Button */}
-                        <img id={"coverImage"} className={styles.coverImg}/>
+                        <img 
+                            id={"coverImage"} 
+                            className={styles.coverImg}
+                            src={user?.cover_image || "https://via.placeholder.com/1200x300?text=Add+Cover+Photo"}
+                            alt="Cover"
+                        />
                         <input id="coverImagePicker" type="file" accept="image/*" style={{display: "none"}} />
                         
                         {uploadingCover ? (
@@ -351,9 +355,9 @@ const Profile = () => {
                                 <FaSpinner className={styles.spinner} /> Uploading...
                             </div>
                         ) : (
-                            <>
+                            <div className={styles.editCoverButton}>
                                 <FaCamera/> Edit Cover
-                            </>
+                            </div>
                         )}
                     </div>
 
