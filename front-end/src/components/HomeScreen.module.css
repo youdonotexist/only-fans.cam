@@ -328,11 +328,21 @@
     padding: var(--space-xs) var(--space-md);
     border-radius: var(--radius-full);
     transition: all var(--transition-fast);
+    cursor: pointer;
 }
 
 .interactionButtons > div:hover {
     background-color: var(--background-lighter);
     color: var(--primary);
+}
+
+.interactionButtons > div.liked {
+    color: var(--secondary);
+}
+
+.interactionButtons > div.liked:hover {
+    background-color: var(--background-lighter);
+    color: var(--secondary-dark);
 }
 
 .icon {
@@ -498,4 +508,185 @@
     border-radius: var(--radius-full);
     transition: all var(--transition-fast);
     cursor: pointer;
+}
+/* Comment Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.commentModal {
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    background-color: var(--background-light);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease-out;
+    border: 1px solid var(--background-lighter);
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) var(--space-lg);
+    border-bottom: 1px solid var(--background-lighter);
+}
+
+.modalHeader h3 {
+    margin: 0;
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--foreground);
+}
+
+.closeButton {
+    background: transparent;
+    border: none;
+    color: var(--foreground-muted);
+    font-size: var(--text-lg);
+    cursor: pointer;
+    padding: var(--space-xs);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.closeButton:hover {
+    color: var(--foreground);
+    background-color: var(--background-lighter);
+}
+
+.commentsContainer {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.loadingComments, .noComments {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl);
+    color: var(--foreground-muted);
+}
+
+.loadingComments .spinner {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-md);
+    animation: spin 1s linear infinite;
+}
+
+.commentItem {
+    background-color: var(--background);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--background-lighter);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.commentHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--space-sm);
+}
+
+.commentAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    margin-right: var(--space-sm);
+    cursor: pointer;
+}
+
+.commentUsername {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--foreground);
+    margin: 0;
+    cursor: pointer;
+}
+
+.commentUsername:hover {
+    color: var(--primary);
+}
+
+.commentDate {
+    font-size: var(--text-xs);
+    color: var(--foreground-muted);
+    display: block;
+}
+
+.commentContent {
+    font-size: var(--text-md);
+    color: var(--foreground-dim);
+    margin: var(--space-xs) 0 0;
+}
+
+.commentForm {
+    display: flex;
+    padding: var(--space-md) var(--space-lg);
+    border-top: 1px solid var(--background-lighter);
+    gap: var(--space-md);
+}
+
+.commentInput {
+    flex: 1;
+    padding: var(--space-md);
+    background-color: var(--background);
+    border: 1px solid var(--background-lighter);
+    border-radius: var(--radius-full);
+    color: var(--foreground);
+    font-size: var(--text-md);
+    transition: all var(--transition-fast);
+}
+
+.commentInput:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
+}
+
+.commentSubmitButton {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-md);
+}
+
+.commentSubmitButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    filter: brightness(1.1);
+}
+
+.commentSubmitButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
