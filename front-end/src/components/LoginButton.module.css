@@ -2,32 +2,43 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    background-color: #1da1f2;
+    gap: var(--space-sm);
+    background: var(--gradient-primary);
     color: white;
     border: none;
-    border-radius: 20px;
-    padding: 8px 16px;
-    font-weight: bold;
+    border-radius: var(--radius-full);
+    padding: var(--space-sm) var(--space-lg);
+    font-weight: var(--font-semibold);
+    font-size: var(--text-md);
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-md);
 }
 
 .loginButton:hover {
-    background-color: #0d8bd9;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    filter: brightness(1.1);
+}
+
+.loginButton:active {
+    transform: translateY(0);
+    filter: brightness(0.95);
 }
 
 .icon {
-    font-size: 16px;
+    font-size: 1.1em;
 }
 
 /* For sidebar integration */
 .sidebarLoginButton {
     width: 100%;
-    margin-top: 16px;
+    margin-top: var(--space-lg);
 }
 
 /* For standalone usage */
 .headerLoginButton {
     margin-left: auto;
+    background: var(--secondary);
+    background: var(--gradient-secondary);
 }

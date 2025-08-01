@@ -140,3 +140,40 @@ export const searchUsers = async (searchTerm: string): Promise<User[]> => {
     throw new Error('Failed to search users');
   }
 };
+
+/**
+ * Upload profile image
+ * @param imageFile Image file to upload
+ * @param token JWT token
+ * @returns Promise with updated user data
+ */
+export const uploadProfileImage = async (
+  imageFile: File,
+  token: string
+): Promise<User> => {
+  try {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
+    const response = await fetch(`${API_URL}/users/me/profile-image`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'x-auth-token': token,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to upload profile image');
+    }
+
+    return await response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Upload profile image error: ${error.message}`);
+    }
+    throw new Error('Failed to upload profile image');
+  }
+};

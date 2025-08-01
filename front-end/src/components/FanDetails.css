@@ -2,7 +2,12 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: var(--space-xl);
+    background-color: var(--background);
+    color: var(--foreground);
+    min-height: 100vh;
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
 .header {
@@ -10,18 +15,82 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--background-lighter);
+}
+
+.header h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-bold);
+    color: var(--foreground);
+    margin: 0;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .headerLoginButton {
-    margin-left: 20px;
+    margin-left: var(--space-lg);
 }
 
 .selectedFanImage {
-    width: 200px;
-    margin-top: 20px;
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    margin: var(--space-xl) 0;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    transition: transform var(--transition-normal);
+    border: 1px solid var(--background-lighter);
+    object-fit: contain;
+    background-color: var(--background-light);
+    padding: var(--space-lg);
+}
+
+.selectedFanImage:hover {
+    transform: scale(1.02);
 }
 
 .specsContainer {
-    margin-top: 20px;
+    margin-top: var(--space-xl);
+    background-color: var(--background-light);
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 600px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--background-lighter);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.specsContainer p {
+    margin: var(--space-md) 0;
+    font-size: var(--text-lg);
+    color: var(--foreground-dim);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.specsContainer p strong {
+    color: var(--foreground);
+    min-width: 100px;
+    display: inline-block;
+}
+
+.specsContainer p:not(:last-child) {
+    border-bottom: 1px solid var(--background-lighter);
+    padding-bottom: var(--space-md);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

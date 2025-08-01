@@ -1,10 +1,11 @@
 .container {
-    width: 60%;
-    margin: auto;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-lg);
+    background-color: var(--background);
+    color: var(--foreground);
+    min-height: 100vh;
 }
 
 /* Profile Header */
@@ -12,8 +13,24 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #ddd;
+    padding: var(--space-xl);
+    margin-bottom: var(--space-xl);
+    background-color: var(--background-light);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--background-lighter);
+    position: relative;
+    overflow: hidden;
+}
+
+.profileHeader::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--gradient-secondary);
 }
 
 .headerLeft {
@@ -22,85 +39,138 @@
 }
 
 .headerLoginButton {
-    margin-left: 20px;
+    margin-left: var(--space-lg);
 }
 
 .avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    margin-right: 15px;
+    width: 90px;
+    height: 90px;
+    border-radius: var(--radius-full);
+    margin-right: var(--space-lg);
+    border: 3px solid var(--secondary);
+    object-fit: cover;
+    box-shadow: var(--shadow-md);
 }
 
 .userInfo h2 {
-    font-size: 22px;
+    font-size: var(--text-2xl);
     margin: 0;
+    font-weight: var(--font-bold);
+    color: var(--foreground);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
 }
 
 .userInfo p {
-    font-size: 14px;
-    color: gray;
-    margin: 2px 0;
+    font-size: var(--text-sm);
+    color: var(--foreground-muted);
+    margin: var(--space-xs) 0;
 }
 
 .bio {
-    font-size: 14px;
-    color: #444;
+    font-size: var(--text-md);
+    color: var(--foreground-dim);
+    margin-top: var(--space-sm);
+    max-width: 400px;
 }
 
 /* Subscription Section */
 .subscriptionSection {
     display: flex;
     justify-content: space-between;
-    padding: 15px 0;
+    padding: var(--space-lg) 0;
+    gap: var(--space-md);
 }
 
 .subscribeButton, .freeButton {
     flex: 1;
-    padding: 10px;
-    font-size: 16px;
+    padding: var(--space-md);
+    font-size: var(--text-md);
     border: none;
     cursor: pointer;
-    margin: 5px;
-    border-radius: 5px;
+    border-radius: var(--radius-md);
+    font-weight: var(--font-semibold);
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-md);
 }
 
 .subscribeButton {
-    background: #007bff;
+    background: var(--gradient-secondary);
     color: white;
 }
 
+.subscribeButton:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    filter: brightness(1.1);
+}
+
 .freeButton {
-    background: #00c853;
+    background: var(--gradient-primary);
     color: white;
+}
+
+.freeButton:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    filter: brightness(1.1);
 }
 
 /* Posts Section */
 .postsSection {
-    margin-top: 20px;
+    margin-top: var(--space-xl);
+}
+
+.postsSection h3 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--foreground);
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--background-lighter);
 }
 
 .post {
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
+    background-color: var(--background-light);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-xl);
     position: relative;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--background-lighter);
+    transition: all var(--transition-normal);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.post:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
 }
 
 .post h4 {
-    margin-bottom: 10px;
+    margin-bottom: var(--space-md);
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--foreground);
 }
 
 .postContent {
     position: relative;
+    margin-bottom: var(--space-md);
+    border-radius: var(--radius-md);
+    overflow: hidden;
 }
 
 .postImage {
     width: 100%;
-    height: 250px;
+    height: 300px;
     object-fit: cover;
-    border-radius: 5px;
+    transition: transform var(--transition-normal);
+}
+
+.postContent:hover .postImage:not(.locked) {
+    transform: scale(1.02);
 }
 
 /* Locked Overlay */
@@ -110,32 +180,82 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 5px;
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-normal);
+}
+
+.lockedOverlay:hover {
+    background: rgba(0, 0, 0, 0.8);
 }
 
 .lockIcon {
-    font-size: 24px;
-    margin-bottom: 5px;
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-md);
+    color: var(--secondary);
+    animation: pulse 2s infinite;
 }
 
 /* Interaction Buttons */
 .interactionButtons {
     display: flex;
     justify-content: space-around;
-    padding: 10px 0;
-    font-size: 14px;
+    padding: var(--space-md) 0 var(--space-xs);
+    font-size: var(--text-sm);
     cursor: pointer;
-    color: #555;
+    color: var(--foreground-muted);
+    border-top: 1px solid var(--background-lighter);
+    margin-top: var(--space-md);
+}
+
+.interactionButtons > div {
+    display: flex;
+    align-items: center;
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-full);
+    transition: all var(--transition-fast);
+}
+
+.interactionButtons > div:hover {
+    background-color: var(--background-lighter);
+    color: var(--primary);
 }
 
 .icon {
-    margin-right: 5px;
+    margin-right: var(--space-xs);
+    font-size: 1.1em;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

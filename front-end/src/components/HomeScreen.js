@@ -1,7 +1,8 @@
-import React from 'react';
-import { FaHeart, FaComment, FaShare } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaHeart, FaComment, FaShare, FaPlus, FaImage, FaSpinner } from 'react-icons/fa';
 import styles from './HomeScreen.module.css';
 import Sidebar from "./Sidebar";
+import { createFan } from '../network/fanApi.ts';
 
 const fansData = [
     {
@@ -61,6 +62,70 @@ const fansData = [
 ];
 
 const HomeScreen = () => {
+    // State for new post form
+    const [showPostForm, setShowPostForm] = useState(false);
+    const [newPost, setNewPost] = useState({
+        title: '',
+        description: ''
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+    
+    // Handle form input changes
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setNewPost(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+    
+    // Handle form submission
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        
+        // Validate form
+        if (!newPost.title.trim()) {
+            setError('Title is required');
+            return;
+        }
+        
+        try {
+            setIsSubmitting(true);
+            setError('');
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setError('You must be logged in to create a post');
+                setIsSubmitting(false);
+                return;
+            }
+            
+            // Create fan post
+            await createFan(newPost, token);
+            
+            // Reset form
+            setNewPost({
+                title: '',
+                description: ''
+            });
+            setShowPostForm(false);
+            setSuccess('Post created successfully!');
+            
+            // Clear success message after 3 seconds
+            setTimeout(() => {
+                setSuccess('');
+            }, 3000);
+            
+        } catch (err) {
+            console.error('Error creating post:', err);
+            setError(err.message || 'Failed to create post');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+    
     return (
         <div className={styles.container}>
             {/* Left Sidebar */}
@@ -68,6 +133,84 @@ const HomeScreen = () => {
 
             {/* Main Content */}
             <main className={styles.mainContent}>
+                {/* Create Post Section */}
+                <div className={styles.createPostSection}>
+                    {!showPostForm ? (
+                        <button 
+                            className={styles.createPostButton}
+                            onClick={() => setShowPostForm(true)}
+                        >
+                            <FaPlus /> Create New Post
+                        </button>
+                    ) : (
+                        <div className={styles.createPostForm}>
+                            <h3>Create New Fan Post</h3>
+                            {error && <div className={styles.error}>{error}</div>}
+                            {success && <div className={styles.success}>{success}</div>}
+                            
+                            <form onSubmit={handleSubmit}>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="title">Title</label>
+                                    <input
+                                        type="text"
+                                        id="title"
+                                        name="title"
+                                        value={newPost.title}
+                                        onChange={handleInputChange}
+                                        placeholder="Enter fan title"
+                                        disabled={isSubmitting}
+                                    />
+                                </div>
+                                
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="description">Description</label>
+                                    <textarea
+                                        id="description"
+                                        name="description"
+                                        value={newPost.description}
+                                        onChange={handleInputChange}
+                                        placeholder="Describe your fan"
+                                        rows={3}
+                                        disabled={isSubmitting}
+                                    />
+                                </div>
+                                
+                                <div className={styles.formActions}>
+                                    <button 
+                                        type="button" 
+                                        className={styles.cancelButton}
+                                        onClick={() => setShowPostForm(false)}
+                                        disabled={isSubmitting}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        className={styles.submitButton}
+                                        disabled={isSubmitting}
+                                    >
+                                        {isSubmitting ? (
+                                            <>
+                                                <FaSpinner className={styles.spinner} /> 
+                                                Posting...
+                                            </>
+                                        ) : (
+                                            'Post'
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+                </div>
+                
+                {/* Success Message (outside of form) */}
+                {success && (
+                    <div className={styles.successBanner}>
+                        {success}
+                    </div>
+                )}
+                
                 {/* Stories Section */}
                 <div className={styles.stories}>
                     <div className={styles.storyItem}>+ Add to Story</div>

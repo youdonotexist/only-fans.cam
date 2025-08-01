@@ -5,10 +5,13 @@ import {
     FaCamera,
     FaEdit,
     FaFan,
+    FaSpinner
 } from 'react-icons/fa';
 import styles from './Profile.module.css';
 import Sidebar from "./Sidebar";
 import { useParams } from 'react-router';
+import { getFansByUser } from '../network/fanApi';
+import { uploadProfileImage } from '../network/userApi.ts';
 
 // Import user API functions directly from the file
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
@@ -81,6 +84,9 @@ const Profile = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [fanPosts, setFanPosts] = useState([]);
+    const [loadingPosts, setLoadingPosts] = useState(false);
 
     // State for editing modes
     const [isEditingCover, setIsEditingCover] = useState(false);
@@ -89,6 +95,11 @@ const Profile = () => {
         username: false,
         bio: false
     });
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const [uploadingCover, setUploadingCover] = useState(false);
+    
+    // State for tracking changes during editing
+    const [editedUser, setEditedUser] = useState(null);
     
     // Fetch user data
     useEffect(() => {
@@ -121,26 +132,76 @@ const Profile = () => {
         
         fetchUserData();
     }, [params.id]);
+    
+    // Fetch user's fan posts
+    const fetchUserFanPosts = async (userId) => {
+        try {
+            setLoadingPosts(true);
+            const response = await getFansByUser(userId);
+            setFanPosts(response.fans || []);
+            setLoadingPosts(false);
+        } catch (err) {
+            console.error('Error fetching user fan posts:', err);
+            setLoadingPosts(false);
+        }
+    };
+    
+    // Fetch fan posts when user data is loaded
+    useEffect(() => {
+        if (user && user.id) {
+            fetchUserFanPosts(user.id);
+        }
+    }, [user]);
 
 
 
     // Handle Cover Photo Edit
     const handleEditCoverPress = () => {
+        if (uploadingCover) return; // Prevent multiple uploads
+        
         const input = document.getElementById('coverImagePicker');
         input.type = 'file';
         input.accept = 'image/png, image/jpeg';
-        input.onchange = (e) => {
+        input.onchange = async (e) => {
             const file = e.target.files[0];
             if (file) {
+                // Show preview immediately
                 const reader = new FileReader();
                 reader.onload = () => {
                     const imgElement = document.getElementById('coverImage');
                     imgElement.src = reader.result;
-                    setIsEditingCover(false); // Exit editing mode
-                    // Stub for server upload:
-                    // uploadImageToServer(file);
                 };
                 reader.readAsDataURL(file);
+                
+                // Upload to server
+                try {
+                    setUploadingCover(true);
+                    setError(null);
+                    
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                        setError('You must be logged in to upload an image');
+                        setUploadingCover(false);
+                        return;
+                    }
+                    
+                    // Use the same uploadProfileImage function
+                    // The backend will still update the profile_image field
+                    const updatedUser = await uploadProfileImage(file, token);
+                    setUser(updatedUser);
+                    setSuccessMessage('Cover photo updated successfully!');
+                    
+                    // Clear success message after 3 seconds
+                    setTimeout(() => {
+                        setSuccessMessage('');
+                    }, 3000);
+                } catch (err) {
+                    console.error('Error uploading cover photo:', err);
+                    setError(err.message || 'Failed to upload cover photo');
+                } finally {
+                    setUploadingCover(false);
+                    setIsEditingCover(false);
+                }
             }
         };
         input.click();
@@ -150,31 +211,56 @@ const Profile = () => {
     const handleEditAvatarPress = () => {
         const input = document.getElementById("avatarPicker");
 
-        input.onchange = (e) => {
+        input.onchange = async (e) => {
             const file = e.target.files[0];
             if (file) {
+                // Show preview immediately
                 const reader = new FileReader();
                 reader.onload = () => {
                     const imgElement = document.getElementById('avatarImage');
                     imgElement.src = reader.result;
-                    setIsEditingCover(false); // Exit editing mode
-                    // Stub for server upload:
-                    // uploadImageToServer(file);
                 };
                 reader.readAsDataURL(file);
+                
+                // Upload to server
+                try {
+                    setUploadingImage(true);
+                    setError(null);
+                    
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                        setError('You must be logged in to upload an image');
+                        setUploadingImage(false);
+                        return;
+                    }
+                    
+                    const updatedUser = await uploadProfileImage(file, token);
+                    setUser(updatedUser);
+                    setSuccessMessage('Profile image updated successfully!');
+                    
+                    // Clear success message after 3 seconds
+                    setTimeout(() => {
+                        setSuccessMessage('');
+                    }, 3000);
+                } catch (err) {
+                    console.error('Error uploading profile image:', err);
+                    setError(err.message || 'Failed to upload profile image');
+                } finally {
+                    setUploadingImage(false);
+                    setIsEditingAvatar(false);
+                }
             }
         };
 
         input.click();
-
-
-
         setIsEditingAvatar(prev => !prev);
     };
 
     // Handle Profile Bio Edit
     const handleEditProfilePress = () => {
         console.log("Entering profile edit mode");
+        // Initialize editedUser with current user data
+        setEditedUser({...user});
         setIsEditingBio({
             username: true,
             bio: true
@@ -184,18 +270,38 @@ const Profile = () => {
     // Handle profile update
     const handleProfileUpdate = async (updatedData) => {
         try {
+            // Clear any previous messages
+            setError(null);
+            setSuccessMessage('');
+            
             const token = localStorage.getItem('token');
             if (!token) {
                 setError('You must be logged in to update your profile');
                 return;
             }
             
+            // Show loading state or disable button here if needed
+            
             const updatedUser = await updateUser(updatedData, token);
             setUser(updatedUser);
+            
+            // Exit editing mode
             setIsEditingBio({
                 username: false,
                 bio: false
             });
+            
+            // Reset edited user
+            setEditedUser(null);
+            
+            // Set success message
+            setSuccessMessage('Profile updated successfully!');
+            
+            // Clear success message after 3 seconds
+            setTimeout(() => {
+                setSuccessMessage('');
+            }, 3000);
+            
         } catch (err) {
             console.error('Error updating profile:', err);
             setError(err.message || 'Failed to update profile');
@@ -234,16 +340,25 @@ const Profile = () => {
             {/* Main Profile Content */}
             <main className={styles.mainContent}>
                 <div className={styles.profileHeader}>
-                    <div className={styles.coverPhoto} onClick={handleEditCoverPress}>
+                    <div className={styles.coverPhoto} onClick={!uploadingCover ? handleEditCoverPress : undefined}>
                         {/* Cover Photo Button */}
                         <img id={"coverImage"} className={styles.coverImg}/>
                         <input id="coverImagePicker" type="file" accept="image/*" style={{display: "none"}} />
-                        <FaCamera/> Edit Cover
+                        
+                        {uploadingCover ? (
+                            <div className={styles.uploadingCoverOverlay}>
+                                <FaSpinner className={styles.spinner} /> Uploading...
+                            </div>
+                        ) : (
+                            <>
+                                <FaCamera/> Edit Cover
+                            </>
+                        )}
                     </div>
 
                     {/* Avatar Section */}
                     <div className={styles.profileInfo}>
-                        <div className={styles.avatar} onClick={handleEditAvatarPress}>
+                        <div className={styles.avatar} onClick={!uploadingImage ? handleEditAvatarPress : undefined}>
                             <img 
                                 id={"avatarImage"} 
                                 className={styles.avatarImg}
@@ -253,7 +368,14 @@ const Profile = () => {
 
                             {/* Avatar Edit Button */}
                             <input id="avatarPicker" type="file" accept="image/*" style={{display: "none"}} />
-                            <FaCamera/>
+                            
+                            {uploadingImage ? (
+                                <div className={styles.uploadingOverlay}>
+                                    <FaSpinner className={styles.spinner} />
+                                </div>
+                            ) : (
+                                <FaCamera/>
+                            )}
                         </div>
 
                         {/* Username and Bio Editing */}
@@ -261,12 +383,12 @@ const Profile = () => {
                             {isEditingBio.username ?
                                 <input
                                     type="text"
-                                    value={user?.username || ""}
+                                    value={editedUser?.username || ""}
                                     onChange={(e) => {
-                                        setUser({...user, username: e.target.value});
+                                        setEditedUser({...editedUser, username: e.target.value});
                                     }}
-                                    onBlur={() => handleProfileUpdate({username: user.username})}
-                                /> :
+                                />
+                             :
                                 `@${user?.username || "User"}`}
                         </h2>
 
@@ -274,11 +396,10 @@ const Profile = () => {
                             {isEditingBio.bio ? (
                                 <textarea
                                     rows={3}
-                                    value={user?.bio || ""}
+                                    value={editedUser?.bio || ""}
                                     onChange={(e) => {
-                                        setUser({...user, bio: e.target.value});
+                                        setEditedUser({...editedUser, bio: e.target.value});
                                     }}
-                                    onBlur={() => handleProfileUpdate({bio: user.bio})}
                                 />
                             ) : (
                                 user?.bio || "No bio available"
@@ -286,53 +407,131 @@ const Profile = () => {
                         </p>
                     </div>
 
+                    {/* Success Message */}
+                    {successMessage && (
+                        <div className={styles.successMessage}>
+                            {successMessage}
+                        </div>
+                    )}
+                    
+                    {/* Error Message */}
+                    {error && (
+                        <div className={styles.error}>
+                            {error}
+                        </div>
+                    )}
+                    
                     {/* Edit Profile Button */}
-                    <button
-                        className={styles.editProfileBtn}
-                        onClick={handleEditProfilePress}
-                    >
-                        <FaEdit/> Edit Profile
-                    </button>
+                    {isEditingBio.username || isEditingBio.bio ? (
+                        <div className={styles.editButtons}>
+                            <button
+                                className={styles.saveProfileBtn}
+                                onClick={() => handleProfileUpdate({
+                                    username: editedUser.username,
+                                    bio: editedUser.bio
+                                })}
+                            >
+                                Save Changes
+                            </button>
+                            <button
+                                className={styles.cancelBtn}
+                                onClick={() => {
+                                    setIsEditingBio({
+                                        username: false,
+                                        bio: false
+                                    });
+                                }}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            className={styles.editProfileBtn}
+                            onClick={handleEditProfilePress}
+                        >
+                            <FaEdit/> Edit Profile
+                        </button>
+                    )}
                 </div>
 
                 {/* Stats Section */}
                 <div className={styles.stats}>
-                    <div><strong>Fans</strong> 1,250</div>
-                    <div><strong>Following</strong> 320</div>
-                    <div><strong>Posts</strong> 42</div>
+                    <div><strong>Fans</strong> {user?.fans_count || 0}</div>
+                    <div><strong>Following</strong> {user?.following_count || 0}</div>
+                    <div><strong>Posts</strong> {fanPosts.length}</div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className={styles.actionButtons}>
-                    <button className={styles.subscribeBtn}>Subscribe</button>
-                    <button className={styles.messageBtn}><FaEnvelope/> Message</button>
-                    <button className={styles.bookmarkBtn}><FaBookmark/> Bookmark</button>
-                </div>
+                {/* Action Buttons - only show when viewing other profiles */}
+                {params.id !== 'me' && params.id && (
+                    <div className={styles.actionButtons}>
+                        <button className={styles.subscribeBtn}>Subscribe</button>
+                        <button className={styles.messageBtn}><FaEnvelope/> Message</button>
+                        <button className={styles.bookmarkBtn}><FaBookmark/> Bookmark</button>
+                    </div>
+                )}
 
                 {/* Feed Section */}
                 <section className={styles.feed}>
                     <div className={styles.feedHeader}>
                         <h3>Posts</h3>
                     </div>
+                    
+                    {/* Loading state for posts */}
+                    {loadingPosts && (
+                        <p>Loading posts...</p>
+                    )}
+                    
+                    {/* No posts message */}
+                    {!loadingPosts && fanPosts.length === 0 && (
+                        <p>No fan posts yet. Create your first post!</p>
+                    )}
+                    
+                    {/* Display user's fan posts */}
                     <div className={styles.feedContent}>
-                        {/* Example Post */}
-                        <div className={styles.post}>
-                            <h4>Vintage Ceiling Fan - 1970s Classic</h4>
-                            <img src="/images/vintage_ceiling_fan.jpg" alt="Vintage Ceiling Fan"
-                                 className={styles.postImage}/>
-                            <p className={styles.postDescription}>
-                                Check out this amazing 70s-era ceiling fan with authentic wooden blades!
-                            </p>
-                        </div>
-                        {/* Another Example Post */}
-                        <div className={styles.post}>
-                            <h4>Industrial Strength Box Fan</h4>
-                            <img src="/images/industrial_box_fan.jpg" alt="Industrial Box Fan"
-                                 className={styles.postImage}/>
-                            <p className={styles.postDescription}>
-                                Nothing beats this industrial-strength box fan for a powerful breeze.
-                            </p>
-                        </div>
+                        {fanPosts.map(post => (
+                            <div key={post.id} className={styles.post}>
+                                <h4>{post.title}</h4>
+                                {(() => {
+                                    // Use a fallback image if media_count > 0
+                                    if (post.media_count > 0) {
+                                        try {
+                                            // Try to load a dynamic image based on post ID
+                                            const imgSrc = require(`../assets/fan${(post.id % 4) + 1}.png`);
+                                            return (
+                                                <img 
+                                                    src={imgSrc} 
+                                                    alt={post.title}
+                                                    className={styles.postImage}
+                                                />
+                                            );
+                                        } catch (error) {
+                                            // Fallback to placeholder if image can't be loaded
+                                            console.error('Error loading image:', error);
+                                            return (
+                                                <div className={styles.noImagePlaceholder}>
+                                                    <FaFan size={40} />
+                                                </div>
+                                            );
+                                        }
+                                    } else {
+                                        // Show placeholder if no media
+                                        return (
+                                            <div className={styles.noImagePlaceholder}>
+                                                <FaFan size={40} />
+                                            </div>
+                                        );
+                                    }
+                                })()}
+                                <p className={styles.postDescription}>
+                                    {post.description || 'No description provided.'}
+                                </p>
+                                <div className={styles.postMeta}>
+                                    <span>{new Date(post.created_at).toLocaleDateString()}</span>
+                                    <span>{post.likes_count || 0} likes</span>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </section>
 

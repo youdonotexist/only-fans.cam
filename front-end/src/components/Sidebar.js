@@ -20,7 +20,6 @@ const Sidebar = () => {
                         <li><NavLink to="/messages" className={({ isActive }) => isActive ? `${styles.link} ${styles.active}` : styles.link}><FaEnvelope /> Messages</NavLink></li>
                         <li><NavLink to="/bookmarks" className={({ isActive }) => isActive ? `${styles.link} ${styles.active}` : styles.link}><FaBookmark /> Bookmarks</NavLink></li>
                         <li><NavLink to="/profile/me" className={({ isActive }) => isActive ? `${styles.link} ${styles.active}` : styles.link}><FaUser /> My Profile</NavLink></li>
-                        <li className={styles.disabledItem}><FaBars /> More</li>
                     </ul>
                 </nav>
                 <LoginButton className={styles.sidebarLoginButton} />

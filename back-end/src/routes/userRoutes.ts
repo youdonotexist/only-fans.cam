@@ -3,8 +3,27 @@ import { body, validationResult } from 'express-validator';
 import { getDatabase } from '../database/init';
 import { auth } from '../middleware/auth';
 import {User} from "../database/models";
+import multer from 'multer';
+import { uploadFileToS3 } from '../services/s3Service';
 
 const router = express.Router();
+
+// Configure multer for memory storage
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept only images
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
 
 /**
  * @route   GET /api/users/me
@@ -192,6 +211,62 @@ router.get('/', (req, res) => {
     
     res.json(users);
   });
+});
+
+/**
+ * @route   POST /api/users/me/profile-image
+ * @desc    Upload profile image
+ * @access  Private
+ */
+router.post('/me/profile-image', auth, upload.single('image'), async (req: Request, res: Response) => {
+  try {
+    // Check if file exists
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image file provided' });
+    }
+
+    const db = getDatabase();
+    
+    // Upload file to S3
+    const fileUrl = await uploadFileToS3(
+      req.file.buffer,
+      req.file.mimetype,
+      'profile-images'
+    );
+    
+    // Update user's profile_image in database
+    db.run(
+      'UPDATE users SET profile_image = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [fileUrl, req.user?.id],
+      function(err) {
+        if (err) {
+          console.error(err.message);
+          return res.status(500).json({ message: 'Server error' });
+        }
+        
+        if (this.changes === 0) {
+          return res.status(404).json({ message: 'User not found' });
+        }
+        
+        // Return updated user
+        db.get(
+          'SELECT id, username, email, bio, profile_image, created_at, updated_at FROM users WHERE id = ?',
+          [req.user?.id],
+          (err, user) => {
+            if (err) {
+              console.error(err.message);
+              return res.status(500).json({ message: 'Server error' });
+            }
+            
+            res.json(user);
+          }
+        );
+      }
+    );
+  } catch (error) {
+    console.error('Error uploading profile image:', error);
+    res.status(500).json({ message: 'Failed to upload profile image' });
+  }
 });
 
 export const userRoutes = router;
