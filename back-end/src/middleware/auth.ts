@@ -19,7 +19,16 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
  */
 export const auth = (req: Request, res: Response, next: NextFunction) => {
   // Get token from header
-  const token = req.header('x-auth-token');
+  const authHeader = req.header('Authorization');
+  let token;
+  
+  // Check if token is in Authorization header with Bearer prefix
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.split(' ')[1];
+  } else {
+    // Fallback to x-auth-token header for backward compatibility
+    token = req.header('x-auth-token');
+  }
 
   // Check if no token
   if (!token) {

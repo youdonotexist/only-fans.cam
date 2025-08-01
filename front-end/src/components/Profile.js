@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     FaEnvelope,
     FaBookmark,
@@ -10,9 +10,77 @@ import styles from './Profile.module.css';
 import Sidebar from "./Sidebar";
 import { useParams } from 'react-router';
 
+// Import user API functions directly from the file
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
+// Get current user's profile
+const getCurrentUser = async (token) => {
+  try {
+    const response = await fetch(`${API_URL}/users/me`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'x-auth-token': token,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to get user data');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(`Get user error: ${error.message}`);
+  }
+};
+
+// Get user by ID
+const getUserById = async (id) => {
+  try {
+    const response = await fetch(`${API_URL}/users/${id}`);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to get user data');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(`Get user error: ${error.message}`);
+  }
+};
+
+// Update current user's profile
+const updateUser = async (userData, token) => {
+  try {
+    const response = await fetch(`${API_URL}/users/me`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        'x-auth-token': token,
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to update user');
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(`Update user error: ${error.message}`);
+  }
+};
+
 const Profile = () => {
 
-    const params= useParams()
+    const params = useParams();
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     // State for editing modes
     const [isEditingCover, setIsEditingCover] = useState(false);
@@ -21,6 +89,38 @@ const Profile = () => {
         username: false,
         bio: false
     });
+    
+    // Fetch user data
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                setLoading(true);
+                const token = localStorage.getItem('token');
+                
+                // If viewing own profile or no specific ID
+                if (params.id === 'me' || !params.id) {
+                    if (!token) {
+                        setError('You must be logged in to view your profile');
+                        setLoading(false);
+                        return;
+                    }
+                    const userData = await getCurrentUser(token);
+                    setUser(userData);
+                } else {
+                    // Viewing another user's profile
+                    const userData = await getUserById(parseInt(params.id));
+                    setUser(userData);
+                }
+                setLoading(false);
+            } catch (err) {
+                console.error('Error fetching user data:', err);
+                setError(err.message || 'Failed to load user profile');
+                setLoading(false);
+            }
+        };
+        
+        fetchUserData();
+    }, [params.id]);
 
 
 
@@ -80,6 +180,51 @@ const Profile = () => {
             bio: true
         });
     };
+    
+    // Handle profile update
+    const handleProfileUpdate = async (updatedData) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setError('You must be logged in to update your profile');
+                return;
+            }
+            
+            const updatedUser = await updateUser(updatedData, token);
+            setUser(updatedUser);
+            setIsEditingBio({
+                username: false,
+                bio: false
+            });
+        } catch (err) {
+            console.error('Error updating profile:', err);
+            setError(err.message || 'Failed to update profile');
+        }
+    };
+
+    // Show loading state
+    if (loading) {
+        return (
+            <div className={styles.container}>
+                <Sidebar />
+                <main className={styles.mainContent}>
+                    <p>Loading profile...</p>
+                </main>
+            </div>
+        );
+    }
+    
+    // Show error state
+    if (error) {
+        return (
+            <div className={styles.container}>
+                <Sidebar />
+                <main className={styles.mainContent}>
+                    <p className={styles.error}>{error}</p>
+                </main>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container}>
@@ -99,7 +244,12 @@ const Profile = () => {
                     {/* Avatar Section */}
                     <div className={styles.profileInfo}>
                         <div className={styles.avatar} onClick={handleEditAvatarPress}>
-                            <img id={"avatarImage"} className={styles.avatarImg}/>
+                            <img 
+                                id={"avatarImage"} 
+                                className={styles.avatarImg}
+                                src={user?.profile_image || "https://via.placeholder.com/150"}
+                                alt={`${user?.username}'s profile`}
+                            />
 
                             {/* Avatar Edit Button */}
                             <input id="avatarPicker" type="file" accept="image/*" style={{display: "none"}} />
@@ -111,21 +261,27 @@ const Profile = () => {
                             {isEditingBio.username ?
                                 <input
                                     type="text"
-                                    value="@FanEnthusiast"
-                                    onChange={(e) => console.log("Updating username:", e.target.value)}
+                                    value={user?.username || ""}
+                                    onChange={(e) => {
+                                        setUser({...user, username: e.target.value});
+                                    }}
+                                    onBlur={() => handleProfileUpdate({username: user.username})}
                                 /> :
-                                "@" + params.id}
+                                `@${user?.username || "User"}`}
                         </h2>
 
                         <p className={styles.bio}>
                             {isEditingBio.bio ? (
                                 <textarea
                                     rows={3}
-                                    value="Your #1 source..."
-                                    onChange={(e) => console.log("Updating bio:", e.target.value)}
+                                    value={user?.bio || ""}
+                                    onChange={(e) => {
+                                        setUser({...user, bio: e.target.value});
+                                    }}
+                                    onBlur={() => handleProfileUpdate({bio: user.bio})}
                                 />
                             ) : (
-                                "Your #1 source for the hottest spins and coolest breezes. Daily uploads of ceiling fans, box fans, and more!"
+                                user?.bio || "No bio available"
                             )}
                         </p>
                     </div>

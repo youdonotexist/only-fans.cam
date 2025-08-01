@@ -65,10 +65,10 @@ router.post(
                     const salt = await bcrypt.genSalt(10);
                     const hashedPassword = await bcrypt.hash(password, salt);
 
-                    // Create user
+                    // Create user with default profile
                     db.run(
-                        'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-                        [username, email, hashedPassword],
+                        'INSERT INTO users (username, email, password, bio, profile_image) VALUES (?, ?, ?, ?, ?)',
+                        [username, email, hashedPassword, 'Hello, I am new to OnlyFans!', null],
                         function (this: { lastID: number }, err: Error | null) {
                             if (err) {
                                 console.error(err.message);
@@ -147,6 +147,19 @@ router.post(
                         return res
                             .status(400)
                             .json({ message: 'Invalid credentials' });
+                    }
+
+                    // Check if user has profile fields, update if missing
+                    if (user.bio === null || user.bio === undefined) {
+                        db.run(
+                            'UPDATE users SET bio = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+                            ['Hello, I am new to OnlyFans!', user.id],
+                            (updateErr) => {
+                                if (updateErr) {
+                                    console.error('Error updating user profile:', updateErr.message);
+                                }
+                            }
+                        );
                     }
 
                     // Create JWT token

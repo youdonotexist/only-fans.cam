@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './FanDetails.css';
+import LoginButton from './LoginButton';
 
 const fansData = [
     {
@@ -65,9 +66,13 @@ const FanDetails = () => {
 
     return (
         <div className={styles.container}>
+            <div className={styles.header}>
+                <h1>Fan Details: {fan ? fan.name : 'Not Found'}</h1>
+                <LoginButton className={styles.headerLoginButton} />
+            </div>
+            
             {fan ? (
                 <>
-                    <h1>Fan Details: {fan.name}</h1>
                     <img src={fan.image} alt={fan.name} className={styles.selectedFanImage} />
                     <div className={styles.specsContainer}>
                         <p>RPMs: {fan.specs.RPMs}</p>
@@ -76,7 +81,7 @@ const FanDetails = () => {
                     </div>
                 </>
             ) : (
-                <h1>Fan not found</h1>
+                <h2>Fan not found</h2>
             )}
         </div>
     );

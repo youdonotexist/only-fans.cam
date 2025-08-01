@@ -13,6 +13,7 @@ export const getCurrentUser = async (token: string): Promise<User> => {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
+        'x-auth-token': token,
       },
     });
 
@@ -69,6 +70,7 @@ export const updateUser = async (
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
+        'x-auth-token': token,
       },
       body: JSON.stringify(userData),
     });
@@ -98,6 +100,7 @@ export const deleteUser = async (token: string): Promise<{ message: string }> =>
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
+        'x-auth-token': token,
       },
     });
 

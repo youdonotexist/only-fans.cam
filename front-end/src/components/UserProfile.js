@@ -2,6 +2,7 @@ import React from 'react';
 import { FaLock, FaHeart, FaComment, FaShare } from 'react-icons/fa';
 import styles from './UserProfile.module.css';
 import {useParams} from "react-router-dom";
+import LoginButton from './LoginButton';
 
 const userData = {
     username: "FanMaster",
@@ -46,12 +47,15 @@ export default function UserProfile() {
         <div className={styles.container}>
             {/* User Profile Header */}
             <div className={styles.profileHeader}>
-                <img src={userData.avatar} alt="User Avatar" className={styles.avatar} />
-                <div className={styles.userInfo}>
-                    <h2> {name} 🔥</h2>
-                    <p>{name} · Seen Yesterday</p>
-                    <p className={styles.bio}>{userData.bio}</p>
+                <div className={styles.headerLeft}>
+                    <img src={userData.avatar} alt="User Avatar" className={styles.avatar} />
+                    <div className={styles.userInfo}>
+                        <h2> {name} 🔥</h2>
+                        <p>{name} · Seen Yesterday</p>
+                        <p className={styles.bio}>{userData.bio}</p>
+                    </div>
                 </div>
+                <LoginButton className={styles.headerLoginButton} />
             </div>
 
             {/* Subscription Section */}

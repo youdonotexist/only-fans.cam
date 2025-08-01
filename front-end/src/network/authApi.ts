@@ -73,6 +73,7 @@ export const getCurrentUserProtected = async (token: string): Promise<User> => {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
+        'x-auth-token': token,
       },
     });
 

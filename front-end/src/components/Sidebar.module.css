@@ -61,3 +61,10 @@ nav li {
 svg {
     margin-right: 12px;
 }
+
+.sidebarLoginButton {
+    width: 100%;
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 4px;
+}
