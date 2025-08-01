@@ -26,6 +26,7 @@ export const uploadMedia = async (
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
+        'x-auth-token': token,
       },
       body: formData,
     });
@@ -102,6 +103,7 @@ export const deleteMedia = async (id: number, token: string): Promise<{ message:
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
+        'x-auth-token': token,
       },
     });
 

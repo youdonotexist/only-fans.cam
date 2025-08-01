@@ -95,6 +95,7 @@ export const createFan = async (fanData: CreateFanRequest, token: string): Promi
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
+        'x-auth-token': token,
       },
       body: JSON.stringify(fanData),
     });
@@ -127,6 +128,7 @@ export const updateFan = async (id: number, fanData: UpdateFanRequest, token: st
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
+        'x-auth-token': token,
       },
       body: JSON.stringify(fanData),
     });
@@ -157,6 +159,7 @@ export const deleteFan = async (id: number, token: string): Promise<{ message: s
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
+        'x-auth-token': token,
       },
     });
 
@@ -186,6 +189,7 @@ export const likeFan = async (id: number, token: string): Promise<{ message: str
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
+        'x-auth-token': token,
       },
     });
 
@@ -215,6 +219,7 @@ export const unlikeFan = async (id: number, token: string): Promise<{ message: s
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
+        'x-auth-token': token,
       },
     });
 
@@ -246,6 +251,7 @@ export const addComment = async (id: number, commentData: CreateCommentRequest, 
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
+        'x-auth-token': token,
       },
       body: JSON.stringify(commentData),
     });
