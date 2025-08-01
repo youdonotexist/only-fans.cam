@@ -9,7 +9,7 @@ import {
 } from 'react-icons/fa';
 import styles from './Profile.module.css';
 import Sidebar from "./Sidebar";
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getFansByUser } from '../network/fanApi';
 import { uploadProfileImage } from '../network/userApi.ts';
 
@@ -81,6 +81,7 @@ const updateUser = async (userData, token) => {
 const Profile = () => {
 
     const params = useParams();
+    const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -421,37 +422,39 @@ const Profile = () => {
                         </div>
                     )}
                     
-                    {/* Edit Profile Button */}
-                    {isEditingBio.username || isEditingBio.bio ? (
-                        <div className={styles.editButtons}>
+                    {/* Edit Profile Button - only show when viewing own profile */}
+                    {(params.id === 'me' || !params.id) && (
+                        isEditingBio.username || isEditingBio.bio ? (
+                            <div className={styles.editButtons}>
+                                <button
+                                    className={styles.saveProfileBtn}
+                                    onClick={() => handleProfileUpdate({
+                                        username: editedUser.username,
+                                        bio: editedUser.bio
+                                    })}
+                                >
+                                    Save Changes
+                                </button>
+                                <button
+                                    className={styles.cancelBtn}
+                                    onClick={() => {
+                                        setIsEditingBio({
+                                            username: false,
+                                            bio: false
+                                        });
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        ) : (
                             <button
-                                className={styles.saveProfileBtn}
-                                onClick={() => handleProfileUpdate({
-                                    username: editedUser.username,
-                                    bio: editedUser.bio
-                                })}
+                                className={styles.editProfileBtn}
+                                onClick={handleEditProfilePress}
                             >
-                                Save Changes
+                                <FaEdit/> Edit Profile
                             </button>
-                            <button
-                                className={styles.cancelBtn}
-                                onClick={() => {
-                                    setIsEditingBio({
-                                        username: false,
-                                        bio: false
-                                    });
-                                }}
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    ) : (
-                        <button
-                            className={styles.editProfileBtn}
-                            onClick={handleEditProfilePress}
-                        >
-                            <FaEdit/> Edit Profile
-                        </button>
+                        )
                     )}
                 </div>
 
@@ -491,7 +494,11 @@ const Profile = () => {
                     <div className={styles.feedContent}>
                         {fanPosts.map(post => (
                             <div key={post.id} className={styles.post}>
-                                <h4>{post.title}</h4>
+                                <h4 
+                                    onClick={() => navigate(`/fandetails/${post.title}`)}
+                                    style={{ cursor: 'pointer' }}
+                                    className={styles.clickableTitle}
+                                >{post.title}</h4>
                                 {(() => {
                                     // Use a fallback image if media_count > 0
                                     if (post.media_count > 0) {
@@ -499,17 +506,26 @@ const Profile = () => {
                                             // Try to load a dynamic image based on post ID
                                             const imgSrc = require(`../assets/fan${(post.id % 4) + 1}.png`);
                                             return (
-                                                <img 
-                                                    src={imgSrc} 
-                                                    alt={post.title}
-                                                    className={styles.postImage}
-                                                />
+                                                <div 
+                                                    onClick={() => navigate(`/fandetails/${post.title}`)}
+                                                    style={{ cursor: 'pointer' }}
+                                                >
+                                                    <img 
+                                                        src={imgSrc} 
+                                                        alt={post.title}
+                                                        className={styles.postImage}
+                                                    />
+                                                </div>
                                             );
                                         } catch (error) {
                                             // Fallback to placeholder if image can't be loaded
                                             console.error('Error loading image:', error);
                                             return (
-                                                <div className={styles.noImagePlaceholder}>
+                                                <div 
+                                                    className={styles.noImagePlaceholder}
+                                                    onClick={() => navigate(`/fandetails/${post.title}`)}
+                                                    style={{ cursor: 'pointer' }}
+                                                >
                                                     <FaFan size={40} />
                                                 </div>
                                             );
@@ -517,7 +533,11 @@ const Profile = () => {
                                     } else {
                                         // Show placeholder if no media
                                         return (
-                                            <div className={styles.noImagePlaceholder}>
+                                            <div 
+                                                className={styles.noImagePlaceholder}
+                                                onClick={() => navigate(`/fandetails/${post.title}`)}
+                                                style={{ cursor: 'pointer' }}
+                                            >
                                                 <FaFan size={40} />
                                             </div>
                                         );

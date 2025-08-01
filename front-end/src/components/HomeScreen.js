@@ -36,6 +36,9 @@ const HomeScreen = () => {
     const [success, setSuccess] = useState('');
     const fileInputRef = useRef(null);
     
+    // State for fan media
+    const [fanMedia, setFanMedia] = useState({});
+    
     // Fetch fans from backend
     useEffect(() => {
         const fetchFans = async () => {
@@ -51,6 +54,29 @@ const HomeScreen = () => {
                     initialLikedState[fan.id] = false; // Initially set all to unliked
                 });
                 setLikedFans(initialLikedState);
+                
+                // Fetch media for each fan with media_count > 0
+                const mediaPromises = response.fans
+                    .filter(fan => fan.media_count > 0)
+                    .map(async (fan) => {
+                        try {
+                            const fanDetails = await getFanById(fan.id);
+                            return { fanId: fan.id, media: fanDetails.media };
+                        } catch (err) {
+                            console.error(`Error fetching media for fan ${fan.id}:`, err);
+                            return { fanId: fan.id, media: [] };
+                        }
+                    });
+                
+                const mediaResults = await Promise.all(mediaPromises);
+                const mediaMap = {};
+                mediaResults.forEach(result => {
+                    if (result.media && result.media.length > 0) {
+                        mediaMap[result.fanId] = result.media[0]; // Use the first media item
+                    }
+                });
+                
+                setFanMedia(mediaMap);
             } catch (err) {
                 console.error('Error fetching fans:', err);
                 setLoadError(err.message || 'Failed to load fans');
@@ -448,12 +474,6 @@ const HomeScreen = () => {
                     </div>
                 )}
                 
-                {/* Stories Section */}
-                <div className={styles.stories}>
-                    <div className={styles.storyItem}>+ Add to Story</div>
-                    <div className={styles.storyItem}>🌟 Micro Fan</div>
-                    <div className={styles.storyItem}>🔥 Nano Fan</div>
-                </div>
 
                 {/* Fans Feed */}
                 {loadError && (
@@ -501,22 +521,34 @@ const HomeScreen = () => {
 
                             {/* Fan Image & Details */}
                             {fan.media_count > 0 ? (
-                                <div className={styles.fanImageContainer}>
-                                    {/* We don't have direct access to media in this response, so using a placeholder based on ID */}
+                                <div 
+                                    className={styles.fanImageContainer}
+                                    onClick={() => navigate(`/fandetails/${fan.id}`)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    {/* Use the actual uploaded image if available, otherwise fallback to placeholder */}
                                     <img 
-                                        src={require(`../assets/fan${(fan.id % 4) + 1}.png`)} 
+                                        src={fanMedia[fan.id] ? getMediaUrl(fanMedia[fan.id].file_path) : require(`../assets/fan${(fan.id % 4) + 1}.png`)} 
                                         alt={fan.title} 
                                         className={styles.fanImage} 
                                     />
                                 </div>
                             ) : (
-                                <div className={styles.noImagePlaceholder}>
+                                <div 
+                                    className={styles.noImagePlaceholder}
+                                    onClick={() => navigate(`/fandetails/${fan.id}`)}
+                                    style={{ cursor: 'pointer' }}
+                                >
                                     <FaFan size={40} />
                                     <p>No image available</p>
                                 </div>
                             )}
                             
-                            <div className={styles.fanDetails}>
+                            <div 
+                                className={styles.fanDetails}
+                                onClick={() => navigate(`/fandetails/${fan.id}`)}
+                                style={{ cursor: 'pointer' }}
+                            >
                                 <h3>{fan.title}</h3>
                                 <p>{fan.description || "No description provided."}</p>
                             </div>

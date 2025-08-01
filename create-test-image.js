@@ -1,0 +1,69 @@
+const fs = require('fs');
+const { createCanvas } = require('canvas');
+const path = require('path');
+
+// Create a simple test image
+function createTestImage(filename = 'sample-profile.jpg', width = 200, height = 200) {
+  try {
+    console.log(`Creating test image: ${filename}`);
+    
+    // Create canvas
+    const canvas = createCanvas(width, height);
+    const ctx = canvas.getContext('2d');
+    
+    // Fill background
+    ctx.fillStyle = '#3498db';
+    ctx.fillRect(0, 0, width, height);
+    
+    // Draw a circle
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(width/2, height/2, width/3, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Add text
+    ctx.fillStyle = '#333333';
+    ctx.font = 'bold 24px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Test', width/2, height/2);
+    
+    // Save to file
+    const buffer = canvas.toBuffer('image/jpeg');
+    fs.writeFileSync(path.join(__dirname, filename), buffer);
+    
+    console.log(`Test image created successfully: ${filename}`);
+  } catch (error) {
+    console.error('Error creating test image:', error.message);
+    
+    // Fallback: Create a simple 1x1 pixel image if canvas is not available
+    try {
+      console.log('Attempting to create a fallback image...');
+      // Simple JPEG header for a 1x1 pixel image
+      const simpleJpegBuffer = Buffer.from([
+        0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01, 
+        0x01, 0x01, 0x00, 0x48, 0x00, 0x48, 0x00, 0x00, 0xFF, 0xDB, 0x00, 0x43, 
+        0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xC2, 0x00, 0x0B, 0x08, 0x00, 0x01, 0x00, 
+        0x01, 0x01, 0x01, 0x11, 0x00, 0xFF, 0xC4, 0x00, 0x14, 0x10, 0x01, 0x00, 
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x00, 0x00, 0xFF, 0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x01, 0x3F, 
+        0x10
+      ]);
+      
+      fs.writeFileSync(path.join(__dirname, filename), simpleJpegBuffer);
+      console.log(`Fallback test image created successfully: ${filename}`);
+    } catch (fallbackError) {
+      console.error('Failed to create fallback image:', fallbackError.message);
+    }
+  }
+}
+
+// Create the test image
+createTestImage();
+
+console.log('Script completed.');

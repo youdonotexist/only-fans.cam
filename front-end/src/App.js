@@ -17,7 +17,7 @@ function App() {
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/login" element={<Navigate to="/auth" />} />
                 <Route path="/register" element={<Navigate to="/auth" />} />
-                <Route path="/fandetails/:name" element={<FanDetails />} />
+                <Route path="/fandetails/:id" element={<FanDetails />} />
                 <Route path="/fanfan/:name" element={<UserProfile />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/messages" element={<Messages />} />

@@ -14,7 +14,7 @@
     margin: 0 auto;
 }
 
-/* Stories Section */
+/* Create Post Section */
 .createPostSection {
     margin-bottom: var(--space-xl);
 }
@@ -198,43 +198,6 @@
     to { opacity: 0; }
 }
 
-.stories {
-    display: flex;
-    gap: var(--space-md);
-    padding-bottom: var(--space-xl);
-    overflow-x: auto;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
-    margin-bottom: var(--space-xl);
-    padding: var(--space-md) 0;
-}
-
-.stories::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera */
-}
-
-.storyItem {
-    min-width: 80px;
-    height: 80px;
-    background: var(--gradient-primary);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: var(--text-sm);
-    font-weight: var(--font-bold);
-    border-radius: var(--radius-full);
-    cursor: pointer;
-    color: white;
-    position: relative;
-    border: 3px solid var(--background-lighter);
-    transition: all var(--transition-fast);
-    flex-shrink: 0;
-}
-
-.storyItem:hover {
-    transform: scale(1.05);
-    box-shadow: var(--shadow-md);
-}
 
 /* Fan Post (Social Media Feed Style) */
 .fanPost {

@@ -445,3 +445,13 @@
     background-color: var(--background-lighter);
     border-top: 1px solid var(--background-lighter);
 }
+
+.clickableTitle {
+    color: var(--foreground);
+    transition: color var(--transition-fast);
+}
+
+.clickableTitle:hover {
+    color: var(--primary);
+    text-decoration: underline;
+}

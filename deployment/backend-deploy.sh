@@ -74,6 +74,10 @@ else
   exit 1
 fi
 
+git add .
+git commit -m "deployment commit"
+git push origin main
+
 # Instructions for deployment
 echo -e "${GREEN}Preparation completed!${NC}"
 echo -e "${YELLOW}To deploy to Render:${NC}"
