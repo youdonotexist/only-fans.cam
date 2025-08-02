@@ -190,21 +190,25 @@ const MessageDetail = ({ userId, onMessageSent }) => {
               <span>{formatDate(date)}</span>
             </div>
             
-            {msgs.map(message => (
-              <div 
-                key={message.id}
-                className={`${styles.message} ${
-                  message.sender_id === currentUserId ? styles.sent : styles.received
-                }`}
-              >
-                <div className={styles.messageContent}>
-                  <p>{message.content}</p>
-                  <span className={styles.messageTime}>
-                    {formatTime(message.created_at)}
-                  </span>
+            {msgs.map(message => {
+              const isSentByCurrentUser = message.sender_id === currentUserId;
+              return (
+                <div 
+                  key={message.id}
+                  className={styles.message}
+                  style={{ justifyContent: isSentByCurrentUser ? 'flex-end' : 'flex-start' }}
+                >
+                  <div className={`${styles.messageContent} ${
+                    isSentByCurrentUser ? styles.sent : styles.received
+                  }`}>
+                    <p>{message.content}</p>
+                    <span className={styles.messageTime}>
+                      {formatTime(message.created_at)}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ))}
         <div ref={messagesEndRef} />
