@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaEnvelope, FaSearch, FaSpinner } from 'react-icons/fa';
+import { FaEnvelope, FaSearch, FaSpinner, FaList, FaArrowLeft } from 'react-icons/fa';
 import styles from './Messages.module.css';
 import Sidebar from './Sidebar';
 import { getConversations, sendMessage } from '../network/messageApi.ts';
@@ -17,7 +17,20 @@ const Messages = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [startingNewConversation, setStartingNewConversation] = useState(false);
+  const [showConversations, setShowConversations] = useState(window.innerWidth > 768);
   const navigate = useNavigate();
+  
+  // Check window size on resize to update showConversations state
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setShowConversations(true);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     fetchConversations();
@@ -55,6 +68,16 @@ const Messages = () => {
       : conversation.user1_id;
     
     setSelectedUserId(otherUserId);
+    
+    // On mobile, hide the conversations panel after selecting a conversation
+    if (window.innerWidth <= 768) {
+      setShowConversations(false);
+    }
+  };
+  
+  // Toggle conversations panel visibility on mobile
+  const toggleConversations = () => {
+    setShowConversations(prev => !prev);
   };
 
   const handleNewMessage = () => {
@@ -118,8 +141,17 @@ const Messages = () => {
       {/* Main Content */}
       <main className={styles.mainContent}>
         <div className={styles.messagesContainer}>
+          {/* Toggle button for mobile */}
+          <button 
+            className={styles.toggleConversations}
+            onClick={toggleConversations}
+            aria-label={showConversations ? "Hide conversations" : "Show conversations"}
+          >
+            {showConversations ? <FaArrowLeft /> : <FaList />}
+          </button>
+          
           {/* Left Panel - Conversation List */}
-          <div className={styles.conversationsPanel}>
+          <div className={`${styles.conversationsPanel} ${showConversations ? styles.visible : ''}`}>
             <div className={styles.conversationsHeader}>
               <h2><FaEnvelope /> Messages</h2>
               <button 
@@ -160,7 +192,7 @@ const Messages = () => {
           </div>
           
           {/* Right Panel - Message Detail */}
-          <div className={styles.messageDetailPanel}>
+          <div className={`${styles.messageDetailPanel} ${!showConversations ? styles.fullWidth : ''}`}>
             {selectedUserId ? (
               <MessageDetail 
                 userId={selectedUserId}

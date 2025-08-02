@@ -165,3 +165,71 @@
         transform: translateX(0);
     }
 }
+
+/* Responsive styles for tablets */
+@media (max-width: 992px) {
+    .mainContent {
+        padding: var(--space-lg);
+    }
+    
+    .notificationsContainer {
+        max-width: 100%;
+    }
+    
+    .notificationItem {
+        padding: var(--space-md);
+    }
+}
+
+/* Responsive styles for mobile */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .mainContent {
+        padding: var(--space-md) var(--space-sm);
+        margin-bottom: 60px; /* Space for mobile navigation */
+    }
+    
+    .header h1 {
+        font-size: var(--text-xl);
+    }
+    
+    .notificationItem {
+        padding: var(--space-md) var(--space-sm);
+        gap: var(--space-sm);
+    }
+    
+    .notificationIcon {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .notificationActions {
+        flex-direction: column;
+    }
+    
+    .notificationActions button {
+        padding: var(--space-sm);
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+    .mainContent {
+        padding: var(--space-sm) var(--space-xs);
+    }
+    
+    .header {
+        margin-bottom: var(--space-lg);
+    }
+    
+    .notificationItem {
+        border-radius: var(--radius-sm);
+    }
+    
+    .emptyState {
+        padding: var(--space-xl);
+    }
+}

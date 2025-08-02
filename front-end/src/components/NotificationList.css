@@ -267,3 +267,92 @@
     transform: translateY(0);
   }
 }
+
+/* Responsive styles for mobile devices */
+@media (max-width: 768px) {
+  .notification-list {
+    width: 100%;
+    max-width: 100%;
+    max-height: none;
+    height: 100%;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  
+  .notification-dropdown {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin-top: 0;
+    z-index: 1100;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .notification-items {
+    max-height: none;
+    flex: 1;
+  }
+  
+  .notification-item {
+    padding: 16px;  /* Larger touch target */
+  }
+  
+  .notification-icon-container {
+    width: 44px;  /* Larger icon container */
+    height: 44px;
+  }
+  
+  .notification-icon {
+    font-size: 18px;  /* Larger icon */
+  }
+  
+  .notification-message {
+    font-size: 16px;  /* Larger text */
+  }
+  
+  .notification-time {
+    font-size: 14px;
+  }
+  
+  .mark-read-btn {
+    width: 44px;  /* Larger button */
+    height: 44px;
+    margin-left: 12px;
+  }
+  
+  .mark-all-read-btn {
+    padding: 8px 12px;
+    font-size: 16px;
+  }
+  
+  .load-more-btn {
+    padding: 10px 16px;
+    font-size: 16px;
+    width: 80%;
+    margin: 0 auto;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .notification-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 16px;
+  }
+  
+  .mark-all-read-btn {
+    align-self: flex-end;
+  }
+  
+  .notification-content {
+    gap: 8px;
+  }
+}

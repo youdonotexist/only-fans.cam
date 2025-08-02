@@ -1,5 +1,6 @@
 .container {
     display: flex;
+    position: relative;
 }
 
 .sidebar {
@@ -11,6 +12,109 @@
     position: sticky;
     top: 0;
     overflow-y: auto;
+    transition: transform 0.3s ease, width 0.3s ease;
+    z-index: var(--z-30);
+}
+
+/* Mobile sidebar styles */
+.sidebarToggle {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    box-shadow: var(--shadow-md);
+    z-index: var(--z-40);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.mobileNav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--background);
+    border-top: 1px solid var(--background-lighter);
+    padding: var(--space-sm) 0;
+    z-index: var(--z-30);
+}
+
+.mobileNav ul {
+    display: flex;
+    justify-content: space-around;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mobileNav li {
+    margin: 0;
+}
+
+.mobileNavLink {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--foreground-dim);
+    font-size: var(--text-xs);
+    padding: var(--space-xs);
+}
+
+.mobileNavLink svg {
+    font-size: 1.5rem;
+    margin: 0 0 var(--space-xs) 0;
+}
+
+.mobileNavLink.active {
+    color: var(--primary);
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 240px;
+        padding: var(--space-md);
+    }
+    
+    .logo {
+        font-size: var(--text-xl);
+    }
+    
+    .link {
+        font-size: var(--text-md);
+        padding: var(--space-sm) var(--space-md);
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        transform: translateX(-100%);
+        width: 250px;
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    
+    .sidebarToggle {
+        display: flex;
+    }
+    
+    .mobileNav {
+        display: block;
+    }
 }
 
 .logo {

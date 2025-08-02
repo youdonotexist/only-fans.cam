@@ -239,3 +239,57 @@
   background-color: rgba(220, 53, 69, 0.1); /* Fallback for --error-light */
   margin-top: -1px;
 }
+
+/* Responsive styles for message bubbles */
+@media (max-width: 992px) {
+  .header {
+    padding: var(--space-sm);
+  }
+  
+  .messageList {
+    padding: var(--space-sm);
+  }
+  
+  .sent, .received {
+    max-width: 80%; /* Wider bubbles on medium screens */
+  }
+  
+  .messageForm {
+    padding: var(--space-sm);
+  }
+}
+
+@media (max-width: 768px) {
+  .sent, .received {
+    max-width: 85%; /* Even wider bubbles on small screens */
+  }
+  
+  .messageContent {
+    padding: var(--space-xs) var(--space-sm);
+  }
+  
+  .messageInput {
+    font-size: var(--text-xs);
+    padding: var(--space-xs) var(--space-sm);
+  }
+  
+  .sendButton {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sent, .received {
+    max-width: 90%; /* Maximum width on very small screens */
+  }
+  
+  .avatar {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .userInfo h3 {
+    font-size: var(--text-md);
+  }
+}
