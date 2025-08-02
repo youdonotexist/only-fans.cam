@@ -134,3 +134,32 @@ export interface Like {
   fan_id: number;
   created_at: string;
 }
+
+// Notification Models
+export interface Notification {
+  id: number;
+  user_id: number;
+  fan_id: number;
+  type: 'comment' | 'like' | 'follow';
+  message: string;
+  actor_id: number;
+  is_read: boolean;
+  created_at: string;
+  actor_username?: string;
+  actor_profile_image?: string;
+  fan_title?: string;
+}
+
+export interface NotificationsResponse {
+  notifications: Notification[];
+  pagination: {
+    page: number;
+    limit: number;
+    totalCount: number;
+    totalPages: number;
+  };
+}
+
+export interface UnreadCountResponse {
+  count: number;
+}

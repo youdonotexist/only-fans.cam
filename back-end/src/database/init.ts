@@ -103,6 +103,23 @@ export function initializeDatabase(): Database {
     )
   `);
 
+  // Create notifications table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      fan_id INTEGER NOT NULL,
+      type TEXT NOT NULL,
+      message TEXT NOT NULL,
+      actor_id INTEGER NOT NULL,
+      is_read BOOLEAN DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+      FOREIGN KEY (fan_id) REFERENCES fans (id) ON DELETE CASCADE,
+      FOREIGN KEY (actor_id) REFERENCES users (id) ON DELETE CASCADE
+    )
+  `);
+
   return db;
 }
 

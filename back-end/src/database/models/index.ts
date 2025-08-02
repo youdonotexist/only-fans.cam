@@ -8,3 +8,4 @@ export { Media } from './Media';
 export { Follow } from './Follow';
 export { Like } from './Like';
 export { Comment } from './Comment';
+export { Notification } from './Notification';

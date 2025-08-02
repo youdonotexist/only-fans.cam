@@ -5,6 +5,7 @@ import { userRoutes } from './routes/userRoutes';
 import { fanRoutes } from './routes/fanRoutes';
 import { followRoutes } from './routes/followRoutes';
 import { mediaRoutes } from './routes/mediaRoutes';
+import { notificationRoutes } from './routes/notificationRoutes';
 import { initializeDatabase } from './database/init';
 import {authRoutes} from "./routes/authRoutes";
 
@@ -35,6 +36,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/fans', fanRoutes);
 app.use('/api/follows', followRoutes);
 app.use('/api/media', mediaRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

@@ -425,6 +425,44 @@ router.post('/:id/like', auth, (req, res) => {
               return res.status(500).json({ message: 'Server error' });
             }
 
+            // Create notification for the fan owner
+            db.get(
+              'SELECT user_id, title FROM fans WHERE id = ?',
+              [req.params.id],
+              (err, fanInfo) => {
+                if (err) {
+                  console.error('Error getting fan info for notification:', err.message);
+                  // Continue without creating notification
+                } else if (fanInfo && fanInfo.user_id !== req.user?.id) {
+                  // Only create notification if the liker is not the fan owner
+                  db.get(
+                    'SELECT username FROM users WHERE id = ?',
+                    [req.user?.id],
+                    (err, userInfo) => {
+                      if (err || !userInfo) {
+                        console.error('Error getting username for notification:', err?.message);
+                        // Continue without creating notification
+                      } else {
+                        const message = `${userInfo.username} liked your post "${fanInfo.title}"`;
+                        
+                        // Insert notification
+                        db.run(
+                          'INSERT INTO notifications (user_id, fan_id, type, message, actor_id) VALUES (?, ?, ?, ?, ?)',
+                          [fanInfo.user_id, req.params.id, 'like', message, req.user?.id],
+                          (err) => {
+                            if (err) {
+                              console.error('Error creating notification:', err.message);
+                              // Continue without notification
+                            }
+                          }
+                        );
+                      }
+                    }
+                  );
+                }
+              }
+            );
+
             res.json({ message: 'Fan liked' });
           }
         );
@@ -519,6 +557,44 @@ router.post(
               if (!comment) {
                 return res.status(404).json({ message: 'Comment not found' });
               }
+
+              // Create notification for the fan owner
+              db.get(
+                'SELECT user_id, title FROM fans WHERE id = ?',
+                [req.params.id],
+                (err, fanInfo) => {
+                  if (err) {
+                    console.error('Error getting fan info for notification:', err.message);
+                    // Continue without creating notification
+                  } else if (fanInfo && fanInfo.user_id !== req.user?.id) {
+                    // Only create notification if the commenter is not the fan owner
+                    db.get(
+                      'SELECT username FROM users WHERE id = ?',
+                      [req.user?.id],
+                      (err, userInfo) => {
+                        if (err || !userInfo) {
+                          console.error('Error getting username for notification:', err?.message);
+                          // Continue without creating notification
+                        } else {
+                          const message = `${userInfo.username} commented on your post "${fanInfo.title}"`;
+                          
+                          // Insert notification
+                          db.run(
+                            'INSERT INTO notifications (user_id, fan_id, type, message, actor_id) VALUES (?, ?, ?, ?, ?)',
+                            [fanInfo.user_id, req.params.id, 'comment', message, req.user?.id],
+                            (err) => {
+                              if (err) {
+                                console.error('Error creating notification:', err.message);
+                                // Continue without notification
+                              }
+                            }
+                          );
+                        }
+                      }
+                    );
+                  }
+                }
+              );
 
               res.status(201).json(comment);
             }

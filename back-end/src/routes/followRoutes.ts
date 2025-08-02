@@ -60,6 +60,32 @@ router.post('/:userId', auth, (req, res) => {
               return res.status(500).json({ message: 'Server error' });
             }
 
+            // Create notification for the user being followed
+            db.get(
+              'SELECT username FROM users WHERE id = ?',
+              [followerId],
+              (err, followerInfo) => {
+                if (err) {
+                  console.error('Error getting follower info for notification:', err.message);
+                  // Continue without creating notification
+                } else if (followerInfo) {
+                  const message = `${followerInfo.username} started following you`;
+                  
+                  // Insert notification
+                  db.run(
+                    'INSERT INTO notifications (user_id, fan_id, type, message, actor_id) VALUES (?, ?, ?, ?, ?)',
+                    [followingId, 0, 'follow', message, followerId],
+                    (err) => {
+                      if (err) {
+                        console.error('Error creating notification:', err.message);
+                        // Continue without notification
+                      }
+                    }
+                  );
+                }
+              }
+            );
+
             res.json({ message: 'User followed successfully' });
           }
         );
