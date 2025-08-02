@@ -1,11 +1,31 @@
-import React from 'react';
-import {NavLink} from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import {NavLink, Link} from 'react-router-dom';
 import { FaHome, FaBell, FaEnvelope, FaUser } from 'react-icons/fa';
 import styles from './Sidebar.module.css';
 import LoginButton from './LoginButton';
+import logo from '../assets/logo.png';
+import { getCurrentUser } from '../network/userApi.ts';
 
 const Sidebar = () => {
     // Sidebar is always visible, no need for toggle state
+    const [user, setUser] = useState(null);
+    
+    // Fetch user data on component mount
+    useEffect(() => {
+        const fetchUser = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const userData = await getCurrentUser(token);
+                    setUser(userData);
+                } catch (error) {
+                    console.error('Error fetching user data:', error);
+                }
+            }
+        };
+        
+        fetchUser();
+    }, []);
     
     // Navigation links click handler
     const handleLinkClick = () => {
@@ -24,6 +44,13 @@ const Sidebar = () => {
         <div className={styles.container}>
             {/* Main Sidebar - Always visible */}
             <aside className={styles.sidebar}>
+                {/* Logo at the top */}
+                <div className={styles.logoContainer}>
+                    <Link to="/" className={styles.logo}>
+                        <img src={logo} className={styles.logoImg} alt="OnlyFans logo" />
+                    </Link>
+                </div>
+                
                 <nav>
                     <ul>
                         {navLinks.map((link) => (
@@ -39,7 +66,28 @@ const Sidebar = () => {
                         ))}
                     </ul>
                 </nav>
-                <LoginButton className={styles.sidebarLoginButton} />
+                
+                {/* Spacer to push content to top and bottom */}
+                <div className={styles.spacer}></div>
+                
+                {/* User profile at the bottom */}
+                {user && (
+                    <div className={styles.userProfile}>
+                        <Link to="/profile/me" className={styles.userProfileLink}>
+                            <img 
+                                src={user.profile_image || "https://via.placeholder.com/40"} 
+                                alt={user.username}
+                                className={styles.userAvatar} 
+                            />
+                            <div className={styles.userInfo}>
+                                <span className={styles.username}>@{user.username}</span>
+                                <span className={styles.userBio}>{user.bio ? user.bio.substring(0, 20) + (user.bio.length > 20 ? '...' : '') : 'No bio'}</span>
+                            </div>
+                        </Link>
+                    </div>
+                )}
+                
+                {!user && <LoginButton className={styles.sidebarLoginButton} />}
             </aside>
             
             {/* Mobile Bottom Navigation - No longer needed as sidebar is always visible */}

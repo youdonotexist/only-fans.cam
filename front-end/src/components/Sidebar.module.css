@@ -14,6 +14,25 @@
     overflow-y: auto;
     transition: all 0.3s ease;
     z-index: var(--z-30);
+    display: flex;
+    flex-direction: column;
+}
+
+.logoContainer {
+    display: flex;
+    justify-content: center;
+    margin-bottom: var(--space-xl);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logoImg {
+    height: 60px;
+    width: auto;
 }
 
 /* Mobile navigation removed as sidebar is always visible */
@@ -41,6 +60,11 @@
         padding: var(--space-md) var(--space-sm);
     }
     
+    /* Adjust logo for smaller sidebar */
+    .logoImg {
+        height: 40px;
+    }
+    
     /* Hide text in links, show only icons */
     .link span {
         display: none;
@@ -55,6 +79,19 @@
     svg {
         margin-right: 0;
         font-size: 1.5em;
+    }
+    
+    /* Adjust user profile for collapsed sidebar */
+    .userInfo {
+        display: none;
+    }
+    
+    .userAvatar {
+        margin-right: 0;
+    }
+    
+    .userProfileLink {
+        justify-content: center;
     }
     
     /* Adjust login button for collapsed sidebar */
@@ -137,9 +174,59 @@ svg {
     font-size: 1.25em;
 }
 
+.spacer {
+    flex: 1;
+    min-height: 20px;
+}
+
+.userProfile {
+    margin-bottom: var(--space-md);
+    background-color: var(--background-light);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.userProfileLink {
+    display: flex;
+    align-items: center;
+    padding: var(--space-md);
+    text-decoration: none;
+    color: var(--foreground);
+    transition: background-color var(--transition-fast);
+}
+
+.userProfileLink:hover {
+    background-color: var(--background-lighter);
+}
+
+.userAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: var(--space-md);
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.username {
+    font-weight: var(--font-semibold);
+    font-size: var(--text-md);
+    color: var(--foreground);
+}
+
+.userBio {
+    font-size: var(--text-xs);
+    color: var(--foreground-dim);
+    margin-top: var(--space-xs);
+}
+
 .sidebarLoginButton {
     width: 100%;
-    margin-top: var(--space-lg);
+    margin-top: var(--space-md);
     background: var(--gradient-primary);
     color: white;
     border: none;

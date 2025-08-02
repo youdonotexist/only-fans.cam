@@ -316,8 +316,14 @@
 }
 
 /* Profile Action Buttons */
-.editProfileBtn {
+.profileActions {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
     margin-top: var(--space-lg);
+}
+
+.editProfileBtn {
     background: var(--gradient-primary);
     color: white;
     border: none;
@@ -331,6 +337,33 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-xs);
+}
+
+.logoutBtn {
+    background: var(--gradient-secondary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    padding: var(--space-sm) var(--space-lg);
+    font-weight: var(--font-semibold);
+    font-size: var(--text-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-md);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.logoutBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    filter: brightness(1.1);
+}
+
+.logoutBtn:active {
+    transform: translateY(0);
+    filter: brightness(0.95);
 }
 
 .editProfileBtn:hover {
@@ -525,6 +558,17 @@
     
     .messageBtn, .bookmarkBtn {
         padding: var(--space-xs) var(--space-sm);
+    }
+    
+    .profileActions {
+        flex-direction: column;
+        gap: var(--space-sm);
+        align-items: center;
+    }
+    
+    .editProfileBtn, .logoutBtn {
+        width: 100%;
+        max-width: 250px;
     }
 }
 

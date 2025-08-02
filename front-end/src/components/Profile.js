@@ -5,7 +5,8 @@ import {
     FaCamera,
     FaEdit,
     FaFan,
-    FaSpinner
+    FaSpinner,
+    FaSignOutAlt
 } from 'react-icons/fa';
 import styles from './Profile.module.css';
 import Sidebar from "./Sidebar";
@@ -89,6 +90,19 @@ const Profile = () => {
     const [fanPosts, setFanPosts] = useState([]);
     const [fanDetails, setFanDetails] = useState({});
     const [loadingPosts, setLoadingPosts] = useState(false);
+    
+    // Handle logout
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+        setSuccessMessage('Logged out successfully!');
+        
+        // Redirect to home page after a short delay
+        setTimeout(() => {
+            navigate('/');
+            window.location.reload(); // Reload to update UI
+        }, 1500);
+    };
 
     // State for editing modes
     const [isEditingCover, setIsEditingCover] = useState(false);
@@ -470,12 +484,20 @@ const Profile = () => {
                                 </button>
                             </div>
                         ) : (
-                            <button
-                                className={styles.editProfileBtn}
-                                onClick={handleEditProfilePress}
-                            >
-                                <FaEdit/> Edit Profile
-                            </button>
+                            <div className={styles.profileActions}>
+                                <button
+                                    className={styles.editProfileBtn}
+                                    onClick={handleEditProfilePress}
+                                >
+                                    <FaEdit/> Edit Profile
+                                </button>
+                                <button
+                                    className={styles.logoutBtn}
+                                    onClick={handleLogout}
+                                >
+                                    <FaSignOutAlt/> Logout
+                                </button>
+                            </div>
                         )
                     )}
                 </div>
