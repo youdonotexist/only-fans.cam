@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaBell, FaCheck, FaCheckDouble, FaComment, FaHeart, FaUserPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { getNotifications, markNotificationAsRead, markAllNotificationsAsRead } from '../network/notificationApi';
+import { getNotifications, markNotificationAsRead, markAllNotificationsAsRead } from '../network/notificationApi.ts';
 import './NotificationList.css';
 
 const NotificationList = ({ onClose }) => {

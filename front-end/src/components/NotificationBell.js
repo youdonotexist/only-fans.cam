@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaBell } from 'react-icons/fa';
-import { getUnreadNotificationCount } from '../network/notificationApi';
+import { getUnreadNotificationCount } from '../network/notificationApi.ts';
 import NotificationList from './NotificationList';
 import './NotificationList.css';
 
