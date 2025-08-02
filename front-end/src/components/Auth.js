@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Auth.module.css';
 import { register, login } from '../network';
+import { getCurrentUser } from '../network/userApi.ts';
 
 const Auth = () => {
     const navigate = useNavigate();
@@ -70,6 +71,17 @@ const Auth = () => {
             // Store token in localStorage
             localStorage.setItem('token', response.token);
 
+            // Fetch user data using the token
+            try {
+                const userData = await getCurrentUser(response.token);
+                
+                // Store user ID in localStorage
+                localStorage.setItem('userId', userData.id);
+            } catch (userError) {
+                console.error('Error fetching user data:', userError);
+                // Continue even if fetching user data fails
+            }
+
             setSuccess('Login successful! Redirecting...');
 
             // Redirect to home page after a short delay
@@ -119,6 +131,17 @@ const Auth = () => {
 
             // Store token in localStorage
             localStorage.setItem('token', response.token);
+
+            // Fetch user data using the token
+            try {
+                const userData = await getCurrentUser(response.token);
+                
+                // Store user ID in localStorage
+                localStorage.setItem('userId', userData.id);
+            } catch (userError) {
+                console.error('Error fetching user data:', userError);
+                // Continue even if fetching user data fails
+            }
 
             setSuccess('Registration successful! Redirecting...');
 
