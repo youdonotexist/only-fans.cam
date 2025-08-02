@@ -64,7 +64,7 @@ router.post('/:userId', auth, (req, res) => {
             db.get(
               'SELECT username FROM users WHERE id = ?',
               [followerId],
-              (err, followerInfo) => {
+              (err, followerInfo: { username: string }) => {
                 if (err) {
                   console.error('Error getting follower info for notification:', err.message);
                   // Continue without creating notification

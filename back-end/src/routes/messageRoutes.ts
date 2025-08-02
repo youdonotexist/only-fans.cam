@@ -247,7 +247,7 @@ router.post(
               db.get(
                 'SELECT id FROM conversations WHERE user1_id = ? AND user2_id = ?',
                 [user1Id, user2Id],
-                (err, conversation) => {
+                (err, conversation: { id: number }) => {
                   if (err) {
                     console.error(err.message);
                     // Continue without error

@@ -429,7 +429,7 @@ router.post('/:id/like', auth, (req, res) => {
             db.get(
               'SELECT user_id, title FROM fans WHERE id = ?',
               [req.params.id],
-              (err, fanInfo) => {
+              (err, fanInfo: { user_id: number, title: string }) => {
                 if (err) {
                   console.error('Error getting fan info for notification:', err.message);
                   // Continue without creating notification
@@ -438,7 +438,7 @@ router.post('/:id/like', auth, (req, res) => {
                   db.get(
                     'SELECT username FROM users WHERE id = ?',
                     [req.user?.id],
-                    (err, userInfo) => {
+                    (err, userInfo: { username: string }) => {
                       if (err || !userInfo) {
                         console.error('Error getting username for notification:', err?.message);
                         // Continue without creating notification
@@ -562,7 +562,7 @@ router.post(
               db.get(
                 'SELECT user_id, title FROM fans WHERE id = ?',
                 [req.params.id],
-                (err, fanInfo) => {
+                (err, fanInfo: { user_id: number, title: string }) => {
                   if (err) {
                     console.error('Error getting fan info for notification:', err.message);
                     // Continue without creating notification
@@ -571,7 +571,7 @@ router.post(
                     db.get(
                       'SELECT username FROM users WHERE id = ?',
                       [req.user?.id],
-                      (err, userInfo) => {
+                      (err, userInfo: { username: string }) => {
                         if (err || !userInfo) {
                           console.error('Error getting username for notification:', err?.message);
                           // Continue without creating notification
