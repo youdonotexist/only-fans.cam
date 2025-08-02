@@ -60,7 +60,7 @@ router.get('/:id', (req, res) => {
   const db = getDatabase();
   
   db.get(
-    'SELECT id, username, bio, profile_image, created_at FROM users WHERE id = ?',
+    'SELECT id, username, bio, profile_image, cover_image, created_at FROM users WHERE id = ?',
     [req.params.id],
     (err, user) => {
       if (err) {

@@ -10,7 +10,7 @@ import {
 import styles from './Profile.module.css';
 import Sidebar from "./Sidebar";
 import { useParams, useNavigate } from 'react-router-dom';
-import { getFansByUser } from '../network/fanApi';
+import { getFansByUser, getFanById } from '../network/fanApi';
 import { uploadProfileImage, uploadCoverImage } from '../network/userApi.ts';
 
 // Import user API functions directly from the file
@@ -87,6 +87,7 @@ const Profile = () => {
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
     const [fanPosts, setFanPosts] = useState([]);
+    const [fanDetails, setFanDetails] = useState({});
     const [loadingPosts, setLoadingPosts] = useState(false);
 
     // State for editing modes
@@ -140,6 +141,19 @@ const Profile = () => {
             setLoadingPosts(true);
             const response = await getFansByUser(userId);
             setFanPosts(response.fans || []);
+            
+            // Fetch detailed information for each fan post
+            const detailsObj = {};
+            for (const post of response.fans || []) {
+                try {
+                    const details = await getFanById(post.id);
+                    detailsObj[post.id] = details;
+                } catch (detailErr) {
+                    console.error(`Error fetching details for fan post ${post.id}:`, detailErr);
+                }
+            }
+            setFanDetails(detailsObj);
+            
             setLoadingPosts(false);
         } catch (err) {
             console.error('Error fetching user fan posts:', err);
@@ -340,7 +354,7 @@ const Profile = () => {
             {/* Main Profile Content */}
             <main className={styles.mainContent}>
                 <div className={styles.profileHeader}>
-                    <div className={styles.coverPhoto} onClick={!uploadingCover ? handleEditCoverPress : undefined}>
+                    <div className={styles.coverPhoto} onClick={(params.id === 'me' || !params.id) && !uploadingCover ? handleEditCoverPress : undefined}>
                         {/* Cover Photo Button */}
                         <img 
                             id={"coverImage"} 
@@ -350,20 +364,22 @@ const Profile = () => {
                         />
                         <input id="coverImagePicker" type="file" accept="image/*" style={{display: "none"}} />
                         
-                        {uploadingCover ? (
-                            <div className={styles.uploadingCoverOverlay}>
-                                <FaSpinner className={styles.spinner} /> Uploading...
-                            </div>
-                        ) : (
-                            <div className={styles.editCoverButton}>
-                                <FaCamera/> Edit Cover
-                            </div>
+                        {(params.id === 'me' || !params.id) && (
+                            uploadingCover ? (
+                                <div className={styles.uploadingCoverOverlay}>
+                                    <FaSpinner className={styles.spinner} /> Uploading...
+                                </div>
+                            ) : (
+                                <div className={styles.editCoverButton}>
+                                    <FaCamera/> Edit Cover
+                                </div>
+                            )
                         )}
                     </div>
 
                     {/* Avatar Section */}
                     <div className={styles.profileInfo}>
-                        <div className={styles.avatar} onClick={!uploadingImage ? handleEditAvatarPress : undefined}>
+                        <div className={styles.avatar} onClick={(params.id === 'me' || !params.id) && !uploadingImage ? handleEditAvatarPress : undefined}>
                             <img 
                                 id={"avatarImage"} 
                                 className={styles.avatarImg}
@@ -374,12 +390,14 @@ const Profile = () => {
                             {/* Avatar Edit Button */}
                             <input id="avatarPicker" type="file" accept="image/*" style={{display: "none"}} />
                             
-                            {uploadingImage ? (
-                                <div className={styles.uploadingOverlay}>
-                                    <FaSpinner className={styles.spinner} />
-                                </div>
-                            ) : (
-                                <FaCamera/>
+                            {(params.id === 'me' || !params.id) && (
+                                uploadingImage ? (
+                                    <div className={styles.uploadingOverlay}>
+                                        <FaSpinner className={styles.spinner} />
+                                    </div>
+                                ) : (
+                                    <FaCamera/>
+                                )
                             )}
                         </div>
 
@@ -469,8 +487,8 @@ const Profile = () => {
                     <div><strong>Posts</strong> {fanPosts.length}</div>
                 </div>
 
-                {/* Action Buttons - only show when viewing other profiles */}
-                {params.id !== 'me' && params.id && (
+                {/* Action Buttons - only show when viewing other profiles and not your own profile by ID */}
+                {params.id !== 'me' && params.id && parseInt(params.id) !== user?.id && (
                     <div className={styles.actionButtons}>
                         <button className={styles.subscribeBtn}>Subscribe</button>
                         <button className={styles.messageBtn}><FaEnvelope/> Message</button>
@@ -504,8 +522,25 @@ const Profile = () => {
                                     className={styles.clickableTitle}
                                 >{post.title}</h4>
                                 {(() => {
-                                    // Use a fallback image if media_count > 0
-                                    if (post.media_count > 0) {
+                                    // Check if we have detailed information with media
+                                    const details = fanDetails[post.id];
+                                    if (details && details.media && details.media.length > 0) {
+                                        // Use the first media item from AWS
+                                        const mediaItem = details.media[0];
+                                        return (
+                                            <div 
+                                                onClick={() => navigate(`/fandetails/${post.title}`)}
+                                                style={{ cursor: 'pointer' }}
+                                            >
+                                                <img 
+                                                    src={mediaItem.file_path} 
+                                                    alt={post.title}
+                                                    className={styles.postImage}
+                                                />
+                                            </div>
+                                        );
+                                    } else if (post.media_count > 0) {
+                                        // If we know there's media but don't have details yet, use a fallback
                                         try {
                                             // Try to load a dynamic image based on post ID
                                             const imgSrc = require(`../assets/fan${(post.id % 4) + 1}.png`);
