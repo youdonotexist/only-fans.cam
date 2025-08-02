@@ -142,7 +142,7 @@ export function initializeDatabase(): Database {
       user2_id INTEGER NOT NULL,
       last_message_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      PRIMARY KEY (user1_id, user2_id),
+      UNIQUE(user1_id, user2_id),
       FOREIGN KEY (user1_id) REFERENCES users (id) ON DELETE CASCADE,
       FOREIGN KEY (user2_id) REFERENCES users (id) ON DELETE CASCADE
     )
