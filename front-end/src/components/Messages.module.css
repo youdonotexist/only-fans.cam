@@ -84,7 +84,7 @@
 .searchInput:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
 }
 
 .searchIcon {
@@ -151,4 +151,39 @@
 .noConversationSelected p {
   font-size: var(--text-sm);
   max-width: 300px;
+}
+
+/* Loading overlay for starting new conversation */
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.loadingContent {
+  background-color: var(--background);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: var(--shadow-lg);
+}
+
+.loadingContent .spinner {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-md);
+}
+
+.loadingContent p {
+  font-size: var(--text-md);
+  color: var(--foreground);
+  margin: 0;
 }

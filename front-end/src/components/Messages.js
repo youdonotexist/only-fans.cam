@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { FaEnvelope, FaSearch, FaSpinner } from 'react-icons/fa';
 import styles from './Messages.module.css';
 import Sidebar from './Sidebar';
-import { getConversations } from '../network/messageApi.ts';
+import { getConversations, sendMessage } from '../network/messageApi.ts';
 import MessageList from './MessageList';
 import MessageDetail from './MessageDetail';
+import NewMessageModal from './NewMessageModal';
 
 const Messages = () => {
   const [conversations, setConversations] = useState([]);
@@ -14,6 +15,8 @@ const Messages = () => {
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showNewMessageModal, setShowNewMessageModal] = useState(false);
+  const [startingNewConversation, setStartingNewConversation] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -55,9 +58,47 @@ const Messages = () => {
   };
 
   const handleNewMessage = () => {
-    // This would typically open a modal or navigate to a new message form
-    // For now, we'll just log a message
-    console.log('New message button clicked');
+    setShowNewMessageModal(true);
+  };
+  
+  const handleSelectUser = async (user) => {
+    try {
+      setStartingNewConversation(true);
+      setError(null);
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        setError('You must be logged in to send messages');
+        setStartingNewConversation(false);
+        return;
+      }
+      
+      // Send an initial message to start the conversation
+      await sendMessage(user.id, "Hi there!", token);
+      
+      // Refresh conversations list
+      await fetchConversations();
+      
+      // Select the new conversation with this user
+      setSelectedUserId(user.id);
+      
+      // Find the conversation in the updated list
+      const currentUserId = parseInt(localStorage.getItem('userId'));
+      const newConversation = conversations.find(conv => 
+        (conv.user1_id === currentUserId && conv.user2_id === user.id) || 
+        (conv.user2_id === currentUserId && conv.user1_id === user.id)
+      );
+      
+      if (newConversation) {
+        setSelectedConversation(newConversation);
+      }
+      
+      setStartingNewConversation(false);
+    } catch (err) {
+      console.error('Error starting new conversation:', err);
+      setError(err.message || 'Failed to start conversation');
+      setStartingNewConversation(false);
+    }
   };
 
   const filteredConversations = conversations.filter(conversation => {
@@ -135,6 +176,24 @@ const Messages = () => {
           </div>
         </div>
       </main>
+      
+      {/* New Message Modal */}
+      {showNewMessageModal && (
+        <NewMessageModal 
+          onClose={() => setShowNewMessageModal(false)}
+          onSelectUser={handleSelectUser}
+        />
+      )}
+      
+      {/* Loading overlay when starting a new conversation */}
+      {startingNewConversation && (
+        <div className={styles.loadingOverlay}>
+          <div className={styles.loadingContent}>
+            <FaSpinner className={styles.spinner} />
+            <p>Starting conversation...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

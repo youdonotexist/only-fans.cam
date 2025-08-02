@@ -1,17 +1,47 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {NavLink} from 'react-router-dom';
 import { FaHome, FaBell, FaEnvelope, FaUser, FaBars } from 'react-icons/fa';
 import styles from './Sidebar.module.css';
 import fanIcon from '../assets/fan.png';
 import LoginButton from './LoginButton';
+import { getCurrentUser } from '../network/userApi.ts';
 
 const Sidebar = () => {
+    const [user, setUser] = useState(null);
+    
+    useEffect(() => {
+        const fetchUser = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const userData = await getCurrentUser(token);
+                    setUser(userData);
+                } catch (error) {
+                    console.error('Error fetching user data:', error);
+                }
+            }
+        };
+        
+        fetchUser();
+    }, []);
+    
     return (
             <aside className={styles.sidebar}>
                     <div className={styles.logo}>
-                        <img src={fanIcon} className={styles.logoImg} />
+                        <img src={fanIcon} className={styles.logoImg} alt="Fan icon" />
                         OnlyFans
                     </div>
+                    
+                    {user && (
+                        <div className={styles.userInfo}>
+                            <img 
+                                src={user.profile_image || "https://via.placeholder.com/40"} 
+                                alt={user.username}
+                                className={styles.userAvatar} 
+                            />
+                            <span className={styles.username}>@{user.username}</span>
+                        </div>
+                    )}
 
                 <nav>
                     <ul>

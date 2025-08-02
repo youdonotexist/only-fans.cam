@@ -16,7 +16,7 @@
 .logo {
     font-size: var(--text-2xl);
     font-weight: var(--font-bold);
-    margin-bottom: var(--space-xl);
+    margin-bottom: var(--space-md);
     display: flex;
     align-items: center;
     color: var(--foreground);
@@ -27,6 +27,32 @@
     width: 30px;
     height: 30px;
     margin-right: var(--space-sm);
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    padding: var(--space-md);
+    margin-bottom: var(--space-md);
+    background-color: var(--background-light);
+    border-radius: var(--radius-md);
+}
+
+.userAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: var(--space-sm);
+}
+
+.username {
+    font-size: var(--text-md);
+    font-weight: var(--font-medium);
+    color: var(--foreground);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 nav ul {
