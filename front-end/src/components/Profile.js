@@ -517,7 +517,7 @@ const Profile = () => {
                         {fanPosts.map(post => (
                             <div key={post.id} className={styles.post}>
                                 <h4 
-                                    onClick={() => navigate(`/fandetails/${post.title}`)}
+                                    onClick={() => navigate(`/fandetails/${post.id}`)}
                                     style={{ cursor: 'pointer' }}
                                     className={styles.clickableTitle}
                                 >{post.title}</h4>
@@ -529,7 +529,7 @@ const Profile = () => {
                                         const mediaItem = details.media[0];
                                         return (
                                             <div 
-                                                onClick={() => navigate(`/fandetails/${post.title}`)}
+                                                onClick={() => navigate(`/fandetails/${post.id}`)}
                                                 style={{ cursor: 'pointer' }}
                                             >
                                                 <img 
@@ -546,7 +546,7 @@ const Profile = () => {
                                             const imgSrc = require(`../assets/fan${(post.id % 4) + 1}.png`);
                                             return (
                                                 <div 
-                                                    onClick={() => navigate(`/fandetails/${post.title}`)}
+                                                    onClick={() => navigate(`/fandetails/${post.id}`)}
                                                     style={{ cursor: 'pointer' }}
                                                 >
                                                     <img 
@@ -562,7 +562,7 @@ const Profile = () => {
                                             return (
                                                 <div 
                                                     className={styles.noImagePlaceholder}
-                                                    onClick={() => navigate(`/fandetails/${post.title}`)}
+                                                    onClick={() => navigate(`/fandetails/${post.id}`)}
                                                     style={{ cursor: 'pointer' }}
                                                 >
                                                     <FaFan size={40} />
@@ -574,7 +574,7 @@ const Profile = () => {
                                         return (
                                             <div 
                                                 className={styles.noImagePlaceholder}
-                                                onClick={() => navigate(`/fandetails/${post.title}`)}
+                                                onClick={() => navigate(`/fandetails/${post.id}`)}
                                                 style={{ cursor: 'pointer' }}
                                             >
                                                 <FaFan size={40} />
