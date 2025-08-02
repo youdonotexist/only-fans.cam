@@ -47,23 +47,30 @@ const MessageDetail = ({ userId, onMessageSent }) => {
       
       setMessages(sortedMessages);
       
-      // Set other user info from the first message
+      // Always set other user info based on the userId prop (not the message history)
       if (sortedMessages.length > 0) {
-        const currentUserId = parseInt(localStorage.getItem('userId'));
-        const firstMessage = sortedMessages[0];
+        // The userId prop is already the ID of the other user
+        // We just need to find their username and profile image from any message
         
-        if (firstMessage.sender_id === currentUserId) {
-          setOtherUser({
-            id: firstMessage.recipient_id,
-            username: firstMessage.recipient_username,
-            profileImage: firstMessage.recipient_profile_image
-          });
-        } else {
-          setOtherUser({
-            id: firstMessage.sender_id,
-            username: firstMessage.sender_username,
-            profileImage: firstMessage.sender_profile_image
-          });
+        // Find a message that contains the other user's information
+        for (const message of sortedMessages) {
+          if (message.sender_id === userId) {
+            // Other user is the sender of this message
+            setOtherUser({
+              id: userId,
+              username: message.sender_username,
+              profileImage: message.sender_profile_image
+            });
+            break;
+          } else if (message.recipient_id === userId) {
+            // Other user is the recipient of this message
+            setOtherUser({
+              id: userId,
+              username: message.recipient_username,
+              profileImage: message.recipient_profile_image
+            });
+            break;
+          }
         }
       }
       
