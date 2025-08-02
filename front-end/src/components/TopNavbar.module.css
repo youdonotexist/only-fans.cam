@@ -34,9 +34,9 @@
 }
 
 .logoImg {
-    width: 30px;
-    height: 30px;
-    margin-right: var(--space-sm);
+    height: 40px;
+    width: auto;
+    margin-right: 0;
 }
 
 .logoText {
@@ -99,8 +99,8 @@
     }
     
     .logoImg {
-        width: 24px;
-        height: 24px;
+        height: 32px;
+        width: auto;
     }
 }
 
@@ -131,6 +131,7 @@
     }
     
     .logoImg {
-        margin-right: 0;
+        height: 28px;
+        width: auto;
     }
 }

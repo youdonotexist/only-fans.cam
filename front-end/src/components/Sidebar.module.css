@@ -1,7 +1,6 @@
 .container {
     display: flex;
     position: relative;
-    flex-direction: column;
 }
 
 .sidebar {
@@ -9,56 +8,15 @@
     padding: var(--space-lg);
     background-color: var(--background);
     border-right: 1px solid var(--background-lighter);
-    height: calc(100vh - 60px); /* Adjust for top navbar height */
+    height: 100vh;
     position: sticky;
-    top: 60px; /* Height of the top navbar */
+    top: 0;
     overflow-y: auto;
-    transition: transform 0.3s ease, width 0.3s ease;
+    transition: all 0.3s ease;
     z-index: var(--z-30);
 }
 
-.mobileNav {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: var(--background);
-    border-top: 1px solid var(--background-lighter);
-    padding: var(--space-sm) 0;
-    z-index: var(--z-30);
-}
-
-.mobileNav ul {
-    display: flex;
-    justify-content: space-around;
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-.mobileNav li {
-    margin: 0;
-}
-
-.mobileNavLink {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: var(--foreground-dim);
-    font-size: var(--text-xs);
-    padding: var(--space-xs);
-}
-
-.mobileNavLink svg {
-    font-size: 1.5rem;
-    margin: 0 0 var(--space-xs) 0;
-}
-
-.mobileNavLink.active {
-    color: var(--primary);
-}
+/* Mobile navigation removed as sidebar is always visible */
 
 /* Responsive styles */
 @media (max-width: 992px) {
@@ -77,31 +35,58 @@
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 992px) {
     .sidebar {
-        position: fixed;
-        transform: translateX(-100%);
-        width: 250px;
-        box-shadow: var(--shadow-lg);
-        top: 50px; /* Adjust for smaller top navbar on mobile */
-        height: calc(100vh - 50px - 60px); /* Adjust for top navbar and bottom nav */
-        z-index: var(--z-20); /* Lower than top navbar */
+        width: 80px;
+        padding: var(--space-md) var(--space-sm);
     }
     
-    .sidebar.open {
-        transform: translateX(0);
+    /* Hide text in links, show only icons */
+    .link span {
+        display: none;
     }
     
-    .mobileNav {
-        display: block;
+    /* Center icons */
+    .link {
+        justify-content: center;
+        padding: var(--space-md);
     }
     
-    .container {
-        padding-top: 50px; /* Space for top navbar on mobile */
+    svg {
+        margin-right: 0;
+        font-size: 1.5em;
     }
+    
+    /* Adjust login button for collapsed sidebar */
+    .sidebarLoginButton {
+        padding: var(--space-sm);
+        min-width: 0;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .sidebarLoginButton span {
+        display: none;
+    }
+    
+    /* Sidebar is always visible, no need for toggle */
 }
 
-/* Logo and user info styles moved to TopNavbar.module.css */
+/* Main content layout adjustments for sidebar */
+.mainContent {
+    flex: 1;
+    transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 992px) {
+    /* Adjust container to handle the collapsed sidebar */
+    .container {
+        width: 100%;
+    }
+}
 
 nav ul {
     list-style-type: none;

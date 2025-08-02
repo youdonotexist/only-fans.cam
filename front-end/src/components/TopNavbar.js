@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import styles from './TopNavbar.module.css';
-import fanIcon from '../assets/fan.png';
+import logo from '../assets/logo.png';
 import { getCurrentUser } from '../network/userApi.ts';
 
 const TopNavbar = ({ toggleSidebar, isSidebarOpen }) => {
@@ -30,8 +30,7 @@ const TopNavbar = ({ toggleSidebar, isSidebarOpen }) => {
                 {/* Logo */}
                 <div className={styles.logoContainer}>
                     <Link to="/" className={styles.logo}>
-                        <img src={fanIcon} className={styles.logoImg} alt="Fan icon" />
-                        <span className={styles.logoText}>OnlyFans</span>
+                        <img src={logo} className={styles.logoImg} alt="OnlyFans logo" />
                     </Link>
                 </div>
                 
