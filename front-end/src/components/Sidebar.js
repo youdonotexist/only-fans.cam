@@ -1,30 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {NavLink} from 'react-router-dom';
-import { FaHome, FaBell, FaEnvelope, FaUser, FaBars, FaTimes } from 'react-icons/fa';
+import { FaHome, FaBell, FaEnvelope, FaUser } from 'react-icons/fa';
 import styles from './Sidebar.module.css';
-import fanIcon from '../assets/fan.png';
 import LoginButton from './LoginButton';
-import { getCurrentUser } from '../network/userApi.ts';
+import TopNavbar from './TopNavbar';
 
 const Sidebar = () => {
-    const [user, setUser] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    
-    useEffect(() => {
-        const fetchUser = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const userData = await getCurrentUser(token);
-                    setUser(userData);
-                } catch (error) {
-                    console.error('Error fetching user data:', error);
-                }
-            }
-        };
-        
-        fetchUser();
-    }, []);
     
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -47,24 +29,14 @@ const Sidebar = () => {
     
     return (
         <div className={styles.container}>
+            {/* Top Navigation Bar */}
+            <TopNavbar 
+                toggleSidebar={toggleSidebar} 
+                isSidebarOpen={isSidebarOpen} 
+            />
+            
             {/* Main Sidebar */}
             <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.open : ''}`}>
-                <div className={styles.logo}>
-                    <img src={fanIcon} className={styles.logoImg} alt="Fan icon" />
-                    OnlyFans
-                </div>
-                
-                {user && (
-                    <div className={styles.userInfo}>
-                        <img 
-                            src={user.profile_image || "https://via.placeholder.com/40"} 
-                            alt={user.username}
-                            className={styles.userAvatar} 
-                        />
-                        <span className={styles.username}>@{user.username}</span>
-                    </div>
-                )}
-
                 <nav>
                     <ul>
                         {navLinks.map((link) => (
@@ -82,15 +54,6 @@ const Sidebar = () => {
                 </nav>
                 <LoginButton className={styles.sidebarLoginButton} />
             </aside>
-            
-            {/* Mobile Toggle Button */}
-            <button 
-                className={styles.sidebarToggle} 
-                onClick={toggleSidebar}
-                aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
-            >
-                {isSidebarOpen ? <FaTimes /> : <FaBars />}
-            </button>
             
             {/* Mobile Bottom Navigation */}
             <nav className={styles.mobileNav}>

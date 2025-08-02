@@ -1,0 +1,136 @@
+.topNavbar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--background);
+    border-bottom: 1px solid var(--background-lighter);
+    padding: var(--space-sm) var(--space-md);
+    z-index: var(--z-40);
+    box-shadow: var(--shadow-sm);
+}
+
+.navbarContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.logoContainer {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--foreground);
+    font-weight: var(--font-bold);
+    font-size: var(--text-xl);
+}
+
+.logoImg {
+    width: 30px;
+    height: 30px;
+    margin-right: var(--space-sm);
+}
+
+.logoText {
+    display: block;
+}
+
+.navbarRight {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--foreground);
+    gap: var(--space-sm);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-fast);
+}
+
+.userInfo:hover {
+    background-color: var(--background-light);
+}
+
+.userAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.username {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+}
+
+.hamburgerButton {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--foreground);
+    font-size: var(--text-xl);
+    cursor: pointer;
+    padding: var(--space-xs);
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-fast);
+}
+
+.hamburgerButton:hover {
+    background-color: var(--background-light);
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+    .logo {
+        font-size: var(--text-lg);
+    }
+    
+    .logoImg {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .topNavbar {
+        padding: var(--space-xs) var(--space-sm);
+    }
+    
+    .hamburgerButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .username {
+        display: none;
+    }
+    
+    .userAvatar {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logoText {
+        display: none;
+    }
+    
+    .logoImg {
+        margin-right: 0;
+    }
+}

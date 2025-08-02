@@ -1,6 +1,7 @@
 .container {
     display: flex;
     position: relative;
+    flex-direction: column;
 }
 
 .sidebar {
@@ -8,32 +9,12 @@
     padding: var(--space-lg);
     background-color: var(--background);
     border-right: 1px solid var(--background-lighter);
-    height: 100vh;
+    height: calc(100vh - 60px); /* Adjust for top navbar height */
     position: sticky;
-    top: 0;
+    top: 60px; /* Height of the top navbar */
     overflow-y: auto;
     transition: transform 0.3s ease, width 0.3s ease;
     z-index: var(--z-30);
-}
-
-/* Mobile sidebar styles */
-.sidebarToggle {
-    display: none;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    box-shadow: var(--shadow-md);
-    z-index: var(--z-40);
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
 }
 
 .mobileNav {
@@ -102,62 +83,25 @@
         transform: translateX(-100%);
         width: 250px;
         box-shadow: var(--shadow-lg);
+        top: 50px; /* Adjust for smaller top navbar on mobile */
+        height: calc(100vh - 50px - 60px); /* Adjust for top navbar and bottom nav */
+        z-index: var(--z-20); /* Lower than top navbar */
     }
     
     .sidebar.open {
         transform: translateX(0);
     }
     
-    .sidebarToggle {
-        display: flex;
-    }
-    
     .mobileNav {
         display: block;
     }
+    
+    .container {
+        padding-top: 50px; /* Space for top navbar on mobile */
+    }
 }
 
-.logo {
-    font-size: var(--text-2xl);
-    font-weight: var(--font-bold);
-    margin-bottom: var(--space-md);
-    display: flex;
-    align-items: center;
-    color: var(--foreground);
-    padding-left: var(--space-md);
-}
-
-.logoImg {
-    width: 30px;
-    height: 30px;
-    margin-right: var(--space-sm);
-}
-
-.userInfo {
-    display: flex;
-    align-items: center;
-    padding: var(--space-md);
-    margin-bottom: var(--space-md);
-    background-color: var(--background-light);
-    border-radius: var(--radius-md);
-}
-
-.userAvatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: var(--space-sm);
-}
-
-.username {
-    font-size: var(--text-md);
-    font-weight: var(--font-medium);
-    color: var(--foreground);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+/* Logo and user info styles moved to TopNavbar.module.css */
 
 nav ul {
     list-style-type: none;
