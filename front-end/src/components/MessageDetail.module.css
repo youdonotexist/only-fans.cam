@@ -1,0 +1,202 @@
+.messageDetail {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--background-light);
+}
+
+.header {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--background-lighter);
+  background-color: var(--background);
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: var(--space-md);
+  object-fit: cover;
+}
+
+.userInfo h3 {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--foreground);
+}
+
+.messageList {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.messageGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.dateDivider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--space-md) 0;
+  position: relative;
+}
+
+.dateDivider::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background-color: var(--background-lighter);
+  z-index: 1;
+}
+
+.dateDivider span {
+  background-color: var(--background-light);
+  padding: 0 var(--space-md);
+  font-size: var(--text-xs);
+  color: var(--foreground-muted);
+  position: relative;
+  z-index: 2;
+}
+
+.message {
+  max-width: 70%;
+  margin-bottom: var(--space-xs);
+  display: flex;
+}
+
+.sent {
+  align-self: flex-end;
+}
+
+.received {
+  align-self: flex-start;
+}
+
+.messageContent {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-lg);
+  position: relative;
+}
+
+.sent .messageContent {
+  background-color: var(--primary);
+  color: white;
+  border-bottom-right-radius: 0;
+}
+
+.received .messageContent {
+  background-color: var(--background);
+  color: var(--foreground);
+  border-bottom-left-radius: 0;
+}
+
+.messageContent p {
+  margin: 0 0 var(--space-xs) 0;
+  word-break: break-word;
+}
+
+.messageTime {
+  font-size: var(--text-xs);
+  opacity: 0.8;
+  display: block;
+  text-align: right;
+}
+
+.messageForm {
+  display: flex;
+  padding: var(--space-md);
+  border-top: 1px solid var(--background-lighter);
+  background-color: var(--background);
+}
+
+.messageInput {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--background-lighter);
+  background-color: var(--background-light);
+  color: var(--foreground);
+  font-size: var(--text-sm);
+  resize: none;
+}
+
+.messageInput:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.sendButton {
+  margin-left: var(--space-sm);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.sendButton:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+}
+
+.sendButton:disabled {
+  background-color: var(--background-lighter);
+  cursor: not-allowed;
+}
+
+.loadingContainer, .errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: var(--space-xl);
+  text-align: center;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  font-size: var(--text-xl);
+  color: var(--primary);
+  margin-bottom: var(--space-md);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.errorMessage {
+  color: var(--error);
+  font-size: var(--text-sm);
+}
+
+.formError {
+  color: var(--error);
+  font-size: var(--text-xs);
+  text-align: center;
+  padding: var(--space-xs) 0;
+  background-color: var(--error-light);
+  margin-top: -1px;
+}

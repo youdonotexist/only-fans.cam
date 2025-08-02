@@ -120,6 +120,34 @@ export function initializeDatabase(): Database {
     )
   `);
 
+  // Create messages table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS messages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      sender_id INTEGER NOT NULL,
+      recipient_id INTEGER NOT NULL,
+      content TEXT NOT NULL,
+      is_read BOOLEAN DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE,
+      FOREIGN KEY (recipient_id) REFERENCES users (id) ON DELETE CASCADE
+    )
+  `);
+
+  // Create conversations table to track message threads between users
+  db.run(`
+    CREATE TABLE IF NOT EXISTS conversations (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user1_id INTEGER NOT NULL,
+      user2_id INTEGER NOT NULL,
+      last_message_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (user1_id, user2_id),
+      FOREIGN KEY (user1_id) REFERENCES users (id) ON DELETE CASCADE,
+      FOREIGN KEY (user2_id) REFERENCES users (id) ON DELETE CASCADE
+    )
+  `);
+
   return db;
 }
 

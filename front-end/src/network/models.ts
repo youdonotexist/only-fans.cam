@@ -163,3 +163,51 @@ export interface NotificationsResponse {
 export interface UnreadCountResponse {
   count: number;
 }
+
+// Message Models
+export interface Message {
+  id: number;
+  sender_id: number;
+  recipient_id: number;
+  content: string;
+  is_read: boolean;
+  created_at: string;
+  sender_username?: string;
+  sender_profile_image?: string;
+  recipient_username?: string;
+  recipient_profile_image?: string;
+}
+
+export interface Conversation {
+  id: number;
+  user1_id: number;
+  user2_id: number;
+  last_message_at: string;
+  created_at: string;
+  user1_username?: string;
+  user1_profile_image?: string;
+  user2_username?: string;
+  user2_profile_image?: string;
+  last_message_content?: string;
+  unread_count?: number;
+}
+
+export interface MessagesResponse {
+  messages: Message[];
+  pagination: {
+    page: number;
+    limit: number;
+    totalCount: number;
+    totalPages: number;
+  };
+}
+
+export interface ConversationsResponse {
+  conversations: Conversation[];
+  pagination: {
+    page: number;
+    limit: number;
+    totalCount: number;
+    totalPages: number;
+  };
+}

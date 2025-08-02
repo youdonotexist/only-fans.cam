@@ -1,0 +1,126 @@
+.messageList {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.conversationItem {
+  display: flex;
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--background-lighter);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.conversationItem:hover {
+  background-color: var(--background-light);
+}
+
+.conversationItem.selected {
+  background-color: var(--background-light);
+  border-left: 3px solid var(--primary);
+}
+
+.avatarContainer {
+  position: relative;
+  margin-right: var(--space-md);
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.unreadBadge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: var(--primary);
+  color: white;
+  border-radius: 50%;
+  min-width: 18px;
+  height: 18px;
+  font-size: 11px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.conversationInfo {
+  flex: 1;
+  min-width: 0; /* Ensures text truncation works */
+}
+
+.conversationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xs);
+}
+
+.username {
+  font-size: var(--text-md);
+  font-weight: var(--font-semibold);
+  margin: 0;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.time {
+  font-size: var(--text-xs);
+  color: var(--foreground-muted);
+  white-space: nowrap;
+  margin-left: var(--space-sm);
+}
+
+.lastMessage {
+  font-size: var(--text-sm);
+  color: var(--foreground-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lastMessage p {
+  margin: 0;
+}
+
+.unreadMessage {
+  display: flex;
+  align-items: center;
+  font-weight: var(--font-medium);
+  color: var(--foreground);
+}
+
+.unreadDot {
+  color: var(--primary);
+  font-size: 8px;
+  margin-right: var(--space-xs);
+}
+
+.emptyList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--foreground-dim);
+}
+
+.emptyList p {
+  margin: var(--space-xs) 0;
+}
+
+.emptyListSubtext {
+  font-size: var(--text-sm);
+  max-width: 250px;
+}
