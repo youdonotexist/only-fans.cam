@@ -82,28 +82,68 @@
 
 .sent {
   align-self: flex-end;
+  margin-left: auto; /* Push sent messages to the right */
 }
 
 .received {
   align-self: flex-start;
+  margin-right: auto; /* Push received messages to the left */
 }
 
 .messageContent {
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-lg);
   position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.message:hover .messageContent {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
 .sent .messageContent {
   background-color: var(--primary);
   color: white;
   border-bottom-right-radius: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.sent .messageContent::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: -8px;
+  width: 0;
+  height: 0;
+  border: 8px solid transparent;
+  border-left-color: var(--primary);
+  border-bottom: 0;
+  border-right: 0;
+  margin-bottom: 0;
 }
 
 .received .messageContent {
   background-color: var(--background);
   color: var(--foreground);
   border-bottom-left-radius: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.received .messageContent::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -8px;
+  width: 0;
+  height: 0;
+  border: 8px solid transparent;
+  border-right-color: var(--background);
+  border-bottom: 0;
+  border-left: 0;
+  margin-bottom: 0;
 }
 
 .messageContent p {
@@ -193,10 +233,10 @@
 }
 
 .formError {
-  color: var(--error);
+  color: var(--error, #dc3545);
   font-size: var(--text-xs);
   text-align: center;
   padding: var(--space-xs) 0;
-  background-color: var(--error-light);
+  background-color: rgba(220, 53, 69, 0.1); /* Fallback for --error-light */
   margin-top: -1px;
 }
