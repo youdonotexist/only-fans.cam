@@ -79,8 +79,6 @@
   display: flex;
   width: 100%; /* Full width container */
   box-sizing: border-box; /* Include padding in width calculation */
-  flex-direction: row; /* Horizontal layout */
-  justify-content: flex-start; /* Default alignment */
 }
 
 .sent {
@@ -91,6 +89,8 @@
   max-width: 70%; /* Control width */
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   position: relative;
+  align-self: flex-end;
+  margin-left: auto;
 }
 
 .received {
@@ -101,6 +101,8 @@
   max-width: 70%; /* Control width */
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   position: relative;
+  align-self: flex-start;
+  margin-right: auto;
 }
 
 .messageContent {
