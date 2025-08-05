@@ -4,6 +4,7 @@ import { FaHome, FaBell, FaEnvelope, FaUser, FaPlus } from 'react-icons/fa';
 import styles from './Sidebar.module.css';
 import logo from '../assets/logo.png';
 import { getCurrentUser } from '../network/userApi.ts';
+import LoginButton from './LoginButton';
 
 const Sidebar = () => {
     // Sidebar is always visible, no need for toggle state
@@ -69,6 +70,33 @@ const Sidebar = () => {
                             </li>
                         ))}
                         
+                        {/* User profile avatar in navigation - for mobile layout */}
+                        {user && (
+                            <li className={styles.userProfileItem}>
+                                <div 
+                                    className={styles.userProfileLink}
+                                    onClick={() => navigate('/profile/me')}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    <img 
+                                        src={user.profile_image || "https://via.placeholder.com/40"} 
+                                        alt={user.username}
+                                        className={styles.userAvatar} 
+                                    />
+                                    <div className={styles.userInfo}>
+                                        <span className={styles.username}>@{user.username}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        )}
+                        
+                        {/* Login button for non-logged in users */}
+                        {!user && (
+                            <li className={styles.loginItem}>
+                                <LoginButton className={styles.sidebarLoginButton} />
+                            </li>
+                        )}
+                        
                         {/* Create New Post button - only visible when logged in */}
                         {user && (
                             <li className={styles.createPostItem}>
@@ -86,9 +114,9 @@ const Sidebar = () => {
                 {/* Spacer to push content to top and bottom */}
                 <div className={styles.spacer}></div>
                 
-                {/* User profile at the bottom - now the only way to access profile */}
+                {/* User profile at the bottom - for desktop layout only */}
                 {user && (
-                    <div className={styles.userProfile}>
+                    <div className={styles.userProfileDesktop}>
                         <div 
                             className={styles.userProfileLink}
                             onClick={() => navigate('/profile/me')}
@@ -103,6 +131,13 @@ const Sidebar = () => {
                                 <span className={styles.username}>@{user.username}</span>
                             </div>
                         </div>
+                    </div>
+                )}
+                
+                {/* Login button for desktop layout */}
+                {!user && (
+                    <div className={styles.loginDesktop}>
+                        <LoginButton className={styles.sidebarLoginButton} />
                     </div>
                 )}
                 

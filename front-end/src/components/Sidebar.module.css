@@ -177,7 +177,6 @@ nav li {
 }
 
 svg {
-    margin-right: var(--space-md);
     font-size: 1.25em;
 }
 
@@ -186,11 +185,27 @@ svg {
     min-height: 20px;
 }
 
-.userProfile {
+.userProfileDesktop {
     margin-bottom: var(--space-md);
     background-color: var(--background-light);
     border-radius: var(--radius-md);
     overflow: hidden;
+}
+
+/* Hide user profile in navigation on desktop */
+.userProfileItem {
+    display: none;
+}
+
+/* Show user profile in navigation on mobile */
+@media (max-width: 768px) {
+    .userProfileDesktop {
+        display: none;
+    }
+    
+    .userProfileItem {
+        display: block;
+    }
 }
 
 .userProfileLink {
@@ -271,9 +286,39 @@ svg {
 
 /* Desktop styles for Create New Post button - no tablet breakpoint needed */
 
-/* Hide Create New Post button on mobile */
+/* Login button styles */
+.loginDesktop {
+    margin-bottom: var(--space-md);
+}
+
+.loginItem {
+    display: none;
+}
+
+/* Hide Create New Post button on mobile and show login in navigation */
 @media (max-width: 768px) {
     .createPostItem {
+        display: none;
+    }
+    
+    .loginDesktop {
+        display: none;
+    }
+    
+    .loginItem {
+        display: block;
+    }
+    
+    .sidebarLoginButton {
+        padding: var(--space-sm);
+        min-width: 0;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin: 0;
+    }
+    
+    .sidebarLoginButton span {
         display: none;
     }
 }
