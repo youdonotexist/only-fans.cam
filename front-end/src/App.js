@@ -33,6 +33,7 @@ function App() {
                                         <Messages />
                                     </ProtectedRoute>
                                 } />
+                                {/* Profile route is now accessed only through the sidebar user profile */}
                                 <Route path="/profile/:id" element={
                                     <ProtectedRoute>
                                         <Profile />

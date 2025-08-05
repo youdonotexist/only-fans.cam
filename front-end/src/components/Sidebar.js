@@ -42,8 +42,7 @@ const Sidebar = () => {
     const navLinks = [
         { to: "/", icon: <FaHome />, text: "Home" },
         { to: "/notifications", icon: <FaBell />, text: "Notifications" },
-        { to: "/messages", icon: <FaEnvelope />, text: "Messages" },
-        { to: "/profile/me", icon: <FaUser />, text: "My Profile" }
+        { to: "/messages", icon: <FaEnvelope />, text: "Messages" }
     ];
     
     return (
@@ -88,10 +87,14 @@ const Sidebar = () => {
                 {/* Spacer to push content to top and bottom */}
                 <div className={styles.spacer}></div>
                 
-                {/* User profile at the bottom */}
+                {/* User profile at the bottom - now the only way to access profile */}
                 {user && (
                     <div className={styles.userProfile}>
-                        <Link to="/profile/me" className={styles.userProfileLink}>
+                        <div 
+                            className={styles.userProfileLink}
+                            onClick={() => navigate(`/profile/${user.id}`)}
+                            style={{ cursor: 'pointer' }}
+                        >
                             <img 
                                 src={user.profile_image || "https://via.placeholder.com/40"} 
                                 alt={user.username}
@@ -100,7 +103,7 @@ const Sidebar = () => {
                             <div className={styles.userInfo}>
                                 <span className={styles.username}>@{user.username}</span>
                             </div>
-                        </Link>
+                        </div>
                     </div>
                 )}
                 

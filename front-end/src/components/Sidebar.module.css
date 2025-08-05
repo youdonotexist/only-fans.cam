@@ -111,13 +111,29 @@
     
     .userProfile {
         margin-bottom: 0;
-        margin-left: var(--space-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .userProfileLink {
+        padding: var(--space-sm);
+        justify-content: center;
     }
     
     .sidebarLoginButton {
         margin-top: 0;
-        margin-left: var(--space-md);
+        margin-left: 0;
         width: auto;
+        padding: var(--space-sm);
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .sidebarLoginButton span {
+        display: none;
     }
 }
 
@@ -206,6 +222,18 @@ svg {
 .userInfo {
     display: flex;
     flex-direction: column;
+}
+    
+@media (max-width: 768px) {
+    .userInfo {
+        display: none;
+    }
+        
+    .userAvatar {
+        width: 30px;
+        height: 30px;
+        margin-right: 0;
+    }
 }
 
 .username {
