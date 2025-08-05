@@ -23,28 +23,22 @@
 
 /* Responsive styles for main content */
 @media (max-width: 768px) {
-    .mainContent {
-        width: 100%;
-        margin-top: 0;
-        padding: var(--space-md);
-        padding-bottom: calc(var(--space-xl) + 50px); /* Add extra padding for bottom bar */
-        margin-left: 0;
-        order: 1; /* Change order to 1 so content comes first */
-    }
-}
-
-/* Desktop styles for main content - no tablet breakpoint needed */
-
-@media (max-width: 768px) {
     .container {
         flex-direction: column;
     }
     
     .mainContent {
+        width: 100%;
+        margin-top: 0;
         padding: var(--space-md) var(--space-sm);
-        margin-bottom: 60px; /* Space for mobile navigation */
+        padding-bottom: calc(var(--space-xl) + 60px); /* Add extra padding for bottom bar */
+        margin-left: 0;
+        margin-bottom: 0; /* Remove conflicting margin-bottom */
+        order: 1; /* Change order to 1 so content comes first */
     }
 }
+
+/* Desktop styles for main content - no tablet breakpoint needed */
 
 /* Profile Header Section */
 .profileHeader {

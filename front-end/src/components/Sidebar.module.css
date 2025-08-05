@@ -64,6 +64,7 @@
         background-color: var(--background);
         z-index: var(--z-40);
         box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        min-height: 60px; /* Ensure consistent height */
     }
     
     .logoContainer {
