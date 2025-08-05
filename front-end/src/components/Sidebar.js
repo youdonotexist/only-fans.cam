@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {NavLink, Link} from 'react-router-dom';
-import { FaHome, FaBell, FaEnvelope, FaUser } from 'react-icons/fa';
+import {NavLink, Link, useNavigate} from 'react-router-dom';
+import { FaHome, FaBell, FaEnvelope, FaUser, FaPlus } from 'react-icons/fa';
 import styles from './Sidebar.module.css';
 import LoginButton from './LoginButton';
 import logo from '../assets/logo.png';
@@ -9,6 +9,7 @@ import { getCurrentUser } from '../network/userApi.ts';
 const Sidebar = () => {
     // Sidebar is always visible, no need for toggle state
     const [user, setUser] = useState(null);
+    const navigate = useNavigate();
     
     // Fetch user data on component mount
     useEffect(() => {
@@ -30,6 +31,11 @@ const Sidebar = () => {
     // Navigation links click handler
     const handleLinkClick = () => {
         // No action needed as sidebar is always visible
+    };
+    
+    // Handle create new post button click
+    const handleCreatePost = () => {
+        navigate('/?newPost=true');
     };
     
     // Navigation links array for reuse
@@ -64,6 +70,18 @@ const Sidebar = () => {
                                 </NavLink>
                             </li>
                         ))}
+                        
+                        {/* Create New Post button - only visible when logged in */}
+                        {user && (
+                            <li className={styles.createPostItem}>
+                                <button 
+                                    className={styles.createPostButton}
+                                    onClick={handleCreatePost}
+                                >
+                                    <FaPlus /> <span>New Post</span>
+                                </button>
+                            </li>
+                        )}
                     </ul>
                 </nav>
                 

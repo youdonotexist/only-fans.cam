@@ -26,8 +26,9 @@
         width: 100%;
         margin-top: 0;
         padding: var(--space-md);
+        padding-bottom: calc(var(--space-xl) + 50px); /* Add extra padding for bottom bar */
         margin-left: 0;
-        order: 2;
+        order: 1; /* Change order to 1 so content comes first */
     }
 }
 

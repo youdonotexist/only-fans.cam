@@ -5,11 +5,12 @@ import Sidebar from "./Sidebar";
 import { createFan, getAllFans, likeFan, unlikeFan, getFanById, addComment } from '../network/fanApi.ts';
 import { uploadMedia } from '../network/mediaApi.ts';
 import { getMediaUrl } from '../network/mediaApi.ts';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useLoginModal } from '../contexts/LoginModalContext';
 
 const HomeScreen = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { openLoginModal } = useLoginModal();
     
     // State for fans from backend
@@ -40,6 +41,23 @@ const HomeScreen = () => {
     
     // State for fan media
     const [fanMedia, setFanMedia] = useState({});
+    
+    // Check for URL parameter to open post form
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        if (searchParams.get('newPost') === 'true') {
+            // Check if user is logged in
+            const token = localStorage.getItem('token');
+            if (token) {
+                setShowPostForm(true);
+                // Remove the parameter from URL to avoid reopening form on refresh
+                navigate('/', { replace: true });
+            } else {
+                // If not logged in, redirect to login
+                openLoginModal('/');
+            }
+        }
+    }, [location, navigate, openLoginModal]);
     
     // Fetch fans from backend
     useEffect(() => {

@@ -27,8 +27,9 @@
         width: 100%;
         margin-top: 0;
         padding: var(--space-md);
+        padding-bottom: calc(var(--space-xl) + 50px); /* Add extra padding for bottom bar */
         margin-left: 0;
-        order: 2;
+        order: 1; /* Change order to 1 so content comes first */
     }
 }
 
@@ -53,6 +54,15 @@
     gap: var(--space-sm);
     transition: all var(--transition-fast);
     box-shadow: var(--shadow-md);
+    /* Hide on desktop */
+    display: none;
+}
+
+/* Only show the create post button on mobile */
+@media (max-width: 768px) {
+    .createPostButton {
+        display: flex;
+    }
 }
 
 .createPostButton:hover {
