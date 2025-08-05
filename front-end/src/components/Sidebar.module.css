@@ -106,6 +106,11 @@
     svg {
         margin-right: 0;
         font-size: 1.5em;
+        height: 30px; /* Match height with user avatar */
+        width: 30px; /* Match width with user avatar */
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     .spacer {
