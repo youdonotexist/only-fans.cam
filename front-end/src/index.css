@@ -3,43 +3,43 @@
 
 :root {
   /* Primary Colors */
-  --primary: #1DA1F2;         /* Twitter Blue */
-  --primary-dark: #0d8bd9;
-  --primary-light: #71c9f8;
+  --primary: #FF85A2;         /* Soft Pink */
+  --primary-dark: #FF5C7C;
+  --primary-light: #FFADC2;
   
   /* Secondary Colors */
-  --secondary: #F91880;       /* OnlyFans Pink */
-  --secondary-dark: #d91472;
-  --secondary-light: #ff6bb3;
+  --secondary: #B388EB;       /* Lavender Purple */
+  --secondary-dark: #9A6FD3;
+  --secondary-light: #D4B8FF;
   
   /* Neutral Colors */
-  --background: #15202B;      /* Dark Mode Background */
-  --background-light: #192734;
-  --background-lighter: #22303c;
-  --foreground: #FFFFFF;
-  --foreground-dim: #E1E8ED;
-  --foreground-muted: #8899A6;
+  --background: #FFF9FB;      /* Light Pink Background */
+  --background-light: #FFFFFF;
+  --background-lighter: #FFF0F5;
+  --foreground: #5E4B56;      /* Soft Brown */
+  --foreground-dim: #7D6B74;
+  --foreground-muted: #A799A0;
   
   /* Accent Colors */
-  --success: #4CAF50;
-  --warning: #FFAB00;
-  --error: #F44336;
-  --info: #2196F3;
+  --success: #A0E7B1;         /* Mint Green */
+  --warning: #FFD6BA;         /* Peach */
+  --error: #FF9AA2;           /* Coral Pink */
+  --info: #A2D2FF;            /* Baby Blue */
   
   /* Gradients */
   --gradient-primary: linear-gradient(45deg, var(--primary), var(--primary-light));
   --gradient-secondary: linear-gradient(45deg, var(--secondary), var(--secondary-light));
   
   /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 4px rgba(255, 133, 162, 0.1);
+  --shadow-md: 0 4px 8px rgba(255, 133, 162, 0.15);
+  --shadow-lg: 0 8px 16px rgba(255, 133, 162, 0.2);
+  --shadow-inner: inset 0 2px 4px rgba(255, 133, 162, 0.1);
   
   /* Border Radius */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 16px;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
   --radius-full: 9999px;
   
   /* Spacing */
@@ -51,8 +51,11 @@
   --space-2xl: 48px;
   
   /* Typography */
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-sans: 'Quicksand', 'Comfortaa', 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  
+  /* Import Google Fonts */
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Comfortaa:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap');
   
   /* Font Sizes */
   --text-xs: 0.75rem;
@@ -102,42 +105,50 @@ body {
   font-family: var(--font-sans);
   background-color: var(--background);
   color: var(--foreground);
-  line-height: 1.5;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
 a {
   color: var(--primary);
   text-decoration: none;
-  transition: color var(--transition-fast);
+  transition: all var(--transition-fast);
+  font-weight: var(--font-medium);
 }
 
 a:hover {
-  color: var(--primary-light);
+  color: var(--primary-dark);
+  text-decoration: underline;
 }
 
 button {
   cursor: pointer;
   font-family: var(--font-sans);
+  font-weight: var(--font-medium);
+  transition: all var(--transition-fast);
 }
 
 /* Modern scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background-light);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--foreground-muted);
+  background: var(--background-lighter);
   border-radius: var(--radius-full);
 }
 
+::-webkit-scrollbar-thumb {
+  background: var(--primary-light);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--background-lighter);
+}
+
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--foreground-dim);
+  background: var(--primary);
 }
 
 /* Utility Classes */
@@ -181,6 +192,63 @@ button {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-sparkle {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-sparkle::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(30deg);
+  animation: sparkle 4s ease-in-out infinite;
+}
+
+/* Decorative elements */
+.heart-bullet li {
+  list-style: none;
+  position: relative;
+  padding-left: 1.5em;
+}
+
+.heart-bullet li::before {
+  content: "♥";
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+}
+
+.ribbon {
+  position: relative;
+}
+
+.ribbon::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 30px;
+  height: 30px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FF85A2'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 10;
+}
+
 @keyframes fade {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -194,6 +262,17 @@ button {
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes sparkle {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(30deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(30deg); }
 }
 
 /* Responsive Utilities */
