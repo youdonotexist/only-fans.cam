@@ -33,12 +33,7 @@
     }
 }
 
-/* Responsive styles */
-@media (max-width: 992px) {
-    .mainContent {
-        padding: var(--space-md);
-    }
-}
+/* Desktop styles for main content - no tablet breakpoint needed */
 
 @media (max-width: 768px) {
     .container {
@@ -148,21 +143,7 @@
     transition: all var(--transition-normal);
 }
 
-/* Responsive styles for profile header */
-@media (max-width: 992px) {
-    .coverPhoto {
-        height: 180px;
-    }
-    
-    .profileInfo {
-        padding: var(--space-lg);
-    }
-    
-    .avatar {
-        width: 100px;
-        height: 100px;
-    }
-}
+/* Responsive styles for profile header - desktop and mobile only */
 
 @media (max-width: 768px) {
     .coverPhoto {
@@ -288,28 +269,7 @@
     transition: all var(--transition-fast);
 }
 
-/* Responsive styles for username and bio */
-@media (max-width: 992px) {
-    .username {
-        margin-top: var(--space-md);
-        font-size: var(--text-xl);
-    }
-    
-    .username input {
-        font-size: var(--text-lg);
-        width: 90%;
-    }
-    
-    .bio {
-        font-size: var(--text-sm);
-        max-width: 100%;
-    }
-    
-    .bio textarea {
-        min-height: 80px;
-        padding: var(--space-sm);
-    }
-}
+/* Responsive styles for username and bio - desktop and mobile only */
 
 @media (max-width: 768px) {
     .username {
@@ -539,26 +499,7 @@
     color: var(--foreground);
 }
 
-/* Responsive styles for stats and action buttons */
-@media (max-width: 992px) {
-    .stats {
-        gap: var(--space-lg);
-        margin: var(--space-lg) 0;
-    }
-    
-    .stats strong {
-        font-size: var(--text-md);
-    }
-    
-    .actionButtons {
-        gap: var(--space-sm);
-    }
-    
-    .subscribeBtn, .messageBtn, .bookmarkBtn {
-        font-size: var(--text-sm);
-        padding: var(--space-xs) var(--space-md);
-    }
-}
+/* Responsive styles for stats and action buttons - desktop and mobile only */
 
 @media (max-width: 768px) {
     .stats {
@@ -673,31 +614,7 @@
     border-top: 1px solid var(--background-lighter);
 }
 
-/* Responsive styles for feed and posts */
-@media (max-width: 992px) {
-    .feedContent {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: var(--space-md);
-    }
-    
-    .post h4 {
-        padding: var(--space-sm);
-        font-size: var(--text-sm);
-    }
-    
-    .postImage, .noImagePlaceholder {
-        height: 160px;
-    }
-    
-    .postDescription {
-        padding: var(--space-sm);
-        font-size: var(--text-xs);
-    }
-    
-    .postMeta {
-        padding: var(--space-xs) var(--space-sm);
-    }
-}
+/* Responsive styles for feed and posts - desktop and mobile only */
 
 @media (max-width: 768px) {
     .feed {

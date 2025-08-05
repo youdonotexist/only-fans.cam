@@ -240,24 +240,7 @@
   margin-top: -1px;
 }
 
-/* Responsive styles for message bubbles */
-@media (max-width: 992px) {
-  .header {
-    padding: var(--space-sm);
-  }
-  
-  .messageList {
-    padding: var(--space-sm);
-  }
-  
-  .sent, .received {
-    max-width: 80%; /* Wider bubbles on medium screens */
-  }
-  
-  .messageForm {
-    padding: var(--space-sm);
-  }
-}
+/* Responsive styles for message bubbles - desktop and mobile only */
 
 @media (max-width: 768px) {
   .sent, .received {

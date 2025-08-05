@@ -37,80 +37,7 @@
 
 /* Mobile navigation removed as sidebar is always visible */
 
-/* Responsive styles */
-@media (max-width: 992px) {
-    .sidebar {
-        width: 240px;
-        padding: var(--space-md);
-    }
-    
-    .logo {
-        font-size: var(--text-xl);
-    }
-    
-    .link {
-        font-size: var(--text-md);
-        padding: var(--space-sm) var(--space-md);
-    }
-}
-
-@media (max-width: 992px) {
-    .sidebar {
-        width: 80px;
-        padding: var(--space-md) var(--space-sm);
-    }
-    
-    /* Adjust logo for smaller sidebar */
-    .logoImg {
-        height: 55px;
-    }
-    
-    /* Hide text in links, show only icons */
-    .link span {
-        display: none;
-    }
-    
-    /* Center icons */
-    .link {
-        justify-content: center;
-        padding: var(--space-md);
-    }
-    
-    svg {
-        margin-right: 0;
-        font-size: 1.5em;
-    }
-    
-    /* Adjust user profile for collapsed sidebar */
-    .userInfo {
-        display: none;
-    }
-    
-    .userAvatar {
-        margin-right: 0;
-    }
-    
-    .userProfileLink {
-        justify-content: center;
-    }
-    
-    /* Adjust login button for collapsed sidebar */
-    .sidebarLoginButton {
-        padding: var(--space-sm);
-        min-width: 0;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    .sidebarLoginButton span {
-        display: none;
-    }
-    
-    /* Sidebar is always visible, no need for toggle */
-}
+/* Desktop styles - no tablet breakpoint needed */
 
 /* Main content layout adjustments for sidebar */
 .mainContent {
@@ -118,12 +45,7 @@
     transition: margin-left 0.3s ease;
 }
 
-@media (max-width: 992px) {
-    /* Adjust container to handle the collapsed sidebar */
-    .container {
-        width: 100%;
-    }
-}
+/* Desktop container styles - no tablet breakpoint needed */
 
 /* Mobile-specific styles */
 @media (max-width: 768px) {
@@ -340,17 +262,7 @@ svg {
     filter: brightness(1.1);
 }
 
-/* Responsive styles for Create New Post button */
-@media (max-width: 992px) {
-    .createPostButton {
-        padding: var(--space-sm);
-        font-size: var(--text-sm);
-    }
-    
-    .createPostButton span {
-        display: none;
-    }
-}
+/* Desktop styles for Create New Post button - no tablet breakpoint needed */
 
 /* Hide Create New Post button on mobile */
 @media (max-width: 768px) {

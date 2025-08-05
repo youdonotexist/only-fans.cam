@@ -166,22 +166,7 @@
     }
 }
 
-/* Responsive styles for tablets */
-@media (max-width: 992px) {
-    .mainContent {
-        padding: var(--space-lg);
-    }
-    
-    .notificationsContainer {
-        max-width: 100%;
-    }
-    
-    .notificationItem {
-        padding: var(--space-md);
-    }
-}
-
-/* Responsive styles for mobile */
+/* Responsive styles - desktop and mobile only */
 @media (max-width: 768px) {
     .container {
         flex-direction: column;
