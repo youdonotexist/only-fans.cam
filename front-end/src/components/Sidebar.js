@@ -92,7 +92,7 @@ const Sidebar = () => {
                     <div className={styles.userProfile}>
                         <div 
                             className={styles.userProfileLink}
-                            onClick={() => navigate(`/profile/${user.id}`)}
+                            onClick={() => navigate('/profile/me')}
                             style={{ cursor: 'pointer' }}
                         >
                             <img 
