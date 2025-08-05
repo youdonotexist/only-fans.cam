@@ -418,26 +418,44 @@ const Profile = () => {
                         {/* Username and Bio Editing */}
                         <h2 className={styles.username}>
                             {isEditingBio.username ?
-                                <input
-                                    type="text"
-                                    value={editedUser?.username || ""}
-                                    onChange={(e) => {
-                                        setEditedUser({...editedUser, username: e.target.value});
-                                    }}
-                                />
+                                <>
+                                    <input
+                                        type="text"
+                                        value={editedUser?.username || ""}
+                                        onChange={(e) => {
+                                            // Limit username to 30 characters
+                                            if (e.target.value.length <= 30) {
+                                                setEditedUser({...editedUser, username: e.target.value});
+                                            }
+                                        }}
+                                        maxLength={30}
+                                    />
+                                    <div className={styles.charCount}>
+                                        {(editedUser?.username || "").length}/30
+                                    </div>
+                                </>
                              :
                                 `@${user?.username || "User"}`}
                         </h2>
 
                         <p className={styles.bio}>
                             {isEditingBio.bio ? (
-                                <textarea
-                                    rows={3}
-                                    value={editedUser?.bio || ""}
-                                    onChange={(e) => {
-                                        setEditedUser({...editedUser, bio: e.target.value});
-                                    }}
-                                />
+                                <>
+                                    <textarea
+                                        rows={3}
+                                        value={editedUser?.bio || ""}
+                                        onChange={(e) => {
+                                            // Limit bio to 250 characters
+                                            if (e.target.value.length <= 250) {
+                                                setEditedUser({...editedUser, bio: e.target.value});
+                                            }
+                                        }}
+                                        maxLength={250}
+                                    />
+                                    <div className={styles.charCount}>
+                                        {(editedUser?.bio || "").length}/250
+                                    </div>
+                                </>
                             ) : (
                                 user?.bio || "No bio available"
                             )}

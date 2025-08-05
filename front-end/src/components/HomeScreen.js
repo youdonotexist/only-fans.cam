@@ -270,6 +270,16 @@ const HomeScreen = () => {
     // Handle form input changes
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        
+        // Apply character limits
+        if (name === 'title' && value.length > 100) {
+            return; // Limit title to 100 characters
+        }
+        
+        if (name === 'description' && value.length > 500) {
+            return; // Limit description to 500 characters
+        }
+        
         setNewPost(prev => ({
             ...prev,
             [name]: value
@@ -399,8 +409,12 @@ const HomeScreen = () => {
                                         value={newPost.title}
                                         onChange={handleInputChange}
                                         placeholder="Enter fan title"
+                                        maxLength={100}
                                         disabled={isSubmitting}
                                     />
+                                    <div className={styles.charCount}>
+                                        {newPost.title.length}/100 characters
+                                    </div>
                                 </div>
                                 
                                 <div className={styles.formGroup}>
@@ -411,9 +425,13 @@ const HomeScreen = () => {
                                         value={newPost.description}
                                         onChange={handleInputChange}
                                         placeholder="Describe your fan"
+                                        maxLength={500}
                                         rows={3}
                                         disabled={isSubmitting}
                                     />
+                                    <div className={styles.charCount}>
+                                        {newPost.description.length}/500 characters
+                                    </div>
                                 </div>
                                 
                                 <div className={styles.formGroup}>

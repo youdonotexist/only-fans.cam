@@ -665,21 +665,32 @@ const FanDetails = () => {
                                 {showCommentForm && (
                                     <div className={styles.commentFormContainer}>
                                         <form className={styles.commentForm} onSubmit={handleCommentSubmit}>
-                                            <input
-                                                type="text"
-                                                placeholder="Add a comment..."
-                                                value={commentText}
-                                                onChange={(e) => setCommentText(e.target.value)}
-                                                className={styles.commentInput}
-                                                disabled={submittingComment}
-                                            />
-                                            <button 
-                                                type="submit" 
-                                                className={styles.commentSubmitButton}
-                                                disabled={!commentText.trim() || submittingComment}
-                                            >
-                                                {submittingComment ? <FaSpinner className={styles.spinner} /> : <FaPaperPlane />}
-                                            </button>
+                                            <div className={styles.commentCharCount}>
+                                                {commentText.length}/200
+                                            </div>
+                                            <div className={styles.inputButtonWrapper}>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Add a comment..."
+                                                    value={commentText}
+                                                    onChange={(e) => {
+                                                        // Limit comment to 200 characters
+                                                        if (e.target.value.length <= 200) {
+                                                            setCommentText(e.target.value);
+                                                        }
+                                                    }}
+                                                    maxLength={200}
+                                                    className={styles.commentInput}
+                                                    disabled={submittingComment}
+                                                />
+                                                <button 
+                                                    type="submit" 
+                                                    className={styles.commentSubmitButton}
+                                                    disabled={!commentText.trim() || submittingComment}
+                                                >
+                                                    {submittingComment ? <FaSpinner className={styles.spinner} /> : <FaPaperPlane />}
+                                                </button>
+                                            </div>
                                         </form>
                                     </div>
                                 )}

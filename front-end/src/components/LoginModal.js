@@ -23,7 +23,8 @@ const LoginModal = ({ onClose, redirectPath }) => {
     username: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    inviteCode: ''
   });
 
   // Handle tab change
@@ -111,7 +112,7 @@ const LoginModal = ({ onClose, redirectPath }) => {
     setLoading(true);
 
     // Validate form
-    if (!registerData.username || !registerData.email || !registerData.password || !registerData.confirmPassword) {
+    if (!registerData.username || !registerData.email || !registerData.password || !registerData.confirmPassword || !registerData.inviteCode) {
       setError('Please fill in all fields');
       setLoading(false);
       return;
@@ -134,7 +135,8 @@ const LoginModal = ({ onClose, redirectPath }) => {
       const response = await register({
         username: registerData.username,
         email: registerData.email,
-        password: registerData.password
+        password: registerData.password,
+        inviteCode: registerData.inviteCode
       });
 
       // Store token in localStorage
@@ -311,6 +313,21 @@ const LoginModal = ({ onClose, redirectPath }) => {
                       value={registerData.confirmPassword}
                       onChange={handleRegisterChange}
                       placeholder="Confirm Password"
+                      className={styles.input}
+                      required
+                    />
+                  </label>
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>
+                    <FaUser className={styles.inputIcon} />
+                    <input
+                      type="text"
+                      name="inviteCode"
+                      value={registerData.inviteCode}
+                      onChange={handleRegisterChange}
+                      placeholder="Invite Code"
                       className={styles.input}
                       required
                     />

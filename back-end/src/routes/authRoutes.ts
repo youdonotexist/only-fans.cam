@@ -6,6 +6,7 @@ import { getDatabase } from '../database/init';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const INVITE_CODE = process.env.INVITE_CODE || 'ONLYFANS2025';
 
 // User interface for database results
 interface User {
@@ -33,6 +34,7 @@ router.post(
         body('password')
             .isLength({ min: 6 })
             .withMessage('Password must be at least 6 characters long'),
+        body('inviteCode').notEmpty().withMessage('Invite code is required'),
     ],
     async (req: Request, res: Response) => {
         // Check for validation errors
@@ -41,8 +43,13 @@ router.post(
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const { username, email, password } = req.body;
+        const { username, email, password, inviteCode } = req.body;
         const db = getDatabase();
+
+        // Validate invite code
+        if (inviteCode !== INVITE_CODE) {
+            return res.status(400).json({ message: 'Invalid invite code' });
+        }
 
         try {
             // Check if user already exists
