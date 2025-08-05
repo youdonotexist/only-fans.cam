@@ -125,7 +125,7 @@
     }
     
     .userProfileLink {
-        padding: var(--space-sm);
+        /*padding: var(--space-sm);*/
         justify-content: center;
     }
     
