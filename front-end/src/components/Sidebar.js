@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {NavLink, Link, useNavigate} from 'react-router-dom';
 import { FaHome, FaBell, FaEnvelope, FaUser, FaPlus } from 'react-icons/fa';
 import styles from './Sidebar.module.css';
-import LoginButton from './LoginButton';
 import logo from '../assets/logo.png';
 import { getCurrentUser } from '../network/userApi.ts';
 
@@ -107,7 +106,6 @@ const Sidebar = () => {
                     </div>
                 )}
                 
-                {!user && <LoginButton className={styles.sidebarLoginButton} />}
             </aside>
             
             {/* Mobile Bottom Navigation - No longer needed as sidebar is always visible */}

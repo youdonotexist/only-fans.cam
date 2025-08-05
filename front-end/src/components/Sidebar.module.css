@@ -73,6 +73,7 @@
         background-color: var(--background);
         z-index: var(--z-40);
         box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        overflow-y: hidden; /* Prevent scrollbar in mobile view */
     }
     
     .logoContainer {
@@ -123,20 +124,6 @@
         justify-content: center;
     }
     
-    .sidebarLoginButton {
-        margin-top: 0;
-        margin-left: 0;
-        width: auto;
-        padding: var(--space-sm);
-        min-width: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .sidebarLoginButton span {
-        display: none;
-    }
 }
 
 nav ul {
@@ -245,29 +232,6 @@ svg {
 }
 
 
-.sidebarLoginButton {
-    width: 100%;
-    margin-top: var(--space-md);
-    background: var(--gradient-primary);
-    color: white;
-    border: none;
-    border-radius: var(--radius-full);
-    padding: var(--space-md);
-    font-weight: var(--font-semibold);
-    font-size: var(--text-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-sm);
-    transition: all var(--transition-fast);
-    box-shadow: var(--shadow-md);
-}
-
-.sidebarLoginButton:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-    filter: brightness(1.1);
-}
 
 /* Create New Post Button Styles */
 .createPostItem {
