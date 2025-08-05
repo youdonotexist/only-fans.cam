@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './FanDetails.module.css';
 import LoginButton from './LoginButton';
 import { getFanById, likeFan, unlikeFan, addComment, updateFan, deleteFan } from '../network/fanApi.ts';
-import { getMediaUrl } from '../network/mediaApi.ts';
+import { getMediaUrl, uploadMedia, deleteMedia } from '../network/mediaApi.ts';
 import Sidebar from './Sidebar';
 import PageLayout from './PageLayout';
-import { FaSpinner, FaFan, FaHeart, FaComment, FaShare, FaUser, FaPaperPlane, FaTimes, FaEllipsisV, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaSpinner, FaFan, FaHeart, FaComment, FaShare, FaUser, FaPaperPlane, FaTimes, FaEllipsisV, FaEdit, FaTrash, FaImage, FaPlus } from 'react-icons/fa';
 import { useLoginModal } from '../contexts/LoginModalContext';
 
 const FanDetails = () => {
@@ -26,6 +26,16 @@ const FanDetails = () => {
     const [editTitle, setEditTitle] = useState('');
     const [editDescription, setEditDescription] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    // Image management state
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [previewUrls, setPreviewUrls] = useState([]);
+    const [showImageManager, setShowImageManager] = useState(false);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
+    const [isDeletingImage, setIsDeletingImage] = useState(false);
+    const [imageError, setImageError] = useState('');
+    const [imageSuccess, setImageSuccess] = useState('');
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         const fetchFanDetails = async () => {
@@ -231,6 +241,136 @@ const FanDetails = () => {
             setIsSubmitting(false);
         }
     };
+    
+    // Toggle image manager
+    const toggleImageManager = () => {
+        if (!isCurrentUserAuthor) return;
+        
+        setShowImageManager(prev => !prev);
+        
+        // Reset state when closing
+        if (showImageManager) {
+            // Clean up preview URLs to avoid memory leaks
+            previewUrls.forEach(url => URL.revokeObjectURL(url));
+            setPreviewUrls([]);
+            setSelectedFiles([]);
+            setImageError('');
+            setImageSuccess('');
+        }
+    };
+    
+    // Handle file selection
+    const handleFileSelect = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
+        
+        // Validate files (only images)
+        const validFiles = files.filter(file => file.type.startsWith('image/'));
+        if (validFiles.length !== files.length) {
+            setImageError('Only image files are allowed');
+            return;
+        }
+        
+        // Create preview URLs for selected files
+        const newPreviewUrls = validFiles.map(file => URL.createObjectURL(file));
+        
+        setSelectedFiles(prev => [...prev, ...validFiles]);
+        setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
+        setImageError('');
+    };
+    
+    // Remove a selected file from preview
+    const removeSelectedFile = (index) => {
+        // Revoke the object URL to avoid memory leaks
+        URL.revokeObjectURL(previewUrls[index]);
+        
+        setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+        setPreviewUrls(prev => prev.filter((_, i) => i !== index));
+    };
+    
+    // Upload selected images
+    const handleImageUpload = async () => {
+        if (selectedFiles.length === 0) {
+            setImageError('Please select at least one image to upload');
+            return;
+        }
+        
+        const token = localStorage.getItem('token');
+        if (!token) {
+            openLoginModal(window.location.pathname);
+            return;
+        }
+        
+        try {
+            setIsUploadingImage(true);
+            setImageError('');
+            
+            // Upload images
+            await uploadMedia(parseInt(id), selectedFiles, token);
+            
+            // Clear selected files and previews
+            previewUrls.forEach(url => URL.revokeObjectURL(url));
+            setPreviewUrls([]);
+            setSelectedFiles([]);
+            
+            // Show success message
+            setImageSuccess('Images uploaded successfully!');
+            
+            // Refresh fan data to show new images
+            const updatedFan = await getFanById(parseInt(id));
+            setFan(updatedFan);
+            
+            // Clear success message after 3 seconds
+            setTimeout(() => {
+                setImageSuccess('');
+            }, 3000);
+        } catch (err) {
+            console.error('Error uploading images:', err);
+            setImageError(err.message || 'Failed to upload images. Please try again.');
+        } finally {
+            setIsUploadingImage(false);
+        }
+    };
+    
+    // Delete an existing image
+    const handleImageDelete = async (mediaId) => {
+        if (!window.confirm('Are you sure you want to delete this image?')) {
+            return;
+        }
+        
+        const token = localStorage.getItem('token');
+        if (!token) {
+            openLoginModal(window.location.pathname);
+            return;
+        }
+        
+        try {
+            setIsDeletingImage(true);
+            setImageError('');
+            
+            // Delete the image
+            await deleteMedia(mediaId, token);
+            
+            // Update fan state to remove the deleted image
+            setFan(prev => ({
+                ...prev,
+                media: prev.media.filter(media => media.id !== mediaId)
+            }));
+            
+            // Show success message
+            setImageSuccess('Image deleted successfully!');
+            
+            // Clear success message after 3 seconds
+            setTimeout(() => {
+                setImageSuccess('');
+            }, 3000);
+        } catch (err) {
+            console.error('Error deleting image:', err);
+            setImageError(err.message || 'Failed to delete image. Please try again.');
+        } finally {
+            setIsDeletingImage(false);
+        }
+    };
 
     return (
         <div className={styles.container}>
@@ -294,6 +434,15 @@ const FanDetails = () => {
                                                 <button 
                                                     className={styles.optionItem}
                                                     onClick={() => {
+                                                        setShowImageManager(true);
+                                                        setShowOptionsMenu(false);
+                                                    }}
+                                                >
+                                                    <FaImage /> Manage Images
+                                                </button>
+                                                <button 
+                                                    className={styles.optionItem}
+                                                    onClick={() => {
                                                         if (window.confirm('Are you sure you want to delete this post?')) {
                                                             handleDeletePost();
                                                         }
@@ -309,13 +458,129 @@ const FanDetails = () => {
                             </div>
                         
                             <div className={styles.fanContent}>
+                                {/* Image Manager */}
+                                {showImageManager && isCurrentUserAuthor && (
+                                    <div className={styles.imageManager}>
+                                        <div className={styles.imageManagerHeader}>
+                                            <h3>Manage Images</h3>
+                                            <button 
+                                                className={styles.closeButton}
+                                                onClick={toggleImageManager}
+                                            >
+                                                <FaTimes />
+                                            </button>
+                                        </div>
+                                        
+                                        {imageError && <div className={styles.error}>{imageError}</div>}
+                                        {imageSuccess && <div className={styles.success}>{imageSuccess}</div>}
+                                        
+                                        {/* Current Images */}
+                                        <div className={styles.currentImages}>
+                                            <h4>Current Images</h4>
+                                            {fan.media && fan.media.length > 0 ? (
+                                                <div className={styles.imageGrid}>
+                                                    {fan.media.map(media => (
+                                                        <div key={media.id} className={styles.imageItem}>
+                                                            <img 
+                                                                src={getMediaUrl(media.file_path)} 
+                                                                alt={fan.title} 
+                                                                className={styles.thumbnailImage} 
+                                                            />
+                                                            <button
+                                                                className={styles.deleteImageButton}
+                                                                onClick={() => handleImageDelete(media.id)}
+                                                                disabled={isDeletingImage}
+                                                            >
+                                                                <FaTrash /> Delete
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <p className={styles.noImages}>No images uploaded yet.</p>
+                                            )}
+                                        </div>
+                                        
+                                        {/* Upload New Images */}
+                                        <div className={styles.uploadImages}>
+                                            <h4>Upload New Images</h4>
+                                            <div className={styles.uploadControls}>
+                                                <div className={styles.uploadButton} onClick={() => fileInputRef.current.click()}>
+                                                    <FaImage /> Select Images
+                                                </div>
+                                                <input
+                                                    type="file"
+                                                    ref={fileInputRef}
+                                                    onChange={handleFileSelect}
+                                                    accept="image/*"
+                                                    multiple
+                                                    style={{ display: 'none' }}
+                                                    disabled={isUploadingImage}
+                                                />
+                                                <button
+                                                    className={styles.uploadSubmitButton}
+                                                    onClick={handleImageUpload}
+                                                    disabled={selectedFiles.length === 0 || isUploadingImage}
+                                                >
+                                                    {isUploadingImage ? (
+                                                        <>
+                                                            <FaSpinner className={styles.spinner} /> 
+                                                            Uploading...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <FaPlus /> Upload
+                                                        </>
+                                                    )}
+                                                </button>
+                                            </div>
+                                            
+                                            {/* Image Previews */}
+                                            {previewUrls.length > 0 && (
+                                                <div className={styles.imagePreviewContainer}>
+                                                    {previewUrls.map((url, index) => (
+                                                        <div key={index} className={styles.imagePreview}>
+                                                            <img src={url} alt={`Preview ${index + 1}`} />
+                                                            <button
+                                                                type="button"
+                                                                className={styles.removeImageButton}
+                                                                onClick={() => removeSelectedFile(index)}
+                                                                disabled={isUploadingImage}
+                                                            >
+                                                                <FaTimes />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                {/* Display images or placeholder */}
                                 {fan.media && fan.media.length > 0 ? (
                                     <div className={styles.mediaContainer}>
+                                        {/* Main image */}
                                         <img 
                                             src={getMediaUrl(fan.media[0].file_path)} 
                                             alt={fan.title} 
                                             className={styles.fanImage} 
                                         />
+                                        
+                                        {/* Image gallery for additional images */}
+                                        {fan.media.length > 1 && (
+                                            <div className={styles.imageGallery}>
+                                                {fan.media.slice(1).map((media, index) => (
+                                                    <div key={media.id} className={styles.galleryItem}>
+                                                        <img 
+                                                            src={getMediaUrl(media.file_path)} 
+                                                            alt={`${fan.title} - image ${index + 2}`} 
+                                                            className={styles.galleryImage} 
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 ) : (
                                     <div className={styles.noImagePlaceholder}>
