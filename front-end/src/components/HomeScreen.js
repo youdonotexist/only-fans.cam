@@ -6,9 +6,11 @@ import { createFan, getAllFans, likeFan, unlikeFan, getFanById, addComment } fro
 import { uploadMedia } from '../network/mediaApi.ts';
 import { getMediaUrl } from '../network/mediaApi.ts';
 import { useNavigate } from 'react-router-dom';
+import { useLoginModal } from '../contexts/LoginModalContext';
 
 const HomeScreen = () => {
     const navigate = useNavigate();
+    const { openLoginModal } = useLoginModal();
     
     // State for fans from backend
     const [fans, setFans] = useState([]);
@@ -92,8 +94,8 @@ const HomeScreen = () => {
     const handleLike = async (fanId) => {
         const token = localStorage.getItem('token');
         if (!token) {
-            // Redirect to login if not authenticated
-            navigate('/auth');
+            // Open login modal if not authenticated
+            openLoginModal(window.location.pathname);
             return;
         }
         
@@ -153,8 +155,8 @@ const HomeScreen = () => {
     const handleCommentClick = async (fanId) => {
         const token = localStorage.getItem('token');
         if (!token) {
-            // Redirect to login if not authenticated
-            navigate('/auth');
+            // Open login modal if not authenticated
+            openLoginModal(window.location.pathname);
             return;
         }
         
