@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './FanDetails.module.css';
 import LoginButton from './LoginButton';
-import { getFanById, likeFan, unlikeFan, addComment } from '../network/fanApi.ts';
+import { getFanById, likeFan, unlikeFan, addComment, updateFan, deleteFan } from '../network/fanApi.ts';
 import { getMediaUrl } from '../network/mediaApi.ts';
 import Sidebar from './Sidebar';
 import PageLayout from './PageLayout';
-import { FaSpinner, FaFan, FaHeart, FaComment, FaShare, FaUser, FaPaperPlane, FaTimes } from 'react-icons/fa';
+import { FaSpinner, FaFan, FaHeart, FaComment, FaShare, FaUser, FaPaperPlane, FaTimes, FaEllipsisV, FaEdit, FaTrash } from 'react-icons/fa';
 import { useLoginModal } from '../contexts/LoginModalContext';
 
 const FanDetails = () => {
@@ -20,6 +20,12 @@ const FanDetails = () => {
     const [commentText, setCommentText] = useState('');
     const [showCommentForm, setShowCommentForm] = useState(false);
     const [submittingComment, setSubmittingComment] = useState(false);
+    const [isCurrentUserAuthor, setIsCurrentUserAuthor] = useState(false);
+    const [showOptionsMenu, setShowOptionsMenu] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editTitle, setEditTitle] = useState('');
+    const [editDescription, setEditDescription] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         const fetchFanDetails = async () => {
@@ -34,6 +40,14 @@ const FanDetails = () => {
                 const token = localStorage.getItem('token');
                 if (token && fanData.is_liked) {
                     setIsLiked(fanData.is_liked);
+                }
+                
+                // Check if current user is the author of the post
+                const currentUserId = localStorage.getItem('userId');
+                if (currentUserId && fanData.user_id === parseInt(currentUserId)) {
+                    setIsCurrentUserAuthor(true);
+                    setEditTitle(fanData.title || '');
+                    setEditDescription(fanData.description || '');
                 }
             } catch (err) {
                 console.error('Error fetching fan details:', err);
@@ -148,6 +162,75 @@ const FanDetails = () => {
             setSubmittingComment(false);
         }
     };
+    
+    // Handle post update
+    const handleUpdatePost = async () => {
+        if (!editTitle.trim()) return;
+        
+        const token = localStorage.getItem('token');
+        if (!token) {
+            openLoginModal(window.location.pathname);
+            return;
+        }
+        
+        try {
+            setIsSubmitting(true);
+            
+            // Create update data
+            const updateData = {
+                title: editTitle,
+                description: editDescription.trim() ? editDescription : undefined
+            };
+            
+            // Update fan in the backend
+            const updatedFan = await updateFan(parseInt(id), updateData, token);
+            
+            // Update fan in state
+            setFan(prev => ({
+                ...prev,
+                title: updatedFan.title,
+                description: updatedFan.description
+            }));
+            
+            // Exit edit mode
+            setIsEditing(false);
+            
+            // Show success message
+            alert('Post updated successfully!');
+        } catch (err) {
+            console.error('Error updating post:', err);
+            alert('Failed to update post. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+    
+    // Handle post deletion
+    const handleDeletePost = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            openLoginModal(window.location.pathname);
+            return;
+        }
+        
+        try {
+            setIsSubmitting(true);
+            
+            // Delete fan in the backend
+            await deleteFan(parseInt(id), token);
+            
+            // Show success message
+            alert('Post deleted successfully!');
+            
+            // Navigate back to home page
+            navigate('/');
+        } catch (err) {
+            console.error('Error deleting post:', err);
+            alert('Failed to delete post. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <div className={styles.container}>
@@ -185,6 +268,44 @@ const FanDetails = () => {
                                 <span className={styles.postDate}>
                                     {new Date(fan.created_at).toLocaleDateString()}
                                 </span>
+                                
+                                {/* Options menu for post author */}
+                                {isCurrentUserAuthor && (
+                                    <div className={styles.optionsContainer}>
+                                        <button 
+                                            className={styles.optionsButton}
+                                            onClick={() => setShowOptionsMenu(!showOptionsMenu)}
+                                            aria-label="Post options"
+                                        >
+                                            <FaEllipsisV />
+                                        </button>
+                                        
+                                        {showOptionsMenu && (
+                                            <div className={styles.optionsMenu}>
+                                                <button 
+                                                    className={styles.optionItem}
+                                                    onClick={() => {
+                                                        setIsEditing(true);
+                                                        setShowOptionsMenu(false);
+                                                    }}
+                                                >
+                                                    <FaEdit /> Edit
+                                                </button>
+                                                <button 
+                                                    className={styles.optionItem}
+                                                    onClick={() => {
+                                                        if (window.confirm('Are you sure you want to delete this post?')) {
+                                                            handleDeletePost();
+                                                        }
+                                                        setShowOptionsMenu(false);
+                                                    }}
+                                                >
+                                                    <FaTrash /> Delete
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         
                             <div className={styles.fanContent}>
@@ -203,9 +324,59 @@ const FanDetails = () => {
                                     </div>
                                 )}
                                 
-                                <div className={styles.description}>
-                                    <p>{fan.description || "No description provided."}</p>
-                                </div>
+                                {isEditing ? (
+                                    <div className={styles.editForm}>
+                                        <h3>Edit Post</h3>
+                                        <div className={styles.formGroup}>
+                                            <label htmlFor="editTitle">Title</label>
+                                            <input
+                                                id="editTitle"
+                                                type="text"
+                                                value={editTitle}
+                                                onChange={(e) => setEditTitle(e.target.value)}
+                                                className={styles.editInput}
+                                                placeholder="Enter title"
+                                                disabled={isSubmitting}
+                                            />
+                                        </div>
+                                        <div className={styles.formGroup}>
+                                            <label htmlFor="editDescription">Description</label>
+                                            <textarea
+                                                id="editDescription"
+                                                value={editDescription}
+                                                onChange={(e) => setEditDescription(e.target.value)}
+                                                className={styles.editTextarea}
+                                                placeholder="Enter description"
+                                                rows={4}
+                                                disabled={isSubmitting}
+                                            />
+                                        </div>
+                                        <div className={styles.editButtons}>
+                                            <button
+                                                className={styles.cancelButton}
+                                                onClick={() => {
+                                                    setIsEditing(false);
+                                                    setEditTitle(fan.title || '');
+                                                    setEditDescription(fan.description || '');
+                                                }}
+                                                disabled={isSubmitting}
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                className={styles.saveButton}
+                                                onClick={handleUpdatePost}
+                                                disabled={!editTitle.trim() || isSubmitting}
+                                            >
+                                                {isSubmitting ? <FaSpinner className={styles.spinner} /> : 'Save Changes'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className={styles.description}>
+                                        <p>{fan.description || "No description provided."}</p>
+                                    </div>
+                                )}
                                 
                                 <div className={styles.stats}>
                                     <div 
