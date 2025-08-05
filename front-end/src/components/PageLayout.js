@@ -1,5 +1,5 @@
 import React from 'react';
-import TopNavBar from './TopNavBar';
+import Topnavbar from './TopNavbar';
 import styles from './PageLayout.module.css';
 
 /**
@@ -20,7 +20,7 @@ const PageLayout = ({
 }) => {
   return (
     <div className={`${styles.pageContainer} ${className}`}>
-      <TopNavBar 
+      <Topnavbar 
         title={title}
         showBackButton={showBackButton}
         rightContent={rightContent}

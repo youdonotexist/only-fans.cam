@@ -1,6 +1,6 @@
 import React from 'react';
 import BackButton from './BackButton';
-import styles from './TopNavBar.module.css';
+import styles from './TopNavbar.module.css';
 
 /**
  * Top navigation bar component that contains the back button and page title
@@ -10,7 +10,7 @@ import styles from './TopNavBar.module.css';
  * @param {React.ReactNode} props.rightContent - Optional content to display on the right side
  * @param {string} props.className - Additional CSS class for the container
  */
-const TopNavBar = ({ 
+const Topnavbar = ({ 
   title, 
   showBackButton = true, 
   rightContent,
@@ -31,4 +31,4 @@ const TopNavBar = ({
   );
 };
 
-export default TopNavBar;
+export default Topnavbar;
