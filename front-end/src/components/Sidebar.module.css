@@ -31,7 +31,7 @@
 }
 
 .logoImg {
-    height: 60px;
+    height: 80px;
     width: auto;
 }
 
@@ -62,7 +62,7 @@
     
     /* Adjust logo for smaller sidebar */
     .logoImg {
-        height: 40px;
+        height: 55px;
     }
     
     /* Hide text in links, show only icons */
@@ -122,6 +122,68 @@
     /* Adjust container to handle the collapsed sidebar */
     .container {
         width: 100%;
+    }
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding: var(--space-sm);
+        border-right: none;
+        border-bottom: 1px solid var(--background-lighter);
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .logoContainer {
+        margin-bottom: 0;
+    }
+    
+    nav {
+        flex: 1;
+    }
+    
+    nav ul {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 0;
+    }
+    
+    nav li {
+        margin-bottom: 0;
+    }
+    
+    .link {
+        justify-content: center;
+        padding: var(--space-sm);
+    }
+    
+    .link span {
+        display: none;
+    }
+    
+    svg {
+        margin-right: 0;
+        font-size: 1.5em;
+    }
+    
+    .spacer {
+        display: none;
+    }
+    
+    .userProfile {
+        margin-bottom: 0;
+        margin-left: var(--space-md);
+    }
+    
+    .sidebarLoginButton {
+        margin-top: 0;
+        margin-left: var(--space-md);
+        width: auto;
     }
 }
 
@@ -218,11 +280,6 @@ svg {
     color: var(--foreground);
 }
 
-.userBio {
-    font-size: var(--text-xs);
-    color: var(--foreground-dim);
-    margin-top: var(--space-xs);
-}
 
 .sidebarLoginButton {
     width: 100%;

@@ -5,6 +5,13 @@
     color: var(--foreground);
 }
 
+/* Responsive layout for mobile */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+}
+
 /* Main Content */
 .mainContent {
     flex: 1;
@@ -12,6 +19,17 @@
     overflow-y: auto;
     max-width: 680px;
     margin: 0 auto;
+}
+
+/* Responsive styles for main content */
+@media (max-width: 768px) {
+    .mainContent {
+        width: 100%;
+        margin-top: 0;
+        padding: var(--space-md);
+        margin-left: 0;
+        order: 2;
+    }
 }
 
 /* Create Post Section */

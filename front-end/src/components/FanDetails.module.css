@@ -5,12 +5,30 @@
     color: var(--foreground);
 }
 
+/* Responsive layout for mobile */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+}
+
 .mainContent {
     flex: 1;
     padding: var(--space-lg);
     max-width: 800px;
     margin: 0 auto;
     width: 100%;
+}
+
+/* Responsive styles for main content */
+@media (max-width: 768px) {
+    .mainContent {
+        width: 100%;
+        margin-top: 0;
+        padding: var(--space-md);
+        margin-left: 0;
+        order: 2;
+    }
 }
 
 .loadingContainer {
@@ -126,12 +144,90 @@
     gap: var(--space-lg);
     color: var(--foreground-dim);
     font-size: 0.9rem;
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--background-lighter);
 }
 
 .stats div {
     display: flex;
     align-items: center;
     gap: var(--space-xs);
+    cursor: pointer;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.stats div:hover {
+    background-color: var(--background-lighter);
+    color: var(--foreground);
+}
+
+.likeButton, .commentButton, .shareButton {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.likeButton.liked {
+    color: var(--error);
+}
+
+.likeButton.liked svg {
+    fill: var(--error);
+}
+
+.commentFormContainer {
+    margin-top: var(--space-md);
+    padding: var(--space-md);
+    background-color: var(--background-lighter);
+    border-radius: var(--radius-md);
+}
+
+.commentForm {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.commentInput {
+    flex: 1;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--background-lighter);
+    border-radius: var(--radius-full);
+    background-color: var(--background-light);
+    color: var(--foreground);
+    font-size: 0.9rem;
+}
+
+.commentInput:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
+}
+
+.commentSubmitButton {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.commentSubmitButton:hover {
+    background-color: var(--primary-dark);
+}
+
+.commentSubmitButton:disabled {
+    background-color: var(--background-lighter);
+    color: var(--foreground-muted);
+    cursor: not-allowed;
 }
 
 .commentsSection {

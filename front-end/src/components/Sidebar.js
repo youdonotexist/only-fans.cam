@@ -81,7 +81,6 @@ const Sidebar = () => {
                             />
                             <div className={styles.userInfo}>
                                 <span className={styles.username}>@{user.username}</span>
-                                <span className={styles.userBio}>{user.bio ? user.bio.substring(0, 20) + (user.bio.length > 20 ? '...' : '') : 'No bio'}</span>
                             </div>
                         </Link>
                     </div>
