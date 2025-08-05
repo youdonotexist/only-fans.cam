@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './Auth.module.css';
 import { register, login } from '../network';
 import { getCurrentUser } from '../network/userApi.ts';
+import BackButton from './BackButton';
 
 const Auth = () => {
     const navigate = useNavigate();
@@ -158,6 +159,9 @@ const Auth = () => {
 
     return (
         <div className={styles.authContainer}>
+            <div className={styles.backButtonContainer}>
+                <BackButton />
+            </div>
             <div className={styles.authCard}>
                 <div className={styles.authHeader}>
                     <div className={styles.logo}>OnlyFans</div>

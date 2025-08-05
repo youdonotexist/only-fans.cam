@@ -1,5 +1,5 @@
 import React from 'react';
-import BackButton from './BackButton';
+import TopNavBar from './TopNavBar';
 import styles from './PageLayout.module.css';
 
 /**
@@ -8,20 +8,23 @@ import styles from './PageLayout.module.css';
  * @param {React.ReactNode} props.children - Page content
  * @param {string} props.title - Page title
  * @param {boolean} props.showBackButton - Whether to show the back button
+ * @param {React.ReactNode} props.rightContent - Optional content to display on the right side of the top nav bar
  * @param {string} props.className - Additional CSS class for the container
  */
 const PageLayout = ({ 
   children, 
   title, 
-  showBackButton = true, 
+  showBackButton = true,
+  rightContent,
   className = '' 
 }) => {
   return (
     <div className={`${styles.pageContainer} ${className}`}>
-      <div className={styles.pageHeader}>
-        {showBackButton && <BackButton />}
-        {title && <h1 className={styles.pageTitle}>{title}</h1>}
-      </div>
+      <TopNavBar 
+        title={title}
+        showBackButton={showBackButton}
+        rightContent={rightContent}
+      />
       <div className={styles.pageContent}>
         {children}
       </div>

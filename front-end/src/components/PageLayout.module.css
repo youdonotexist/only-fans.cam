@@ -2,51 +2,27 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: var(--space-md);
-}
-
-.pageHeader {
+  padding: 0;
   display: flex;
-  align-items: center;
-  margin-bottom: var(--space-lg);
-  flex-wrap: wrap;
-  gap: var(--space-sm);
+  flex-direction: column;
 }
 
-.pageTitle {
-  font-size: var(--text-2xl);
-  font-weight: var(--font-bold);
-  color: var(--foreground);
-  margin: 0;
-  flex: 1;
-}
+/* The pageHeader is now replaced by TopNavBar */
 
 .pageContent {
   width: 100%;
+  padding: var(--space-md);
 }
 
 /* Responsive styles */
 @media (max-width: 768px) {
-  .pageContainer {
+  .pageContent {
     padding: var(--space-sm);
-  }
-  
-  .pageHeader {
-    margin-bottom: var(--space-md);
-  }
-  
-  .pageTitle {
-    font-size: var(--text-xl);
   }
 }
 
 @media (max-width: 480px) {
-  .pageHeader {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .pageTitle {
-    margin-top: var(--space-xs);
+  .pageContent {
+    padding: var(--space-xs) var(--space-sm);
   }
 }

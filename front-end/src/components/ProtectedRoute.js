@@ -35,8 +35,8 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  // If modal is closed, redirect to login page
-  return <Navigate to="/auth" state={{ from: location }} replace />;
+  // If modal is closed, redirect to home page
+  return <Navigate to="/" replace />;
 };
 
 export default ProtectedRoute;

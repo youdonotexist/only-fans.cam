@@ -98,6 +98,7 @@ The authentication flow works as follows:
    - The LoginModal appears
    - The user can log in without navigating away from the current page
    - After successful login, the user is redirected to the originally requested page
+   - If the user closes the login modal, they are redirected to the home page
    - The navigation history is preserved
 
 ### Implementation Details
@@ -132,7 +133,7 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  return <Navigate to="/auth" state={{ from: location }} replace />;
+  return <Navigate to="/" replace />;
 };
 ```
 
@@ -175,9 +176,15 @@ function App() {
 
 ## Testing
 
-A test script (`test-navigation-flow.js`) is provided to verify the navigation and authentication flow. This script includes a checklist for manual testing of:
+Several test scripts are provided to verify the navigation and authentication flow:
 
-- Back button visibility on appropriate pages
-- Navigation history across different page flows
-- Authentication flow for protected content
-- Edge cases such as page refreshes and deep linking
+1. **`test-navigation-flow.js`** - Verifies general navigation flow, including:
+   - Back button visibility on appropriate pages
+   - Navigation history across different page flows
+   - Authentication flow for protected content
+   - Edge cases such as page refreshes and deep linking
+
+2. **`test-login-modal-redirect.js`** - Specifically tests the login modal redirect behavior:
+   - Verifies that the login modal appears when accessing protected content
+   - Confirms that closing the modal redirects to the home page
+   - Tests edge cases like different protected routes and direct URL access

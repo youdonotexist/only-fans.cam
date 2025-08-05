@@ -1,65 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { FaBars, FaTimes } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import styles from './TopNavbar.module.css';
-import logo from '../assets/logo.png';
-import { getCurrentUser } from '../network/userApi.ts';
+import React from 'react';
+import BackButton from './BackButton';
+import styles from './TopNavBar.module.css';
 
-const TopNavbar = ({ toggleSidebar, isSidebarOpen }) => {
-    const [user, setUser] = useState(null);
-    
-    useEffect(() => {
-        const fetchUser = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const userData = await getCurrentUser(token);
-                    setUser(userData);
-                } catch (error) {
-                    console.error('Error fetching user data:', error);
-                }
-            }
-        };
-        
-        fetchUser();
-    }, []);
-    
-    return (
-        <header className={styles.topNavbar}>
-            <div className={styles.navbarContent}>
-                {/* Logo */}
-                <div className={styles.logoContainer}>
-                    <Link to="/" className={styles.logo}>
-                        <img src={logo} className={styles.logoImg} alt="OnlyFans logo" />
-                    </Link>
-                </div>
-                
-                {/* Right side - User info and hamburger menu */}
-                <div className={styles.navbarRight}>
-                    {/* User info - only show if logged in */}
-                    {user && (
-                        <Link to="/profile/me" className={styles.userInfo}>
-                            <img 
-                                src={user.profile_image || "https://via.placeholder.com/40"} 
-                                alt={user.username}
-                                className={styles.userAvatar} 
-                            />
-                            <span className={styles.username}>@{user.username}</span>
-                        </Link>
-                    )}
-                    
-                    {/* Hamburger menu button - only visible on mobile */}
-                    <button 
-                        className={styles.hamburgerButton} 
-                        onClick={toggleSidebar}
-                        aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
-                    >
-                        {isSidebarOpen ? <FaTimes /> : <FaBars />}
-                    </button>
-                </div>
-            </div>
-        </header>
-    );
+/**
+ * Top navigation bar component that contains the back button and page title
+ * @param {Object} props - Component props
+ * @param {string} props.title - Page title
+ * @param {boolean} props.showBackButton - Whether to show the back button
+ * @param {React.ReactNode} props.rightContent - Optional content to display on the right side
+ * @param {string} props.className - Additional CSS class for the container
+ */
+const TopNavBar = ({ 
+  title, 
+  showBackButton = true, 
+  rightContent,
+  className = '' 
+}) => {
+  return (
+    <div className={`${styles.topNavBar} ${className}`}>
+      <div className={styles.leftSection}>
+        {showBackButton && <BackButton className={styles.backButton} />}
+        {title && <h1 className={styles.pageTitle}>{title}</h1>}
+      </div>
+      {rightContent && (
+        <div className={styles.rightSection}>
+          {rightContent}
+        </div>
+      )}
+    </div>
+  );
 };
 
-export default TopNavbar;
+export default TopNavBar;
