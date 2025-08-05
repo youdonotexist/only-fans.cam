@@ -64,7 +64,8 @@
         bottom: 0;
         left: 0;
         top: auto;
-        padding: var(--space-sm);
+        padding: 0;
+        margin: 0;
         border-right: none;
         border-top: 1px solid var(--background-lighter);
         flex-direction: row;
@@ -125,7 +126,7 @@
     }
     
     .userProfileLink {
-        /*padding: var(--space-sm);*/
+        padding: 0;
         justify-content: center;
     }
     
