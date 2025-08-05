@@ -167,7 +167,15 @@ const LoginModal = ({ onClose, redirectPath }) => {
         }
       }, 1000);
     } catch (error) {
-      setError(error.message || 'Registration failed. Please try again.');
+      // Check for specific error messages related to duplicate accounts
+      const errorMessage = error.message || '';
+      if (errorMessage.includes('User already exists') || 
+          errorMessage.includes('already in use') ||
+          errorMessage.includes('duplicate')) {
+        setError('This username or email is already registered. Please use different credentials.');
+      } else {
+        setError(errorMessage || 'Registration failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -189,18 +197,22 @@ const LoginModal = ({ onClose, redirectPath }) => {
         
         <div className={styles.modalBody}>
           <div className={styles.tabContainer}>
-            <div 
-              className={`${styles.tab} ${activeTab === 'login' ? styles.activeTab : ''}`}
-              onClick={() => handleTabChange('login')}
-            >
-              Login
-            </div>
-            <div 
-              className={`${styles.tab} ${activeTab === 'register' ? styles.activeTab : ''}`}
-              onClick={() => handleTabChange('register')}
-            >
-              Register
-            </div>
+            {activeTab === 'register' && (
+              <div 
+                className={styles.switchTab}
+                onClick={() => handleTabChange('login')}
+              >
+                Login
+              </div>
+            )}
+            {activeTab === 'login' && (
+              <div 
+                className={styles.switchTab}
+                onClick={() => handleTabChange('register')}
+              >
+                Register
+              </div>
+            )}
           </div>
           
           {activeTab === 'login' ? (

@@ -140,29 +140,26 @@
   cursor: not-allowed;
 }
 
-.registerPrompt {
-  text-align: center;
-  color: var(--foreground-dim);
-  font-size: var(--text-sm);
+.tabContainer {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-sm);
+  justify-content: flex-end;
+  margin-bottom: var(--space-md);
 }
 
-.registerButton {
-  background: none;
-  border: none;
+.switchTab {
   color: var(--primary);
   font-weight: var(--font-medium);
   cursor: pointer;
-  padding: 0;
   font-size: var(--text-sm);
   text-decoration: underline;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
 }
 
-.registerButton:hover {
+.switchTab:hover {
   color: var(--primary-light);
+  background-color: var(--background-lighter);
 }
 
 @keyframes fadeIn {
