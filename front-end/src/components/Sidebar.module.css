@@ -3,6 +3,13 @@
     position: relative;
 }
 
+/* Ensure container doesn't interfere with fixed positioning in mobile view */
+@media (max-width: 768px) {
+    .container {
+        position: static;
+    }
+}
+
 .sidebar {
     width: 280px;
     padding: var(--space-lg);
