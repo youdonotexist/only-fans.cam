@@ -5,6 +5,7 @@ import LoginButton from './LoginButton';
 import { getFanById } from '../network/fanApi.ts';
 import { getMediaUrl } from '../network/mediaApi.ts';
 import Sidebar from './Sidebar';
+import PageLayout from './PageLayout';
 import { FaSpinner, FaFan, FaHeart, FaComment, FaShare, FaUser } from 'react-icons/fa';
 
 const FanDetails = () => {
@@ -46,14 +47,14 @@ const FanDetails = () => {
                         <p>Loading fan details...</p>
                     </div>
                 ) : error ? (
-                    <div className={styles.error}>
-                        <p>{error}</p>
-                        <button onClick={() => navigate('/')}>Back to Home</button>
-                    </div>
+                    <PageLayout showBackButton={true}>
+                        <div className={styles.error}>
+                            <p>{error}</p>
+                        </div>
+                    </PageLayout>
                 ) : fan ? (
-                    <div className={styles.fanDetailsContainer}>
-                        <div className={styles.header}>
-                            <h1>{fan.title}</h1>
+                    <PageLayout title={fan.title}>
+                        <div className={styles.fanDetailsContainer}>
                             <div className={styles.userInfo}>
                                 <img 
                                     src={fan.user_profile_image || "https://via.placeholder.com/40"} 
@@ -72,70 +73,64 @@ const FanDetails = () => {
                                     {new Date(fan.created_at).toLocaleDateString()}
                                 </span>
                             </div>
-                        </div>
                         
-                        <div className={styles.fanContent}>
-                            {fan.media && fan.media.length > 0 ? (
-                                <div className={styles.mediaContainer}>
-                                    <img 
-                                        src={getMediaUrl(fan.media[0].file_path)} 
-                                        alt={fan.title} 
-                                        className={styles.fanImage} 
-                                    />
+                            <div className={styles.fanContent}>
+                                {fan.media && fan.media.length > 0 ? (
+                                    <div className={styles.mediaContainer}>
+                                        <img 
+                                            src={getMediaUrl(fan.media[0].file_path)} 
+                                            alt={fan.title} 
+                                            className={styles.fanImage} 
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className={styles.noImagePlaceholder}>
+                                        <FaFan size={60} />
+                                        <p>No image available</p>
+                                    </div>
+                                )}
+                                
+                                <div className={styles.description}>
+                                    <p>{fan.description || "No description provided."}</p>
                                 </div>
-                            ) : (
-                                <div className={styles.noImagePlaceholder}>
-                                    <FaFan size={60} />
-                                    <p>No image available</p>
+                                
+                                <div className={styles.stats}>
+                                    <div><FaHeart /> {fan.likes_count || 0} Likes</div>
+                                    <div><FaComment /> {fan.comments?.length || 0} Comments</div>
+                                </div>
+                            </div>
+                            
+                            {fan.comments && fan.comments.length > 0 && (
+                                <div className={styles.commentsSection}>
+                                    <h3>Comments</h3>
+                                    {fan.comments.map(comment => (
+                                        <div key={comment.id} className={styles.comment}>
+                                            <img 
+                                                src={comment.user_profile_image || "https://via.placeholder.com/30"} 
+                                                alt={`${comment.username}'s avatar`} 
+                                                className={styles.commentAvatar}
+                                            />
+                                            <div className={styles.commentContent}>
+                                                <div className={styles.commentHeader}>
+                                                    <span className={styles.commentUsername}>{comment.username}</span>
+                                                    <span className={styles.commentDate}>
+                                                        {new Date(comment.created_at).toLocaleDateString()}
+                                                    </span>
+                                                </div>
+                                                <p>{comment.content}</p>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
-                            
-                            <div className={styles.description}>
-                                <p>{fan.description || "No description provided."}</p>
-                            </div>
-                            
-                            <div className={styles.stats}>
-                                <div><FaHeart /> {fan.likes_count || 0} Likes</div>
-                                <div><FaComment /> {fan.comments?.length || 0} Comments</div>
-                            </div>
                         </div>
-                        
-                        {fan.comments && fan.comments.length > 0 && (
-                            <div className={styles.commentsSection}>
-                                <h3>Comments</h3>
-                                {fan.comments.map(comment => (
-                                    <div key={comment.id} className={styles.comment}>
-                                        <img 
-                                            src={comment.user_profile_image || "https://via.placeholder.com/30"} 
-                                            alt={`${comment.username}'s avatar`} 
-                                            className={styles.commentAvatar}
-                                        />
-                                        <div className={styles.commentContent}>
-                                            <div className={styles.commentHeader}>
-                                                <span className={styles.commentUsername}>{comment.username}</span>
-                                                <span className={styles.commentDate}>
-                                                    {new Date(comment.created_at).toLocaleDateString()}
-                                                </span>
-                                            </div>
-                                            <p>{comment.content}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                        
-                        <button 
-                            className={styles.backButton}
-                            onClick={() => navigate('/')}
-                        >
-                            Back to Home
-                        </button>
-                    </div>
+                    </PageLayout>
                 ) : (
-                    <div className={styles.notFound}>
-                        <h2>Fan not found</h2>
-                        <button onClick={() => navigate('/')}>Back to Home</button>
-                    </div>
+                    <PageLayout showBackButton={true}>
+                        <div className={styles.notFound}>
+                            <h2>Fan not found</h2>
+                        </div>
+                    </PageLayout>
                 )}
             </main>
         </div>

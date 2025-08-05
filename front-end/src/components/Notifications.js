@@ -3,6 +3,7 @@ import styles from './Notifications.module.css';
 import Sidebar from "./Sidebar";
 import { FaBell } from 'react-icons/fa';
 import NotificationList from './NotificationList';
+import PageLayout from './PageLayout';
 
 const Notifications = () => {
 
@@ -13,14 +14,12 @@ const Notifications = () => {
 
             {/* Main Content */}
             <main className={styles.mainContent}>
-                <div className={styles.header}>
-                    <h1><FaBell /> Notifications</h1>
-                </div>
-                
-                <div className={styles.notificationsContainer}>
-                    {/* Use our new NotificationList component */}
-                    <NotificationList />
-                </div>
+                <PageLayout title="Notifications">
+                    <div className={styles.notificationsContainer}>
+                        {/* Use our new NotificationList component */}
+                        <NotificationList />
+                    </div>
+                </PageLayout>
             </main>
         </div>
     );
