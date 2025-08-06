@@ -248,6 +248,11 @@ sidebarLinkText {
         height: 30px;
         margin-right: 0;
     }
+
+    sidebarLinkText {
+        margin-left: 0px;
+        display: none;
+    }
 }
 
 .username {
