@@ -15,7 +15,7 @@ async function columnExists(db: Database, table: string, column: string): Promis
     db.get(
       `PRAGMA table_info(${table})`,
       [],
-      (err, rows) => {
+      (err, rows: any) => {
         if (err) {
           console.error(`Error checking if column ${column} exists in ${table}:`, err.message);
           resolve(false);

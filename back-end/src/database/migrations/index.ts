@@ -36,7 +36,7 @@ export async function initializeVersionTracking(db: Database): Promise<void> {
       }
 
       // Check if version exists
-      db.get('SELECT value FROM system_settings WHERE key = ?', [DB_VERSION_KEY], (err, row) => {
+      db.get('SELECT value FROM system_settings WHERE key = ?', [DB_VERSION_KEY], (err, row: { value: string } | undefined) => {
         if (err) {
           console.error('Error checking database version:', err.message);
           reject(err);
@@ -74,7 +74,7 @@ export async function initializeVersionTracking(db: Database): Promise<void> {
  */
 export async function getDatabaseVersion(db: Database): Promise<string> {
   return new Promise((resolve, reject) => {
-    db.get('SELECT value FROM system_settings WHERE key = ?', [DB_VERSION_KEY], (err, row) => {
+    db.get('SELECT value FROM system_settings WHERE key = ?', [DB_VERSION_KEY], (err, row: { value: string } | undefined) => {
       if (err) {
         console.error('Error getting database version:', err.message);
         reject(err);

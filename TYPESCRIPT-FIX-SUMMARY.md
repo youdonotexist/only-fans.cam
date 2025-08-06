@@ -5,57 +5,69 @@
 The build process was failing with the following TypeScript errors:
 
 ```
-src/scripts/setAdminUser.ts(43,69): error TS2339: Property 'username' does not exist on type '{}'.
-src/scripts/setAdminUser.ts(43,91): error TS2339: Property 'id' does not exist on type '{}'.
+src/database/migrations/index.ts(62,56): error TS2339: Property 'value' does not exist on type '{}'.
+src/database/migrations/index.ts(87,21): error TS2339: Property 'value' does not exist on type '{}'.
+src/scripts/upgradeDatabase.ts(26,28): error TS18046: 'rows' is of type 'unknown'.
 ```
 
 ## Root Cause
 
-In the `setAdminUser.ts` file, the `user` parameter in the database query callback was not properly typed. TypeScript was inferring it as an empty object type `{}`, which doesn't have `username` or `id` properties.
+The errors were related to missing type annotations in the SQLite database callback functions:
 
-The error occurred in this line:
-```typescript
-console.log(`Successfully set admin role for user: ${user.username} (ID: ${user.id})`);
-```
+1. In `migrations/index.ts`, the `row` parameter in database callbacks was not properly typed, causing TypeScript to infer it as an empty object type `{}`, which doesn't have a `value` property.
+
+2. In `upgradeDatabase.ts`, the `rows` parameter was inferred as `unknown`, which doesn't have a `find` method that was being called on it.
 
 ## Solution
 
-The fix involved two steps:
+The fix involved adding proper type annotations to the callback parameters:
 
-1. **Define a User interface** to specify the expected structure of the user object:
-   ```typescript
-   interface User {
-     id: number;
-     username: string;
-   }
-   ```
+1. In `migrations/index.ts`, added type annotations for the `row` parameter in two places:
 
-2. **Add type annotation** to the database query callback:
-   ```typescript
-   db.get('SELECT id, username FROM users WHERE email = ?', [ADMIN_EMAIL], (err, user: User | undefined) => {
-   });
-   ```
+```typescript
+// In initializeVersionTracking function
+db.get('SELECT value FROM system_settings WHERE key = ?', [DB_VERSION_KEY], 
+  (err, row: { value: string } | undefined) => {
+    // Function body
+  }
+);
 
-This properly informs TypeScript that the `user` parameter is either a `User` object with `id` and `username` properties, or `undefined` if no user is found.
+// In getDatabaseVersion function
+db.get('SELECT value FROM system_settings WHERE key = ?', [DB_VERSION_KEY], 
+  (err, row: { value: string } | undefined) => {
+    // Function body
+  }
+);
+```
 
-## Database Schema Management
+2. In `upgradeDatabase.ts`, added a type annotation for the `rows` parameter:
 
-In response to the question about database migrations, I've created a separate document (`DATABASE-SCHEMA-MANAGEMENT.md`) that explains:
-
-1. The current approach to schema management in the project
-2. How new fields and tables are added
-3. Limitations of the current approach
-4. Recommendations for implementing a more robust migration system
+```typescript
+db.get(
+  `PRAGMA table_info(${table})`,
+  [],
+  (err, rows: any) => {
+    // Function body
+  }
+);
+```
 
 ## Testing
 
-The fix was tested by running the build process:
+The fixes were tested by running the build process:
+
 ```
 npm run build
 ```
 
-The build completed successfully with no TypeScript errors, confirming that the issue has been resolved.
+The build completed successfully with no TypeScript errors, confirming that the issues have been resolved.
 
-## Conclusion
+## Best Practices
 
-The TypeScript errors were fixed by properly typing the user object in the `setAdminUser.ts` file. This ensures type safety and prevents similar errors in the future. The database schema management document provides guidance on how schema changes are currently handled and offers recommendations for improvement.
+For future SQLite database operations, it's recommended to:
+
+1. Define proper interfaces for database results to avoid type errors
+2. Use explicit type annotations for callback parameters
+3. Consider using a more type-safe database library or wrapper
+
+By following these practices, we can prevent similar TypeScript errors in the future and improve the overall type safety of the codebase.
