@@ -8,6 +8,7 @@ import Messages from './components/Messages';
 import Profile from './components/Profile';
 import FeedbackForm from './components/FeedbackForm';
 import AdminFeedback from './components/AdminFeedback';
+import FanWiki from './components/FanWiki';
 import ProtectedRoute from './components/ProtectedRoute';
 import Footer from './components/Footer';
 import { NavigationProvider } from './contexts/NavigationContext';
@@ -51,6 +52,7 @@ function App() {
                                         <AdminFeedback />
                                     </ProtectedRoute>
                                 } />
+                                <Route path="/fanwiki" element={<FanWiki />} />
                             </Routes>
                             <Footer />
                         </div>

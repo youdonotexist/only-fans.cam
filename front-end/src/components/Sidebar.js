@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {NavLink, Link, useNavigate} from 'react-router-dom';
-import { FaHome, FaBell, FaEnvelope, FaUser, FaPlus } from 'react-icons/fa';
+import { FaHome, FaBell, FaEnvelope, FaUser, FaPlus, FaBook } from 'react-icons/fa';
 import styles from './Sidebar.module.css';
 import logo from '../assets/logo.png';
 import { getCurrentUser } from '../network/userApi.ts';
@@ -43,7 +43,8 @@ const Sidebar = () => {
     const navLinks = [
         { to: "/", icon: <FaHome />, text: "Home" },
         { to: "/notifications", icon: <FaBell />, text: "Notifications" },
-        { to: "/messages", icon: <FaEnvelope />, text: "Messages" }
+        { to: "/messages", icon: <FaEnvelope />, text: "Messages" },
+        { to: "/fanwiki", icon: <FaBook />, text: "Fan Wiki" }
     ];
     
     return (
