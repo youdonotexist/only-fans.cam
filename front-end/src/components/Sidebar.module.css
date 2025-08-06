@@ -249,7 +249,7 @@ sidebarLinkText {
         margin-right: 0;
     }
 
-    sidebarLinkText {
+    .sidebarLinkText {
         margin-left: 0px;
         display: none;
     }
