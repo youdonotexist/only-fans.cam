@@ -12,10 +12,10 @@ import { Database } from 'sqlite3';
 // Function to check if a column exists in a table
 async function columnExists(db: Database, table: string, column: string): Promise<boolean> {
   return new Promise((resolve) => {
-    db.get(
+    db.all(
       `PRAGMA table_info(${table})`,
       [],
-      (err, rows: any) => {
+      (err, rows: any[]) => {
         if (err) {
           console.error(`Error checking if column ${column} exists in ${table}:`, err.message);
           resolve(false);
