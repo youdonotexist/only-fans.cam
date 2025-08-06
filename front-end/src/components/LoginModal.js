@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaTimes, FaUser, FaLock, FaEnvelope } from 'react-icons/fa';
-import { login, register } from '../network';
+import { login as apiLogin, register as apiRegister } from '../network';
 import { getCurrentUser } from '../network/userApi.ts';
+import { useAuth } from '../contexts/AuthContext';
 import styles from './LoginModal.module.css';
 
 const LoginModal = ({ onClose, redirectPath }) => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [activeTab, setActiveTab] = useState('login');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -68,7 +70,7 @@ const LoginModal = ({ onClose, redirectPath }) => {
 
     try {
       // Call login API
-      const response = await login(loginData.email, loginData.password);
+      const response = await apiLogin(loginData.email, loginData.password);
 
       // Store token in localStorage
       localStorage.setItem('token', response.token);
@@ -79,6 +81,9 @@ const LoginModal = ({ onClose, redirectPath }) => {
         
         // Store user ID in localStorage
         localStorage.setItem('userId', userData.id);
+        
+        // Update auth context
+        login(userData);
       } catch (userError) {
         console.error('Error fetching user data:', userError);
         // Continue even if fetching user data fails
@@ -93,8 +98,8 @@ const LoginModal = ({ onClose, redirectPath }) => {
         if (redirectPath) {
           navigate(redirectPath);
         } else {
-          // Reload the current page to reflect logged-in state
-          window.location.reload();
+          // No need to reload the page anymore since we update the auth context
+          // window.location.reload();
         }
       }, 1000);
     } catch (error) {
@@ -132,7 +137,7 @@ const LoginModal = ({ onClose, redirectPath }) => {
 
     try {
       // Call register API
-      const response = await register({
+      const response = await apiRegister({
         username: registerData.username,
         email: registerData.email,
         password: registerData.password,
@@ -148,6 +153,9 @@ const LoginModal = ({ onClose, redirectPath }) => {
         
         // Store user ID in localStorage
         localStorage.setItem('userId', userData.id);
+        
+        // Update auth context
+        login(userData);
       } catch (userError) {
         console.error('Error fetching user data:', userError);
         // Continue even if fetching user data fails
@@ -162,8 +170,8 @@ const LoginModal = ({ onClose, redirectPath }) => {
         if (redirectPath) {
           navigate(redirectPath);
         } else {
-          // Reload the current page to reflect logged-in state
-          window.location.reload();
+          // No need to reload the page anymore since we update the auth context
+          // window.location.reload();
         }
       }, 1000);
     } catch (error) {
