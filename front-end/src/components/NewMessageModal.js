@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaSearch, FaTimes, FaSpinner } from 'react-icons/fa';
 import styles from './NewMessageModal.module.css';
 import { searchUsers } from '../network/userApi.ts';
+import Avatar from './Avatar';
 
 const NewMessageModal = ({ onClose, onSelectUser }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -104,10 +105,12 @@ const NewMessageModal = ({ onClose, onSelectUser }) => {
                   className={styles.userItem}
                   onClick={() => handleSelectUser(user)}
                 >
-                  <img 
-                    src={user.profile_image || "https://via.placeholder.com/40"} 
+                  <Avatar 
+                    src={user.profile_image} 
                     alt={user.username}
+                    username={user.username}
                     className={styles.userAvatar}
+                    size={40}
                   />
                   <div className={styles.userInfo}>
                     <h4 className={styles.userName}>@{user.username}</h4>

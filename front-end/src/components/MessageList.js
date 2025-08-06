@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaCircle } from 'react-icons/fa';
 import styles from './MessageList.module.css';
+import Avatar from './Avatar';
 
 const MessageList = ({ conversations, onSelectConversation, selectedConversationId }) => {
   // Helper function to format date
@@ -74,10 +75,12 @@ const MessageList = ({ conversations, onSelectConversation, selectedConversation
             onClick={() => onSelectConversation(conversation)}
           >
             <div className={styles.avatarContainer}>
-              <img 
-                src={otherUser.profileImage || "https://via.placeholder.com/40"}
+              <Avatar 
+                src={otherUser.profileImage}
                 alt={otherUser.username}
+                username={otherUser.username}
                 className={styles.avatar}
+                size={40}
               />
               {conversation.unread_count > 0 && (
                 <div className={styles.unreadBadge}>

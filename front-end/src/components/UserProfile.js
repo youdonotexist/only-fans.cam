@@ -3,6 +3,7 @@ import { FaLock, FaHeart, FaComment, FaShare } from 'react-icons/fa';
 import styles from './UserProfile.module.css';
 import {useParams} from "react-router-dom";
 import LoginButton from './LoginButton';
+import Avatar from './Avatar';
 
 const userData = {
     username: "FanMaster",
@@ -48,7 +49,13 @@ export default function UserProfile() {
             {/* User Profile Header */}
             <div className={styles.profileHeader}>
                 <div className={styles.headerLeft}>
-                    <img src={userData.avatar} alt="User Avatar" className={styles.avatar} />
+                    <Avatar 
+                        src={userData.avatar} 
+                        alt="User Avatar" 
+                        username={userData.username}
+                        className={styles.avatar}
+                        size={80}
+                    />
                     <div className={styles.userInfo}>
                         <h2> {name} 🔥</h2>
                         <p>{name} · Seen Yesterday</p>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FaPaperPlane, FaSpinner } from 'react-icons/fa';
 import styles from './MessageDetail.module.css';
 import { getMessages, sendMessage } from '../network/messageApi.ts';
+import Avatar from './Avatar';
 
 const MessageDetail = ({ userId, onMessageSent }) => {
   const [messages, setMessages] = useState([]);
@@ -172,10 +173,12 @@ const MessageDetail = ({ userId, onMessageSent }) => {
       {otherUser && (
         <div className={styles.header}>
           <div className={styles.userInfo}>
-            <img 
-              src={otherUser.profileImage || "https://via.placeholder.com/40"}
+            <Avatar 
+              src={otherUser.profileImage}
               alt={otherUser.username}
+              username={otherUser.username}
               className={styles.avatar}
+              size={40}
             />
             <h3>{otherUser.username}</h3>
           </div>

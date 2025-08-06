@@ -13,6 +13,7 @@ import Sidebar from "./Sidebar";
 import { useParams, useNavigate } from 'react-router-dom';
 import { getFansByUser, getFanById } from '../network/fanApi';
 import { uploadProfileImage, uploadCoverImage } from '../network/userApi.ts';
+import Avatar from './Avatar';
 
 // Import user API functions directly from the file
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
@@ -394,11 +395,13 @@ const Profile = () => {
                     {/* Avatar Section */}
                     <div className={styles.profileInfo}>
                         <div className={styles.avatar} onClick={(params.id === 'me' || !params.id) && !uploadingImage ? handleEditAvatarPress : undefined}>
-                            <img 
+                            <Avatar 
                                 id={"avatarImage"} 
                                 className={styles.avatarImg}
-                                src={user?.profile_image || "https://via.placeholder.com/150"}
+                                src={user?.profile_image}
                                 alt={`${user?.username}'s profile`}
+                                username={user?.username}
+                                size={150}
                             />
 
                             {/* Avatar Edit Button */}

@@ -5,6 +5,7 @@ import styles from './Sidebar.module.css';
 import logo from '../assets/logo.png';
 import { getCurrentUser } from '../network/userApi.ts';
 import LoginButton from './LoginButton';
+import Avatar from './Avatar';
 
 const Sidebar = () => {
     // Sidebar is always visible, no need for toggle state
@@ -78,10 +79,12 @@ const Sidebar = () => {
                                     onClick={() => navigate('/profile/me')}
                                     style={{ cursor: 'pointer' }}
                                 >
-                                    <img 
-                                        src={user.profile_image || "https://via.placeholder.com/40"} 
+                                    <Avatar 
+                                        src={user.profile_image} 
                                         alt={user.username}
-                                        className={styles.userAvatar} 
+                                        username={user.username}
+                                        className={styles.userAvatar}
+                                        size={40}
                                     />
                                     <div className={styles.userInfo}>
                                         <span className={styles.username}>@{user.username}</span>
@@ -122,10 +125,12 @@ const Sidebar = () => {
                             onClick={() => navigate('/profile/me')}
                             style={{ cursor: 'pointer' }}
                         >
-                            <img 
-                                src={user.profile_image || "https://via.placeholder.com/40"} 
+                            <Avatar 
+                                src={user.profile_image} 
                                 alt={user.username}
-                                className={styles.userAvatar} 
+                                username={user.username}
+                                className={styles.userAvatar}
+                                size={40}
                             />
                             <div className={styles.userInfo}>
                                 <span className={styles.username}>@{user.username}</span>
