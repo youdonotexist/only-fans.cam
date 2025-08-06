@@ -379,7 +379,6 @@ const Profile = () => {
                             id={"coverImage"} 
                             className={styles.coverImg}
                             src={user?.cover_image || "https://via.placeholder.com/1200x300?text=Add+Cover+Photo"}
-                            alt="Cover"
                         />
                         <input id="coverImagePicker" type="file" accept="image/*" style={{display: "none"}} />
                         
