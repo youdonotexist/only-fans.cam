@@ -1,4 +1,7 @@
-const fetch = require('node-fetch');
+// For Node.js v18+
+const { fetch } = require('undici');
+// For older Node.js versions, uncomment the line below:
+// const fetch = require('node-fetch');
 
 // Configuration
 const API_URL = 'http://localhost:3000/api';

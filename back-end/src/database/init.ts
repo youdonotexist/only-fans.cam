@@ -44,7 +44,6 @@ export async function initializeDatabase(): Promise<Database> {
       bio TEXT,
       profile_image TEXT,
       cover_image TEXT,
-      is_admin BOOLEAN DEFAULT 0,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )

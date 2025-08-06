@@ -7,6 +7,7 @@ import {
   CURRENT_DB_VERSION
 } from './index';
 import { migration_v1_0_0 } from './v1_0_0';
+import { migration_v1_0_1 } from './v1_0_1';
 
 // Interface for migration
 export interface Migration {
@@ -18,6 +19,7 @@ export interface Migration {
 // Array of migrations, ordered by version
 const migrations: Migration[] = [
   migration_v1_0_0,
+  migration_v1_0_1,
   // Add future migrations here
 ];
 

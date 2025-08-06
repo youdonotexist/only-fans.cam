@@ -12,7 +12,7 @@ export interface SystemSetting {
 export const DB_VERSION_KEY = 'db_version';
 
 // Current database version
-export const CURRENT_DB_VERSION = '1.0.0';
+export const CURRENT_DB_VERSION = '1.0.1';
 
 /**
  * Initialize the system_settings table and set up version tracking

@@ -12,7 +12,8 @@
     "db:set-admin": "ts-node src/scripts/setAdminUser.ts",
     "db:test": "ts-node src/scripts/testDatabaseUpgrade.ts",
     "db:test-migrations": "ts-node src/scripts/testMigrationSystem.ts",
-    "db:configure": "ts-node src/scripts/configureSystemSettings.ts"
+    "db:configure": "ts-node src/scripts/configureSystemSettings.ts",
+    "db:test-is-admin": "ts-node src/scripts/testIsAdminMigration.ts"
   },
   "keywords": [
     "fans",
