@@ -7,6 +7,7 @@ import { uploadMedia } from '../network/mediaApi.ts';
 import { getMediaUrl } from '../network/mediaApi.ts';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLoginModal } from '../contexts/LoginModalContext';
+import Avatar from "./Avatar";
 
 const HomeScreen = () => {
     const navigate = useNavigate();
@@ -536,12 +537,13 @@ const HomeScreen = () => {
                         <div key={fan.id} className={styles.fanPost}>
                             {/* User Info */}
                             <div className={styles.postHeader}>
-                                <img 
-                                    src={fan.user_profile_image || "https://via.placeholder.com/40"} 
-                                    alt={`${fan.username}'s avatar`} 
+                                <Avatar
+                                    src={fan.user_profile_image}
+                                    alt={`${fan.username}'s avatar`}
+                                    username={fan.username}
                                     className={styles.avatar}
+                                    size={40}
                                     onClick={() => navigate(`/profile/${fan.user_id}`)}
-                                    style={{ cursor: 'pointer' }}
                                 />
                                 <div>
                                     <h4 
