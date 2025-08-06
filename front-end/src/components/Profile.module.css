@@ -359,6 +359,7 @@
     justify-content: center;
     gap: var(--space-md);
     margin-top: var(--space-lg);
+    margin-bottom: var(--space-lg);
 }
 
 .saveProfileBtn {

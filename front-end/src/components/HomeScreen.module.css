@@ -497,7 +497,7 @@
 
 .fanImageContainer {
     width: 100%;
-    margin-bottom: var(--space-md);
+    margin-bottom: 0;
 }
 
 .interactionButtons > div {
