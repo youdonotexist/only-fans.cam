@@ -126,7 +126,7 @@ const Profile = () => {
                 const token = localStorage.getItem('token');
                 
                 // If viewing own profile or no specific ID
-                if (params.id === 'me' || !params.id) {
+                if (params.id === 'me' || (!params.id && !params.username)) {
                     if (!token) {
                         setError('You must be logged in to view your profile');
                         setLoading(false);
@@ -150,7 +150,7 @@ const Profile = () => {
                 setLoading(false);
             }
         };
-        
+
         fetchUserData();
     }, [params.id, params.username]);
     
@@ -399,13 +399,11 @@ const Profile = () => {
                     {/* Avatar Section */}
                     <div className={styles.profileInfo}>
                         <div className={styles.avatar} onClick={(params.id === 'me' || !params.id) && !uploadingImage ? handleEditAvatarPress : undefined}>
-                            <Avatar 
-                                id={"avatarImage"} 
+                            <img
+                                id={"avatarImage"}
                                 className={styles.avatarImg}
-                                src={user?.profile_image}
+                                src={user?.profile_image || "https://via.placeholder.com/150"}
                                 alt={`${user?.username}'s profile`}
-                                username={user?.username}
-                                size={150}
                             />
 
                             {/* Avatar Edit Button */}
