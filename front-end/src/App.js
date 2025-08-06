@@ -40,9 +40,7 @@ function App() {
                                     </ProtectedRoute>
                                 } />
                                 <Route path="/user/:username" element={
-                                    <ProtectedRoute>
-                                        <Profile />
-                                    </ProtectedRoute>
+                                    <Profile />
                                 } />
                             </Routes>
                         </div>
