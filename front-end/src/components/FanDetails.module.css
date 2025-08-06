@@ -264,6 +264,7 @@
 .mediaContainer {
     margin-bottom: var(--space-md);
     text-align: center;
+    margin-top: 15px;
 }
 
 .fanImage {
