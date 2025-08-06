@@ -406,6 +406,12 @@ const Profile = () => {
                                 alt={`${user?.username}'s profile`}
                             />
 
+                            <Avatar
+                                src={user.profile_image}
+                                alt={`${user?.username}'s avatar`}
+                                className={styles.avatar}
+                            />
+
                             {/* Avatar Edit Button */}
                             <input id="avatarPicker" type="file" accept="image/*" style={{display: "none"}} />
                             
