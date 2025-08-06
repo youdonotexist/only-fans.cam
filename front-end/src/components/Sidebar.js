@@ -63,10 +63,10 @@ const Sidebar = () => {
                             <li key={link.to}>
                                 <NavLink 
                                     to={link.to} 
-                                    className={[({ isActive }) => isActive ? `${styles.link} ${styles.active}` : styles.link, `${styles.sidebarLinkText}`].join()}
+                                    className={({ isActive }) => isActive ? `${styles.link} ${styles.active}` : styles.link}
                                     onClick={handleLinkClick}
                                 >
-                                    {link.icon} <span>{link.text}</span>
+                                    {link.icon} <span className=${styles.sidebarLinkText}>{link.text}</span>
                                 </NavLink>
                             </li>
                         ))}
@@ -74,13 +74,13 @@ const Sidebar = () => {
                         {/* User profile avatar in navigation - for mobile layout */}
                         {user && (
                             <li className={styles.userProfileItem}>
-                                <div 
+                                <div
                                     className={styles.userProfileLink}
                                     onClick={() => navigate('/profile/me')}
                                     style={{ cursor: 'pointer' }}
                                 >
-                                    <Avatar 
-                                        src={user.profile_image} 
+                                    <Avatar
+                                        src={user.profile_image}
                                         alt={user.username}
                                         username={user.username}
                                         className={styles.userAvatar}
@@ -92,18 +92,18 @@ const Sidebar = () => {
                                 </div>
                             </li>
                         )}
-                        
+
                         {/* Login button for non-logged in users */}
                         {!user && (
                             <li className={styles.loginItem}>
                                 <LoginButton className={styles.sidebarLoginButton} />
                             </li>
                         )}
-                        
+
                         {/* Create New Post button - only visible when logged in */}
                         {user && (
                             <li className={styles.createPostItem}>
-                                <button 
+                                <button
                                     className={styles.createPostButton}
                                     onClick={handleCreatePost}
                                 >
@@ -113,20 +113,20 @@ const Sidebar = () => {
                         )}
                     </ul>
                 </nav>
-                
+
                 {/* Spacer to push content to top and bottom */}
                 <div className={styles.spacer}></div>
-                
+
                 {/* User profile at the bottom - for desktop layout only */}
                 {user && (
                     <div className={styles.userProfileDesktop}>
-                        <div 
+                        <div
                             className={styles.userProfileLink}
                             onClick={() => navigate('/profile/me')}
                             style={{ cursor: 'pointer' }}
                         >
-                            <Avatar 
-                                src={user.profile_image} 
+                            <Avatar
+                                src={user.profile_image}
                                 alt={user.username}
                                 username={user.username}
                                 className={styles.userAvatar}
@@ -138,7 +138,7 @@ const Sidebar = () => {
                         </div>
                     </div>
                 )}
-                
+
                 {/* Login button for desktop layout */}
                 {!user && (
                     <div className={styles.loginDesktop}>
