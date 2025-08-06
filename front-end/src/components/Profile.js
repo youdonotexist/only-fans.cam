@@ -397,11 +397,12 @@ const Profile = () => {
 
                     {/* Avatar Section */}
                     <div className={styles.profileInfo}>
-                        <div className={styles.avatar} onClick={(params.id === 'me' || !params.id) && !uploadingImage ? handleEditAvatarPress : undefined}>
+                        <div>
                             <Avatar
                                 src={user.profile_image}
                                 alt={`${user?.username}'s avatar`}
                                 className={styles.avatar}
+                                onClick={(params.id === 'me' || !params.id) && !uploadingImage ? handleEditAvatarPress : undefined}
                             />
 
                             {/* Avatar Edit Button */}
