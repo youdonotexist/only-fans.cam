@@ -24,6 +24,7 @@ const LoginButton = ({ className }) => {
     };
     
     return (
+        isLoggedIn ? <div/> :
         <button 
             className={`${styles.loginButton} ${className || ''}`}
             onClick={handleClick}
