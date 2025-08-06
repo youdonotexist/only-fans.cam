@@ -29,17 +29,18 @@
     display: flex;
     justify-content: center;
     margin-bottom: var(--space-xl);
+    width: 100%;
 }
 
 .logo {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
 }
 
 .logoImg {
-    height: 80px;
-    width: auto;
+    width: 100%;
 }
 
 /* Mobile navigation removed as sidebar is always visible */
