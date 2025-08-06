@@ -66,7 +66,7 @@ const Sidebar = () => {
                                     className={({ isActive }) => isActive ? `${styles.link} ${styles.active}` : styles.link}
                                     onClick={handleLinkClick}
                                 >
-                                    {link.icon} <span className=${styles.sidebarLinkText}>{link.text}</span>
+                                    {link.icon} <span className={styles.sidebarLinkText}>{link.text}</span>
                                 </NavLink>
                             </li>
                         ))}
