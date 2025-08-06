@@ -55,6 +55,29 @@ export const getUserById = async (id: number): Promise<User> => {
 };
 
 /**
+ * Get user by username
+ * @param username Username
+ * @returns Promise with user data
+ */
+export const getUserByUsername = async (username: string): Promise<User> => {
+  try {
+    const response = await fetch(`${API_URL}/users/username/${encodeURIComponent(username)}`);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to get user data');
+    }
+
+    return await response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Get user by username error: ${error.message}`);
+    }
+    throw new Error('Failed to get user data');
+  }
+};
+
+/**
  * Update current user's profile
  * @param userData User data to update
  * @param token JWT token

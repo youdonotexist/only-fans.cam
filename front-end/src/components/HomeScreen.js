@@ -543,12 +543,12 @@ const HomeScreen = () => {
                                     username={fan.username}
                                     className={styles.avatar}
                                     size={40}
-                                    onClick={() => navigate(`/profile/${fan.user_id}`)}
+                                    onClick={() => navigate(`/user/${fan.username}`)}
                                 />
                                 <div>
                                     <h4 
                                         className={styles.username}
-                                        onClick={() => navigate(`/profile/${fan.user_id}`)}
+                                        onClick={() => navigate(`/user/${fan.username}`)}
                                         style={{ cursor: 'pointer' }}
                                     >
                                         {fan.username || "Anonymous"}
@@ -642,13 +642,15 @@ const HomeScreen = () => {
                                 comments.map(comment => (
                                     <div key={comment.id} className={styles.commentItem}>
                                         <div className={styles.commentHeader}>
-                                            <img 
-                                                src={comment.user_profile_image || "https://via.placeholder.com/32"} 
-                                                alt={`${comment.username}'s avatar`} 
+                                            <Avatar 
+                                                src={comment.user_profile_image} 
+                                                alt={`${comment.username}'s avatar`}
+                                                username={comment.username}
                                                 className={styles.commentAvatar}
+                                                size={32}
                                                 onClick={() => {
                                                     closeCommentModal();
-                                                    navigate(`/profile/${comment.user_id}`);
+                                                    navigate(`/user/${comment.username}`);
                                                 }}
                                             />
                                             <div>
@@ -656,7 +658,7 @@ const HomeScreen = () => {
                                                     className={styles.commentUsername}
                                                     onClick={() => {
                                                         closeCommentModal();
-                                                        navigate(`/profile/${comment.user_id}`);
+                                                        navigate(`/user/${comment.username}`);
                                                     }}
                                                 >
                                                     {comment.username || "Anonymous"}

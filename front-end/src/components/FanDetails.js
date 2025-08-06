@@ -399,10 +399,10 @@ const FanDetails = () => {
                                     username={fan.username}
                                     className={styles.avatar}
                                     size={40}
-                                    onClick={() => navigate(`/profile/${fan.user_id}`)}
+                                    onClick={() => navigate(`/user/${fan.username}`)}
                                 />
                                 <span 
-                                    onClick={() => navigate(`/profile/${fan.user_id}`)}
+                                    onClick={() => navigate(`/user/${fan.username}`)}
                                     style={{ cursor: 'pointer' }}
                                 >
                                     {fan.username || "Anonymous"}
@@ -710,13 +710,13 @@ const FanDetails = () => {
                                                 username={comment.username}
                                                 className={styles.commentAvatar}
                                                 size={30}
-                                                onClick={() => navigate(`/profile/${comment.user_id}`)}
+                                                onClick={() => navigate(`/user/${comment.username}`)}
                                             />
                                             <div className={styles.commentContent}>
                                                 <div className={styles.commentHeader}>
                                                     <span 
                                                         className={styles.commentUsername}
-                                                        onClick={() => navigate(`/profile/${comment.user_id}`)}
+                                                        onClick={() => navigate(`/user/${comment.username}`)}
                                                         style={{ cursor: 'pointer' }}
                                                     >
                                                         {comment.username}

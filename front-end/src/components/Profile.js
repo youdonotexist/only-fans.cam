@@ -12,7 +12,7 @@ import styles from './Profile.module.css';
 import Sidebar from "./Sidebar";
 import { useParams, useNavigate } from 'react-router-dom';
 import { getFansByUser, getFanById } from '../network/fanApi';
-import { uploadProfileImage, uploadCoverImage } from '../network/userApi.ts';
+import { uploadProfileImage, uploadCoverImage, getUserByUsername } from '../network/userApi.ts';
 import Avatar from './Avatar';
 
 // Import user API functions directly from the file
@@ -134,8 +134,12 @@ const Profile = () => {
                     }
                     const userData = await getCurrentUser(token);
                     setUser(userData);
+                } else if (params.username) {
+                    // Viewing a profile by username
+                    const userData = await getUserByUsername(params.username);
+                    setUser(userData);
                 } else {
-                    // Viewing another user's profile
+                    // Viewing another user's profile by ID
                     const userData = await getUserById(parseInt(params.id));
                     setUser(userData);
                 }
@@ -148,7 +152,7 @@ const Profile = () => {
         };
         
         fetchUserData();
-    }, [params.id]);
+    }, [params.id, params.username]);
     
     // Fetch user's fan posts
     const fetchUserFanPosts = async (userId) => {

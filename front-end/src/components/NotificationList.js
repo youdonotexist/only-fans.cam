@@ -107,7 +107,7 @@ const NotificationList = ({ onClose }) => {
     if (notification.type === 'comment' || notification.type === 'like') {
       navigate(`/fandetails/${notification.fan_id}`);
     } else if (notification.type === 'follow') {
-      navigate(`/profile/${notification.actor_id}`);
+      navigate(`/user/${notification.actor_username}`);
     }
     
     // Close notification panel if provided

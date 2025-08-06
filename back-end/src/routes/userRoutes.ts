@@ -52,6 +52,32 @@ router.get('/me', auth, (req, res) => {
 });
 
 /**
+ * @route   GET /api/users/username/:username
+ * @desc    Get user by username
+ * @access  Public
+ */
+router.get('/username/:username', (req, res) => {
+  const db = getDatabase();
+  
+  db.get(
+    'SELECT id, username, bio, profile_image, cover_image, created_at FROM users WHERE username = ?',
+    [req.params.username],
+    (err, user) => {
+      if (err) {
+        console.error(err.message);
+        return res.status(500).json({ message: 'Server error' });
+      }
+      
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      
+      res.json(user);
+    }
+  );
+});
+
+/**
  * @route   GET /api/users/:id
  * @desc    Get user by ID
  * @access  Public
