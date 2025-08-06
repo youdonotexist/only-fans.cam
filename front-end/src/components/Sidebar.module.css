@@ -234,7 +234,7 @@ svg {
     flex-direction: column;
 }
 
-sidebarLinkText {
+.sidebarLinkText {
     margin-left: 10px;
 }
     
