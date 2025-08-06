@@ -7,6 +7,7 @@ import { followRoutes } from './routes/followRoutes';
 import { mediaRoutes } from './routes/mediaRoutes';
 import { notificationRoutes } from './routes/notificationRoutes';
 import { messageRoutes } from './routes/messageRoutes';
+import { feedbackRoutes } from './routes/feedbackRoutes';
 import { initializeDatabase } from './database/init';
 import {authRoutes} from "./routes/authRoutes";
 
@@ -39,6 +40,7 @@ app.use('/api/follows', followRoutes);
 app.use('/api/media', mediaRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/feedback', feedbackRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

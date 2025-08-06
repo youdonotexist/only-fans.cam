@@ -1,70 +1,175 @@
-# Getting Started with Create React App
+# OnlyFans - A Platform for Fan Enthusiasts
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+OnlyFans is a social media platform dedicated to fans of all types - ceiling fans, desk fans, industrial fans, and more! Share your favorite fans, follow other enthusiasts, and engage with a community that shares your passion.
 
-## Available Scripts
+## Tech Stack
 
-In the project directory, you can run:
+### Frontend
+- **Framework**: React 19.0.0
+- **Routing**: React Router 7.3.0
+- **UI Components**: React Icons 5.5.0
+- **Styling**: CSS Modules
+- **HTTP Client**: Fetch API
+- **Build Tool**: Create React App
 
-### `npm start`
+### Backend
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Language**: TypeScript
+- **Authentication**: JWT (jsonwebtoken) with bcrypt for password hashing
+- **Validation**: express-validator
+- **File Upload**: multer
+- **CORS Handling**: cors
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Database
+- **Database**: SQLite3
+- **Backup/Replication**: Litestream (S3-compatible storage)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Storage
+- **Image Storage**: AWS S3 for user uploads
+- **Fallback**: UI Avatars API for placeholder images
 
 ### Deployment
+- **Frontend**: Netlify
+- **Backend**: Render (Docker container)
+- **Database**: SQLite with Litestream replication to S3
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Application Features
 
-### `npm run build` fails to minify
+- **User Authentication**: Register and login with JWT-based authentication
+- **Profile Management**: Create and edit user profiles with avatars and cover images
+- **Fan Posts**: Share photos and descriptions of your favorite fans
+- **Social Interactions**: Like, comment, and share fan posts
+- **Follow System**: Follow other users to see their content
+- **Messaging**: Private messaging between users
+- **Notifications**: Real-time notifications for social interactions
+- **Mobile Responsive**: Fully responsive design for all device sizes
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## How It Works
+
+1. **User Registration/Login**: Users can register with a username, email, and password. An invite code is required for registration.
+2. **Creating Fan Posts**: Authenticated users can create posts about their favorite fans, including images and descriptions.
+3. **Social Interactions**: Users can like, comment on, and share fan posts from other users.
+4. **Following Users**: Users can follow other fan enthusiasts to see their content in their feed.
+5. **Messaging**: Users can send private messages to other users.
+6. **Notifications**: Users receive notifications when someone likes, comments on, or shares their posts.
+
+## Getting Started
+
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
+- Git
+
+### Local Development Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd onlyfans
+   ```
+
+2. **Install dependencies**
+   ```bash
+   # Install frontend dependencies
+   cd front-end
+   npm install
+   
+   # Install backend dependencies
+   cd ../back-end
+   npm install
+   ```
+
+3. **Set up environment variables**
+   
+   Create a `.env` file in the `back-end` directory:
+   ```
+   NODE_ENV=development
+   PORT=3000
+   JWT_SECRET=your_jwt_secret_change_in_production
+   FRONTEND_URL=http://localhost:3001
+   
+   # Optional: AWS S3 Configuration for image uploads
+   AWS_ACCESS_KEY_ID=your_aws_access_key
+   AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+   AWS_REGION=your_aws_region
+   AWS_S3_BUCKET_NAME=your_bucket_name
+   ```
+   
+   Create a `.env` file in the `front-end` directory:
+   ```
+   REACT_APP_API_URL=http://localhost:3000/api
+   ```
+
+4. **Start the development servers**
+   
+   Start the backend server:
+   ```bash
+   cd back-end
+   npm run dev
+   ```
+   
+   Start the frontend server in a new terminal:
+   ```bash
+   cd front-end
+   npm start
+   ```
+
+5. **Access the application**
+   
+   The frontend will be available at http://localhost:3001
+   The backend API will be available at http://localhost:3000/api
+
+## Deployment
+
+The application can be deployed using the provided deployment scripts in the `deployment` directory.
+
+### Deployment Architecture
+- **Frontend**: Deployed to Netlify
+- **Backend**: Deployed to Render as a Docker container
+- **Database**: SQLite with Litestream replication to S3
+
+### Deployment Steps
+
+1. **Deploy all components**
+   ```bash
+   cd deployment
+   chmod +x deploy.sh
+   ./deploy.sh --all
+   ```
+
+2. **Deploy specific components**
+   ```bash
+   # Deploy only the frontend
+   ./deploy.sh --frontend
+   
+   # Deploy only the backend
+   ./deploy.sh --backend
+   
+   # Deploy only the database
+   ./deploy.sh --database
+   ```
+
+For detailed deployment instructions, refer to the [Deployment Guide](./deployment/README.md).
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the ISC License.
+
+## Acknowledgements
+
+- [React](https://reactjs.org/)
+- [Express](https://expressjs.com/)
+- [SQLite](https://www.sqlite.org/)
+- [Litestream](https://litestream.io/)
+- [AWS S3](https://aws.amazon.com/s3/)
+- [Netlify](https://www.netlify.com/)
+- [Render](https://render.com/)

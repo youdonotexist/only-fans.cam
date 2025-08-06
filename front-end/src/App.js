@@ -6,7 +6,10 @@ import UserProfile from "./components/UserProfile";
 import Notifications from './components/Notifications';
 import Messages from './components/Messages';
 import Profile from './components/Profile';
+import FeedbackForm from './components/FeedbackForm';
+import AdminFeedback from './components/AdminFeedback';
 import ProtectedRoute from './components/ProtectedRoute';
+import Footer from './components/Footer';
 import { NavigationProvider } from './contexts/NavigationContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { LoginModalProvider } from './contexts/LoginModalContext';
@@ -42,7 +45,14 @@ function App() {
                                 <Route path="/user/:username" element={
                                     <Profile />
                                 } />
+                                <Route path="/feedback" element={<FeedbackForm />} />
+                                <Route path="/admin/feedback" element={
+                                    <ProtectedRoute>
+                                        <AdminFeedback />
+                                    </ProtectedRoute>
+                                } />
                             </Routes>
+                            <Footer />
                         </div>
                     </NavigationProvider>
                 </LoginModalProvider>

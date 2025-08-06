@@ -35,6 +35,7 @@ export function initializeDatabase(): Database {
       bio TEXT,
       profile_image TEXT,
       cover_image TEXT,
+      is_admin BOOLEAN DEFAULT 0,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
@@ -145,6 +146,34 @@ export function initializeDatabase(): Database {
       UNIQUE(user1_id, user2_id),
       FOREIGN KEY (user1_id) REFERENCES users (id) ON DELETE CASCADE,
       FOREIGN KEY (user2_id) REFERENCES users (id) ON DELETE CASCADE
+    )
+  `);
+  
+  // Create user_logins table to track login events with IP addresses
+  db.run(`
+    CREATE TABLE IF NOT EXISTS user_logins (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      ip_address TEXT NOT NULL,
+      login_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      login_type TEXT NOT NULL,
+      user_agent TEXT,
+      FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+    )
+  `);
+  
+  // Create feedback table for user feedback and bug reports
+  db.run(`
+    CREATE TABLE IF NOT EXISTS feedback (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER,
+      type TEXT NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT NOT NULL,
+      status TEXT DEFAULT 'pending',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL
     )
   `);
 

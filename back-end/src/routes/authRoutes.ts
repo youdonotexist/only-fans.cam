@@ -3,10 +3,13 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { body, validationResult } from 'express-validator';
 import { getDatabase } from '../database/init';
+import { logUserLogin } from '../services/loginTrackingService';
+import { auth } from '../middleware/auth';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const INVITE_CODE = process.env.INVITE_CODE || 'ONLYFANS2025';
+const ADMIN_EMAIL = 'youdonotexist@gmail.com';
 
 // User interface for database results
 interface User {
@@ -72,10 +75,13 @@ router.post(
                     const salt = await bcrypt.genSalt(10);
                     const hashedPassword = await bcrypt.hash(password, salt);
 
+                    // Check if this is the admin email
+                    const isAdmin = email === ADMIN_EMAIL ? 1 : 0;
+                    
                     // Create user with default profile
                     db.run(
-                        'INSERT INTO users (username, email, password, bio, profile_image) VALUES (?, ?, ?, ?, ?)',
-                        [username, email, hashedPassword, 'Hello, I am new to OnlyFans!', null],
+                        'INSERT INTO users (username, email, password, bio, profile_image, is_admin) VALUES (?, ?, ?, ?, ?, ?)',
+                        [username, email, hashedPassword, 'Hello, I am new to OnlyFans!', null, isAdmin],
                         function (this: { lastID: number }, err: Error | null) {
                             if (err) {
                                 console.error(err.message);
@@ -93,8 +99,18 @@ router.post(
                                 payload,
                                 JWT_SECRET,
                                 { expiresIn: '1d' },
-                                (err: Error | null, token: string | undefined) => {
+                                async (err: Error | null, token: string | undefined) => {
                                     if (err) throw err;
+                                    
+                                    // Log the registration event with IP address
+                                    try {
+                                        await logUserLogin(this.lastID, req, 'register');
+                                        console.log(`User ${this.lastID} registered from IP: ${req.ip}`);
+                                    } catch (logError) {
+                                        console.error('Error logging registration:', logError);
+                                        // Continue even if logging fails
+                                    }
+                                    
                                     res.json({ token });
                                 }
                             );
@@ -180,8 +196,18 @@ router.post(
                         payload,
                         JWT_SECRET,
                         { expiresIn: '1d' },
-                        (err: Error | null, token: string | undefined) => {
+                        async (err: Error | null, token: string | undefined) => {
                             if (err) throw err;
+                            
+                            // Log the login event with IP address
+                            try {
+                                await logUserLogin(user.id, req, 'login');
+                                console.log(`User ${user.id} logged in from IP: ${req.ip}`);
+                            } catch (logError) {
+                                console.error('Error logging login:', logError);
+                                // Continue even if logging fails
+                            }
+                            
                             res.json({ token });
                         }
                     );
@@ -193,5 +219,26 @@ router.post(
         }
     }
 );
+
+/**
+ * @route   GET /api/auth/login-history
+ * @desc    Get login history for the authenticated user
+ * @access  Private
+ */
+router.get('/login-history', auth, async (req: Request, res: Response) => {
+    // Ensure user is authenticated
+    if (!req.user || !req.user.id) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    try {
+        const { logUserLogin, getUserLoginHistory } = await import('../services/loginTrackingService');
+        const loginHistory = await getUserLoginHistory(req.user.id);
+        res.json({ loginHistory });
+    } catch (err) {
+        console.error('Error fetching login history:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 export const authRoutes = router;
