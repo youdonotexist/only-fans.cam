@@ -1,0 +1,171 @@
+/* Common UI Elements */
+
+/* Buttons */
+.button {
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-full);
+    font-size: var(--text-md);
+    font-weight: var(--font-semibold);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+}
+
+.primaryButton {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    box-shadow: var(--shadow-md);
+}
+
+.primaryButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    filter: brightness(1.1);
+}
+
+.secondaryButton {
+    background-color: transparent;
+    color: var(--foreground-dim);
+    border: 1px solid var(--foreground-muted);
+}
+
+.secondaryButton:hover:not(:disabled) {
+    background-color: var(--background-lighter);
+    color: var(--foreground);
+}
+
+.iconButton {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Form Elements */
+.formGroup {
+    margin-bottom: var(--space-md);
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: var(--space-xs);
+    font-weight: var(--font-medium);
+    color: var(--foreground-dim);
+}
+
+.input,
+.textarea {
+    width: 100%;
+    padding: var(--space-md);
+    background-color: var(--background-lighter);
+    border: 1px solid var(--background-lighter);
+    border-radius: var(--radius-md);
+    color: var(--foreground);
+    font-size: var(--text-md);
+    transition: all var(--transition-fast);
+}
+
+.input:focus,
+.textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
+}
+
+.textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.charCount {
+    text-align: right;
+    font-size: var(--text-xs);
+    color: var(--foreground-dim);
+    margin-top: var(--space-xs);
+}
+
+/* Status Messages */
+.error {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: var(--error);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-md);
+    border-left: 3px solid var(--error);
+}
+
+.success {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--success);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-md);
+    border-left: 3px solid var(--success);
+}
+
+.successBanner {
+    background-color: var(--success);
+    color: white;
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-xl);
+    text-align: center;
+    font-weight: var(--font-semibold);
+    box-shadow: var(--shadow-md);
+    animation: slideDown 0.3s ease-out, fadeOut 0.5s ease-out 2.5s forwards;
+}
+
+/* Loading States */
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl);
+    color: var(--foreground-dim);
+}
+
+.loadingContainer .spinner {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-md);
+}
+
+/* Empty States */
+.emptyState {
+    text-align: center;
+    padding: var(--space-2xl);
+    background-color: var(--background-light);
+    border-radius: var(--radius-lg);
+    margin-top: var(--space-xl);
+    border: 1px solid var(--background-lighter);
+    color: var(--foreground-dim);
+}
+
+.emptyState svg {
+    color: var(--foreground-muted);
+    margin-bottom: var(--space-md);
+}
+
+.emptyState h3 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-semibold);
+    color: var(--foreground);
+    margin-bottom: var(--space-md);
+}

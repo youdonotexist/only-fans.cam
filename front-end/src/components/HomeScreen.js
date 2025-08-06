@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaHeart, FaComment, FaShare, FaPlus, FaImage, FaSpinner, FaTimes, FaFan, FaPaperPlane } from 'react-icons/fa';
-import styles from './HomeScreen.module.css';
+import layoutStyles from './Layout.module.css';
+import createPostStyles from './CreatePost.module.css';
+import fanPostStyles from './FanPost.module.css';
+import commentStyles from './Comments.module.css';
+import animationStyles from './Animations.module.css';
+import uiStyles from './UI.module.css';
 import Sidebar from "./Sidebar";
 import { createFan, getAllFans, likeFan, unlikeFan, getFanById, addComment } from '../network/fanApi.ts';
 import { uploadMedia } from '../network/mediaApi.ts';
@@ -379,29 +384,29 @@ const HomeScreen = () => {
     };
     
     return (
-        <div className={styles.container}>
+        <div className={layoutStyles.container}>
             {/* Left Sidebar */}
             <Sidebar />
 
             {/* Main Content */}
-            <main className={styles.mainContent}>
+            <main className={layoutStyles.mainContent}>
                 {/* Create Post Section */}
-                <div className={styles.createPostSection}>
+                <div className={createPostStyles.createPostSection}>
                     {!showPostForm ? (
                         <button 
-                            className={styles.createPostButton}
+                            className={createPostStyles.createPostButton}
                             onClick={() => setShowPostForm(true)}
                         >
                             <FaPlus /> Create New Post
                         </button>
                     ) : (
-                        <div className={styles.createPostForm}>
+                        <div className={createPostStyles.createPostForm}>
                             <h3>Create New Fan Post</h3>
-                            {error && <div className={styles.error}>{error}</div>}
-                            {success && <div className={styles.success}>{success}</div>}
+                            {error && <div className={uiStyles.error}>{error}</div>}
+                            {success && <div className={uiStyles.success}>{success}</div>}
                             
                             <form onSubmit={handleSubmit}>
-                                <div className={styles.formGroup}>
+                                <div className={uiStyles.formGroup}>
                                     <label htmlFor="title">Title</label>
                                     <input
                                         type="text"
@@ -412,13 +417,14 @@ const HomeScreen = () => {
                                         placeholder="Enter fan title"
                                         maxLength={100}
                                         disabled={isSubmitting}
+                                        className={uiStyles.input}
                                     />
-                                    <div className={styles.charCount}>
+                                    <div className={uiStyles.charCount}>
                                         {newPost.title.length}/100 characters
                                     </div>
                                 </div>
                                 
-                                <div className={styles.formGroup}>
+                                <div className={uiStyles.formGroup}>
                                     <label htmlFor="description">Description</label>
                                     <textarea
                                         id="description"
@@ -429,16 +435,17 @@ const HomeScreen = () => {
                                         maxLength={500}
                                         rows={3}
                                         disabled={isSubmitting}
+                                        className={uiStyles.textarea}
                                     />
-                                    <div className={styles.charCount}>
+                                    <div className={uiStyles.charCount}>
                                         {newPost.description.length}/500 characters
                                     </div>
                                 </div>
                                 
-                                <div className={styles.formGroup}>
+                                <div className={uiStyles.formGroup}>
                                     <label>
                                         <span>Add Photos</span>
-                                        <div className={styles.uploadButton} onClick={() => fileInputRef.current.click()}>
+                                        <div className={createPostStyles.uploadButton} onClick={() => fileInputRef.current.click()}>
                                             <FaImage /> Add Photos
                                         </div>
                                         <input
@@ -453,13 +460,13 @@ const HomeScreen = () => {
                                     </label>
                                     
                                     {previewUrls.length > 0 && (
-                                        <div className={styles.imagePreviewContainer}>
+                                        <div className={createPostStyles.imagePreviewContainer}>
                                             {previewUrls.map((url, index) => (
-                                                <div key={index} className={styles.imagePreview}>
+                                                <div key={index} className={createPostStyles.imagePreview}>
                                                     <img src={url} alt={`Preview ${index + 1}`} />
                                                     <button
                                                         type="button"
-                                                        className={styles.removeImageButton}
+                                                        className={createPostStyles.removeImageButton}
                                                         onClick={() => removeFile(index)}
                                                         disabled={isSubmitting}
                                                     >
@@ -471,10 +478,10 @@ const HomeScreen = () => {
                                     )}
                                 </div>
                                 
-                                <div className={styles.formActions}>
+                                <div className={createPostStyles.formActions}>
                                     <button 
                                         type="button" 
-                                        className={styles.cancelButton}
+                                        className={createPostStyles.cancelButton}
                                         onClick={() => {
                                             // Clean up preview URLs before closing
                                             previewUrls.forEach(url => URL.revokeObjectURL(url));
@@ -488,12 +495,12 @@ const HomeScreen = () => {
                                     </button>
                                     <button 
                                         type="submit" 
-                                        className={styles.submitButton}
+                                        className={createPostStyles.submitButton}
                                         disabled={isSubmitting}
                                     >
                                         {isSubmitting ? (
                                             <>
-                                                <FaSpinner className={styles.spinner} /> 
+                                                <FaSpinner className={animationStyles.spin} /> 
                                                 Posting...
                                             </>
                                         ) : (
@@ -508,7 +515,7 @@ const HomeScreen = () => {
                 
                 {/* Success Message (outside of form) */}
                 {success && (
-                    <div className={styles.successBanner}>
+                    <div className={uiStyles.successBanner}>
                         {success}
                     </div>
                 )}
@@ -516,44 +523,44 @@ const HomeScreen = () => {
 
                 {/* Fans Feed */}
                 {loadError && (
-                    <div className={styles.error}>
+                    <div className={uiStyles.error}>
                         {loadError}
                     </div>
                 )}
                 
                 {loading ? (
-                    <div className={styles.loadingContainer}>
-                        <FaSpinner className={styles.spinner} />
+                    <div className={uiStyles.loadingContainer}>
+                        <FaSpinner className={animationStyles.spin} />
                         <p>Loading fans...</p>
                     </div>
                 ) : fans.length === 0 ? (
-                    <div className={styles.emptyState}>
+                    <div className={uiStyles.emptyState}>
                         <FaFan size={40} />
                         <h3>No fans found</h3>
                         <p>Be the first to create a fan post!</p>
                     </div>
                 ) : (
                     fans.map((fan) => (
-                        <div key={fan.id} className={styles.fanPost}>
+                        <div key={fan.id} className={fanPostStyles.fanPost}>
                             {/* User Info */}
-                            <div className={styles.postHeader}>
+                            <div className={fanPostStyles.postHeader}>
                                 <Avatar
                                     src={fan.user_profile_image}
                                     alt={`${fan.username}'s avatar`}
                                     username={fan.username}
-                                    className={styles.avatar}
+                                    className={fanPostStyles.avatar}
                                     size={40}
                                     onClick={() => navigate(`/user/${fan.username}`)}
                                 />
                                 <div>
                                     <h4 
-                                        className={styles.username}
+                                        className={fanPostStyles.username}
                                         onClick={() => navigate(`/user/${fan.username}`)}
                                         style={{ cursor: 'pointer' }}
                                     >
                                         {fan.username || "Anonymous"}
                                     </h4>
-                                    <span className={styles.postDate}>
+                                    <span className={fanPostStyles.postDate}>
                                         {new Date(fan.created_at).toLocaleDateString()} at {new Date(fan.created_at).toLocaleTimeString()}
                                     </span>
                                 </div>
@@ -562,7 +569,7 @@ const HomeScreen = () => {
                             {/* Fan Image & Details */}
                             {fan.media_count > 0 ? (
                                 <div 
-                                    className={styles.fanImageContainer}
+                                    className={fanPostStyles.fanImageContainer}
                                     onClick={() => navigate(`/fandetails/${fan.id}`)}
                                     style={{ cursor: 'pointer' }}
                                 >
@@ -570,12 +577,12 @@ const HomeScreen = () => {
                                     <img 
                                         src={fanMedia[fan.id] ? getMediaUrl(fanMedia[fan.id].file_path) : require(`../assets/fan${(fan.id % 4) + 1}.png`)} 
                                         alt={fan.title} 
-                                        className={styles.fanImage} 
+                                        className={fanPostStyles.fanImage} 
                                     />
                                 </div>
                             ) : (
                                 <div 
-                                    className={styles.noImagePlaceholder}
+                                    className={fanPostStyles.noImagePlaceholder}
                                     onClick={() => navigate(`/fandetails/${fan.id}`)}
                                     style={{ cursor: 'pointer' }}
                                 >
@@ -585,7 +592,7 @@ const HomeScreen = () => {
                             )}
                             
                             <div 
-                                className={styles.fanDetails}
+                                className={fanPostStyles.fanDetails}
                                 onClick={() => navigate(`/fandetails/${fan.id}`)}
                                 style={{ cursor: 'pointer' }}
                             >
@@ -594,19 +601,19 @@ const HomeScreen = () => {
                             </div>
 
                             {/* Interaction Buttons */}
-                            <div className={styles.interactionButtons}>
+                            <div className={fanPostStyles.interactionButtons}>
                                 <div 
                                     onClick={() => handleLike(fan.id)}
-                                    className={likedFans[fan.id] ? styles.liked : ''}
+                                    className={likedFans[fan.id] ? fanPostStyles.liked : ''}
                                 >
-                                    <FaHeart className={styles.icon} /> 
+                                    <FaHeart className={fanPostStyles.icon} /> 
                                     {fan.likes_count || 0} {fan.likes_count === 1 ? 'Like' : 'Likes'}
                                 </div>
                                 <div onClick={() => handleCommentClick(fan.id)}>
-                                    <FaComment className={styles.icon} /> Comment
+                                    <FaComment className={fanPostStyles.icon} /> Comment
                                 </div>
                                 <div onClick={() => handleShare(fan)}>
-                                    <FaShare className={styles.icon} /> Share
+                                    <FaShare className={fanPostStyles.icon} /> Share
                                 </div>
                             </div>
                         </div>
@@ -616,37 +623,37 @@ const HomeScreen = () => {
             
             {/* Comment Modal */}
             {showCommentModal && (
-                <div className={styles.modalOverlay}>
-                    <div className={styles.commentModal}>
-                        <div className={styles.modalHeader}>
+                <div className={commentStyles.modalOverlay}>
+                    <div className={commentStyles.commentModal}>
+                        <div className={commentStyles.modalHeader}>
                             <h3>Comments</h3>
                             <button 
-                                className={styles.closeButton}
+                                className={commentStyles.closeButton}
                                 onClick={closeCommentModal}
                             >
                                 <FaTimes />
                             </button>
                         </div>
                         
-                        <div className={styles.commentsContainer}>
+                        <div className={commentStyles.commentsContainer}>
                             {loadingComments ? (
-                                <div className={styles.loadingComments}>
-                                    <FaSpinner className={styles.spinner} />
+                                <div className={commentStyles.loadingComments}>
+                                    <FaSpinner className={commentStyles.spinner} />
                                     <p>Loading comments...</p>
                                 </div>
                             ) : comments.length === 0 ? (
-                                <div className={styles.noComments}>
+                                <div className={commentStyles.noComments}>
                                     <p>No comments yet. Be the first to comment!</p>
                                 </div>
                             ) : (
                                 comments.map(comment => (
-                                    <div key={comment.id} className={styles.commentItem}>
-                                        <div className={styles.commentHeader}>
+                                    <div key={comment.id} className={commentStyles.commentItem}>
+                                        <div className={commentStyles.commentHeader}>
                                             <Avatar 
                                                 src={comment.user_profile_image} 
                                                 alt={`${comment.username}'s avatar`}
                                                 username={comment.username}
-                                                className={styles.commentAvatar}
+                                                className={commentStyles.commentAvatar}
                                                 size={32}
                                                 onClick={() => {
                                                     closeCommentModal();
@@ -655,7 +662,7 @@ const HomeScreen = () => {
                                             />
                                             <div>
                                                 <h4 
-                                                    className={styles.commentUsername}
+                                                    className={commentStyles.commentUsername}
                                                     onClick={() => {
                                                         closeCommentModal();
                                                         navigate(`/user/${comment.username}`);
@@ -663,28 +670,28 @@ const HomeScreen = () => {
                                                 >
                                                     {comment.username || "Anonymous"}
                                                 </h4>
-                                                <span className={styles.commentDate}>
+                                                <span className={commentStyles.commentDate}>
                                                     {new Date(comment.created_at).toLocaleDateString()} at {new Date(comment.created_at).toLocaleTimeString()}
                                                 </span>
                                             </div>
                                         </div>
-                                        <p className={styles.commentContent}>{comment.content}</p>
+                                        <p className={commentStyles.commentContent}>{comment.content}</p>
                                     </div>
                                 ))
                             )}
                         </div>
                         
-                        <form className={styles.commentForm} onSubmit={handleCommentSubmit}>
+                        <form className={commentStyles.commentForm} onSubmit={handleCommentSubmit}>
                             <input
                                 type="text"
                                 placeholder="Add a comment..."
                                 value={commentText}
                                 onChange={(e) => setCommentText(e.target.value)}
-                                className={styles.commentInput}
+                                className={commentStyles.commentInput}
                             />
                             <button 
                                 type="submit" 
-                                className={styles.commentSubmitButton}
+                                className={commentStyles.commentSubmitButton}
                                 disabled={!commentText.trim()}
                             >
                                 <FaPaperPlane />

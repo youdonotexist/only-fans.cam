@@ -36,7 +36,7 @@
 
 /* Create Post Section */
 .createPostSection {
-    margin-bottom: var(--space-xl);
+    margin-bottom: var(--space-2xl);
 }
 
 .createPostButton {
