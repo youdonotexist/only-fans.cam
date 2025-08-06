@@ -8,6 +8,7 @@ import Sidebar from './Sidebar';
 import PageLayout from './PageLayout';
 import { FaSpinner, FaFan, FaHeart, FaComment, FaShare, FaUser, FaPaperPlane, FaTimes, FaEllipsisV, FaEdit, FaTrash, FaImage, FaPlus } from 'react-icons/fa';
 import { useLoginModal } from '../contexts/LoginModalContext';
+import Avatar from './Avatar';
 
 const FanDetails = () => {
     const { id } = useParams();
@@ -392,12 +393,13 @@ const FanDetails = () => {
                     <PageLayout title={fan.title}>
                         <div className={styles.fanDetailsContainer}>
                             <div className={styles.userInfo}>
-                                <img 
-                                    src={fan.user_profile_image || "https://via.placeholder.com/40"} 
+                                <Avatar 
+                                    src={fan.user_profile_image} 
                                     alt={`${fan.username}'s avatar`} 
+                                    username={fan.username}
                                     className={styles.avatar}
+                                    size={40}
                                     onClick={() => navigate(`/profile/${fan.user_id}`)}
-                                    style={{ cursor: 'pointer' }}
                                 />
                                 <span 
                                     onClick={() => navigate(`/profile/${fan.user_id}`)}
@@ -702,12 +704,13 @@ const FanDetails = () => {
                                     <h3>Comments</h3>
                                     {fan.comments.map(comment => (
                                         <div key={comment.id} className={styles.comment}>
-                                            <img 
-                                                src={comment.user_profile_image || "https://via.placeholder.com/30"} 
+                                            <Avatar 
+                                                src={comment.user_profile_image} 
                                                 alt={`${comment.username}'s avatar`} 
+                                                username={comment.username}
                                                 className={styles.commentAvatar}
+                                                size={30}
                                                 onClick={() => navigate(`/profile/${comment.user_id}`)}
-                                                style={{ cursor: 'pointer' }}
                                             />
                                             <div className={styles.commentContent}>
                                                 <div className={styles.commentHeader}>

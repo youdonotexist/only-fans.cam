@@ -63,7 +63,7 @@ const Sidebar = () => {
                             <li key={link.to}>
                                 <NavLink 
                                     to={link.to} 
-                                    className={({ isActive }) => isActive ? `${styles.link} ${styles.active}` : styles.link}
+                                    className={[({ isActive }) => isActive ? `${styles.link} ${styles.active}` : styles.link, styles.sidebarLinkText].join()}
                                     onClick={handleLinkClick}
                                 >
                                     {link.icon} <span>{link.text}</span>
