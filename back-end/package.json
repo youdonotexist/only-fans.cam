@@ -7,7 +7,12 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "test": "jest"
+    "test": "jest",
+    "db:upgrade": "ts-node src/scripts/upgradeDatabase.ts",
+    "db:set-admin": "ts-node src/scripts/setAdminUser.ts",
+    "db:test": "ts-node src/scripts/testDatabaseUpgrade.ts",
+    "db:test-migrations": "ts-node src/scripts/testMigrationSystem.ts",
+    "db:configure": "ts-node src/scripts/configureSystemSettings.ts"
   },
   "keywords": [
     "fans",

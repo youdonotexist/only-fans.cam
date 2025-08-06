@@ -2,6 +2,7 @@ import sqlite3 from 'sqlite3';
 import { Database } from 'sqlite3';
 import path from 'path';
 import fs from 'fs';
+import { runMigrations } from './migrations/migrationRunner';
 
 // Database directory
 const dbDir = path.resolve(__dirname, '../../TEMP/app/data');
@@ -14,7 +15,7 @@ if (!fs.existsSync(dbDir)) {
 }
 
 // Create and initialize the database
-export function initializeDatabase(): Database {
+export async function initializeDatabase(): Promise<Database> {
   const db = new sqlite3.Database(dbPath, (err: Error | null) => {
     if (err) {
       console.error('Error opening database:', err.message);
@@ -24,6 +25,14 @@ export function initializeDatabase(): Database {
 
   // Enable foreign keys
   db.run('PRAGMA foreign_keys = ON');
+  
+  // Run migrations
+  try {
+    await runMigrations(db);
+    console.log('Database migrations completed successfully.');
+  } catch (error) {
+    console.error('Error running database migrations:', error);
+  }
 
   // Create users table
   db.run(`

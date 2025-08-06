@@ -29,27 +29,36 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Initialize database
-initializeDatabase();
+// Initialize database and start server
+(async () => {
+  try {
+    // Initialize database with migrations
+    await initializeDatabase();
+    console.log('Database initialized successfully');
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/fans', fanRoutes);
-app.use('/api/follows', followRoutes);
-app.use('/api/media', mediaRoutes);
-app.use('/api/notifications', notificationRoutes);
-app.use('/api/messages', messageRoutes);
-app.use('/api/feedback', feedbackRoutes);
+    // Routes
+    app.use('/api/auth', authRoutes);
+    app.use('/api/users', userRoutes);
+    app.use('/api/fans', fanRoutes);
+    app.use('/api/follows', followRoutes);
+    app.use('/api/media', mediaRoutes);
+    app.use('/api/notifications', notificationRoutes);
+    app.use('/api/messages', messageRoutes);
+    app.use('/api/feedback', feedbackRoutes);
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
-});
+    // Health check endpoint
+    app.get('/health', (req, res) => {
+      res.status(200).json({ status: 'ok' });
+    });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+    // Start server
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to initialize application:', error);
+    process.exit(1);
+  }
+})();
 
 export default app;

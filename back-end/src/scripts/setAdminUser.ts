@@ -5,6 +5,12 @@ import { getDatabase } from '../database/init';
  * This is used to designate the admin user for the feedback system
  */
 
+// Define the User interface
+interface User {
+  id: number;
+  username: string;
+}
+
 const ADMIN_EMAIL = 'youdonotexist@gmail.com';
 
 async function setAdminUser() {
@@ -13,7 +19,7 @@ async function setAdminUser() {
   console.log(`Setting admin role for user with email: ${ADMIN_EMAIL}`);
   
   // Check if user exists
-  db.get('SELECT id, username FROM users WHERE email = ?', [ADMIN_EMAIL], (err, user) => {
+  db.get('SELECT id, username FROM users WHERE email = ?', [ADMIN_EMAIL], (err, user: User | undefined) => {
     if (err) {
       console.error('Error checking for user:', err.message);
       db.close();
