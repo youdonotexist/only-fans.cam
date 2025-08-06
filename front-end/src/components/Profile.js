@@ -378,7 +378,7 @@ const Profile = () => {
                         <img 
                             id={"coverImage"} 
                             className={styles.coverImg}
-                            src={user?.cover_image || "https://via.placeholder.com/1200x300?text=Add+Cover+Photo"}
+                            src={user?.cover_image || ""}
                         />
                         <input id="coverImagePicker" type="file" accept="image/*" style={{display: "none"}} />
                         
@@ -398,13 +398,6 @@ const Profile = () => {
                     {/* Avatar Section */}
                     <div className={styles.profileInfo}>
                         <div className={styles.avatar} onClick={(params.id === 'me' || !params.id) && !uploadingImage ? handleEditAvatarPress : undefined}>
-                            <img
-                                id={"avatarImage"}
-                                className={styles.avatarImg}
-                                src={user?.profile_image || "https://via.placeholder.com/150"}
-                                alt={`${user?.username}'s profile`}
-                            />
-
                             <Avatar
                                 src={user.profile_image}
                                 alt={`${user?.username}'s avatar`}
