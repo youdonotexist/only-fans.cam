@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs';
 
 // Database directory
-const dbDir = path.resolve(__dirname, '../../data');
+const dbDir = path.resolve(__dirname, '../../TEMP/data/app/data');
 // Database file path
 const dbPath = path.resolve(dbDir, 'onlyfans.db');
 
