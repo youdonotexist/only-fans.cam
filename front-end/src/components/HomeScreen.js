@@ -586,7 +586,7 @@ const HomeScreen = () => {
                                         <div className={createPostStyles.imagePreviewContainer}>
                                             {previewUrls.map((url, index) => (
                                                 <div key={index} className={createPostStyles.imagePreview}>
-                                                    <img className={createPostStyles.createPostImagePreviewsrc}={url} alt={`Preview ${index + 1}`} />
+                                                    <img className={createPostStyles.createPostImagePreview} src={url} alt={`Preview ${index + 1}`} />
                                                     <button
                                                         type="button"
                                                         className={createPostStyles.removeImageButton}
