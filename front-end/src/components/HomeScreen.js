@@ -567,7 +567,6 @@ const HomeScreen = () => {
                                 
                                 <div className={uiStyles.formGroup}>
                                     <label>
-                                        <span>Add Photos</span>
                                         <div className={createPostStyles.uploadButton} onClick={() => fileInputRef.current.click()}>
                                             <FaImage /> Add Photos
                                         </div>
