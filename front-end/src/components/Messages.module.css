@@ -109,6 +109,11 @@
   .searchContainer {
     padding: var(--space-sm) var(--space-xs);
   }
+
+  .searchContainer svg {
+      width: 20px;
+      height: 20px;
+  }
 }
 
 .conversationsHeader h2 {
