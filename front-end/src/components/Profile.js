@@ -16,7 +16,7 @@ import Sidebar from "./Sidebar";
 import { useParams, useNavigate } from 'react-router-dom';
 import { getFansByUser, getFanById } from '../network/fanApi';
 import { uploadProfileImage, uploadCoverImage, getUserByUsername, changePassword } from '../network/userApi.ts';
-import { followUser, unfollowUser, checkIfFollowing } from '../network/followApi';
+import { followUser, unfollowUser, checkIfFollowing } from '../network/followApi.ts';
 import Avatar from './Avatar';
 import { useAuth } from '../contexts/AuthContext';
 import { useLoginModal } from '../contexts/LoginModalContext';
