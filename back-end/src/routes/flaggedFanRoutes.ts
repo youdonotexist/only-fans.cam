@@ -76,7 +76,7 @@ router.get('/:id', auth, isAdmin, async (req, res) => {
           ff.updated_at,
           f.title as fan_title,
           f.description as fan_description,
-          f.image_url as fan_image_url,
+          (SELECT file_path FROM media WHERE fan_id = f.id ORDER BY created_at LIMIT 1) as fan_image_url,
           u.username as reporter_username,
           u.profile_image as reporter_profile_image
         FROM flagged_fans ff

@@ -246,6 +246,32 @@
     word-break: break-word;
 }
 
+/* Stats Container for Followers and Following */
+.statsContainer {
+    display: flex;
+    margin-top: var(--space-md);
+    gap: var(--space-lg);
+    justify-content: center;
+}
+
+.statItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.statCount {
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    color: var(--foreground);
+}
+
+.statLabel {
+    font-size: var(--text-xs);
+    color: var(--foreground-dim);
+    margin-top: var(--space-xs);
+}
+
 .bio textarea {
     width: 100%;
     padding: var(--space-md);

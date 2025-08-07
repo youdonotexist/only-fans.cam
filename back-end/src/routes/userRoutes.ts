@@ -46,7 +46,38 @@ router.get('/me', auth, (req, res) => {
         return res.status(404).json({ message: 'User not found' });
       }
       
-      res.json(user);
+      // Get follower count
+      db.get(
+        'SELECT COUNT(*) as followers_count FROM follows WHERE following_id = ?',
+        [user.id],
+        (err, followerResult) => {
+          if (err) {
+            console.error(err.message);
+            return res.status(500).json({ message: 'Server error' });
+          }
+          
+          // Get following count
+          db.get(
+            'SELECT COUNT(*) as following_count FROM follows WHERE follower_id = ?',
+            [user.id],
+            (err, followingResult) => {
+              if (err) {
+                console.error(err.message);
+                return res.status(500).json({ message: 'Server error' });
+              }
+              
+              // Add counts to user object
+              const userWithCounts = {
+                ...user,
+                followers_count: followerResult?.followers_count || 0,
+                following_count: followingResult?.following_count || 0
+              };
+              
+              res.json(userWithCounts);
+            }
+          );
+        }
+      );
     }
   );
 });
@@ -72,7 +103,38 @@ router.get('/username/:username', (req, res) => {
         return res.status(404).json({ message: 'User not found' });
       }
       
-      res.json(user);
+      // Get follower count
+      db.get(
+        'SELECT COUNT(*) as followers_count FROM follows WHERE following_id = ?',
+        [user.id],
+        (err, followerResult) => {
+          if (err) {
+            console.error(err.message);
+            return res.status(500).json({ message: 'Server error' });
+          }
+          
+          // Get following count
+          db.get(
+            'SELECT COUNT(*) as following_count FROM follows WHERE follower_id = ?',
+            [user.id],
+            (err, followingResult) => {
+              if (err) {
+                console.error(err.message);
+                return res.status(500).json({ message: 'Server error' });
+              }
+              
+              // Add counts to user object
+              const userWithCounts = {
+                ...user,
+                followers_count: followerResult?.followers_count || 0,
+                following_count: followingResult?.following_count || 0
+              };
+              
+              res.json(userWithCounts);
+            }
+          );
+        }
+      );
     }
   );
 });
@@ -98,7 +160,38 @@ router.get('/:id', (req, res) => {
         return res.status(404).json({ message: 'User not found' });
       }
       
-      res.json(user);
+      // Get follower count
+      db.get(
+        'SELECT COUNT(*) as followers_count FROM follows WHERE following_id = ?',
+        [user.id],
+        (err, followerResult) => {
+          if (err) {
+            console.error(err.message);
+            return res.status(500).json({ message: 'Server error' });
+          }
+          
+          // Get following count
+          db.get(
+            'SELECT COUNT(*) as following_count FROM follows WHERE follower_id = ?',
+            [user.id],
+            (err, followingResult) => {
+              if (err) {
+                console.error(err.message);
+                return res.status(500).json({ message: 'Server error' });
+              }
+              
+              // Add counts to user object
+              const userWithCounts = {
+                ...user,
+                followers_count: followerResult?.followers_count || 0,
+                following_count: followingResult?.following_count || 0
+              };
+              
+              res.json(userWithCounts);
+            }
+          );
+        }
+      );
     }
   );
 });

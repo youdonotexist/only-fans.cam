@@ -28,6 +28,8 @@
 
 .icon {
     font-size: 1.1em;
+    width: 20px;
+    height: 20px;
 }
 
 /* For sidebar integration */

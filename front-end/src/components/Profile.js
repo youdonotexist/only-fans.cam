@@ -629,6 +629,18 @@ const Profile = () => {
                                 user?.bio || "No bio available"
                             )}
                         </p>
+                        
+                        {/* Follower and Following Counts */}
+                        <div className={styles.statsContainer}>
+                            <div className={styles.statItem}>
+                                <span className={styles.statCount}>{user?.followers_count || 0}</span>
+                                <span className={styles.statLabel}>Followers</span>
+                            </div>
+                            <div className={styles.statItem}>
+                                <span className={styles.statCount}>{user?.following_count || 0}</span>
+                                <span className={styles.statLabel}>Following</span>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Success Message */}

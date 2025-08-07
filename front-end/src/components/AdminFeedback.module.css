@@ -177,14 +177,20 @@
 
 .feedbackIcon {
   color: var(--primary);
+    width: 20px;
+    height: 20px;
 }
 
 .bugIcon {
   color: #ff4c4c;
+    width: 20px;
+    height: 20px;
 }
 
 .pendingIcon {
   color: #f39c12;
+    width: 20px;
+    height: 20px;
 }
 
 .inProgressIcon {
