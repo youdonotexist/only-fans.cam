@@ -169,3 +169,28 @@
     color: var(--foreground);
     margin-bottom: var(--space-md);
 }
+
+/* Lazy Loading Styles */
+.loadingMoreContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-md);
+    color: var(--foreground-dim);
+    margin: var(--space-lg) 0;
+}
+
+.loadingMoreContainer .spinner {
+    font-size: var(--text-xl);
+    margin-bottom: var(--space-sm);
+}
+
+.endOfContentMessage {
+    text-align: center;
+    padding: var(--space-lg);
+    color: var(--foreground-muted);
+    font-style: italic;
+    margin: var(--space-lg) 0;
+    border-top: 1px solid var(--background-lighter);
+}

@@ -22,8 +22,11 @@ const HomeScreen = () => {
     // State for fans from backend
     const [fans, setFans] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [loadError, setLoadError] = useState('');
     const [likedFans, setLikedFans] = useState({});
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
     
     // State for comments
     const [showCommentModal, setShowCommentModal] = useState(false);
@@ -65,14 +68,19 @@ const HomeScreen = () => {
         }
     }, [location, navigate, openLoginModal]);
     
-    // Fetch fans from backend
+    // Fetch initial fans from backend
     useEffect(() => {
-        const fetchFans = async () => {
+        const fetchInitialFans = async () => {
             try {
                 setLoading(true);
                 setLoadError('');
-                const response = await getAllFans(1, 20);
+                setPage(1); // Reset to page 1
+                
+                const response = await getAllFans(1, 10);
                 setFans(response.fans || []);
+                
+                // Check if there are more fans to load
+                setHasMore(response.pagination.page < response.pagination.totalPages);
                 
                 // Initialize liked status based on likes_count
                 const initialLikedState = {};
@@ -111,7 +119,7 @@ const HomeScreen = () => {
             }
         };
         
-        fetchFans();
+        fetchInitialFans();
     }, [success]); // Refetch when a new post is created successfully
     
     // Handle like/unlike
@@ -236,6 +244,78 @@ const HomeScreen = () => {
         setCurrentFanId(null);
         setComments([]);
     };
+    
+    // Load more fans when scrolling
+    const loadMoreFans = async () => {
+        if (!hasMore || loadingMore) return;
+        
+        try {
+            setLoadingMore(true);
+            const nextPage = page + 1;
+            const response = await getAllFans(nextPage, 10);
+            
+            if (response.fans && response.fans.length > 0) {
+                // Add new fans to the existing list
+                setFans(prevFans => [...prevFans, ...response.fans]);
+                setPage(nextPage);
+                
+                // Update hasMore flag
+                setHasMore(response.pagination.page < response.pagination.totalPages);
+                
+                // Initialize liked status for new fans
+                const newLikedState = { ...likedFans };
+                response.fans.forEach(fan => {
+                    newLikedState[fan.id] = false;
+                });
+                setLikedFans(newLikedState);
+                
+                // Fetch media for new fans with media_count > 0
+                const mediaPromises = response.fans
+                    .filter(fan => fan.media_count > 0)
+                    .map(async (fan) => {
+                        try {
+                            const fanDetails = await getFanById(fan.id);
+                            return { fanId: fan.id, media: fanDetails.media };
+                        } catch (err) {
+                            console.error(`Error fetching media for fan ${fan.id}:`, err);
+                            return { fanId: fan.id, media: [] };
+                        }
+                    });
+                
+                const mediaResults = await Promise.all(mediaPromises);
+                const newMediaMap = { ...fanMedia };
+                mediaResults.forEach(result => {
+                    if (result.media && result.media.length > 0) {
+                        newMediaMap[result.fanId] = result.media[0];
+                    }
+                });
+                
+                setFanMedia(newMediaMap);
+            } else {
+                setHasMore(false);
+            }
+        } catch (err) {
+            console.error('Error loading more fans:', err);
+        } finally {
+            setLoadingMore(false);
+        }
+    };
+
+    // Handle scroll event to load more fans
+    useEffect(() => {
+        const handleScroll = () => {
+            // Check if user has scrolled to the bottom of the page
+            if (
+                window.innerHeight + document.documentElement.scrollTop >= 
+                document.documentElement.offsetHeight - 300 // Load more when 300px from bottom
+            ) {
+                loadMoreFans();
+            }
+        };
+        
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [page, hasMore, loadingMore]); // Re-attach listener when these dependencies change
     
     // Handle share functionality
     const handleShare = (fan) => {
@@ -618,6 +698,21 @@ const HomeScreen = () => {
                             </div>
                         </div>
                     ))
+                )}
+                
+                {/* Loading more indicator */}
+                {loadingMore && (
+                    <div className={uiStyles.loadingMoreContainer}>
+                        <FaSpinner className={animationStyles.spin} />
+                        <p>Loading more fans...</p>
+                    </div>
+                )}
+                
+                {/* End of content message */}
+                {!hasMore && fans.length > 0 && !loadingMore && (
+                    <div className={uiStyles.endOfContentMessage}>
+                        <p>You've reached the end of the feed!</p>
+                    </div>
                 )}
             </main>
             
