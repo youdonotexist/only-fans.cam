@@ -11,3 +11,4 @@ export { Comment } from './Comment';
 export { Notification } from './Notification';
 export { Message } from './Message';
 export { Conversation } from './Conversation';
+export { FlaggedFan } from './FlaggedFan';

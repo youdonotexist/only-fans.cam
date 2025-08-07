@@ -18,7 +18,7 @@ const Messages = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showNewMessageModal, setShowNewMessageModal] = useState(false);
   const [startingNewConversation, setStartingNewConversation] = useState(false);
-  const [showConversations, setShowConversations] = useState(window.innerWidth > 768);
+  const [showConversations, setShowConversations] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -74,7 +74,6 @@ const Messages = () => {
             setSelectedUserId(parseInt(userId));
           } else {
             // Start a new conversation
-            await sendMessage(parseInt(userId), "Hi there!", token);
             await fetchConversations();
             setSelectedUserId(parseInt(userId));
             
@@ -89,10 +88,8 @@ const Messages = () => {
             }
           }
           
-          // On mobile, show the conversation detail
-          if (window.innerWidth <= 768) {
-            setShowConversations(false);
-          }
+          // Always keep the conversations list visible by default
+          // (removed code that was hiding conversations on mobile)
           
           // Clear the URL parameters
           navigate('/messages', { replace: true });
@@ -142,10 +139,8 @@ const Messages = () => {
     
     setSelectedUserId(otherUserId);
     
-    // On mobile, hide the conversations panel after selecting a conversation
-    if (window.innerWidth <= 768) {
-      setShowConversations(false);
-    }
+    // Keep the conversations panel visible even after selecting a conversation
+    // This ensures users can easily switch between conversations
   };
   
   // Toggle conversations panel visibility on mobile
@@ -168,9 +163,6 @@ const Messages = () => {
         setStartingNewConversation(false);
         return;
       }
-      
-      // Send an initial message to start the conversation
-      await sendMessage(user.id, "Hi there!", token);
       
       // Refresh conversations list
       await fetchConversations();

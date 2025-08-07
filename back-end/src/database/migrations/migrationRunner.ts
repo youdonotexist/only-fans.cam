@@ -9,6 +9,7 @@ import {
 import { migration_v1_0_0 } from './v1_0_0';
 import { migration_v1_0_1 } from './v1_0_1';
 import { migration_v1_0_2 } from './v1_0_2';
+import { migration_v1_0_3 } from './v1_0_3';
 
 // Interface for migration
 export interface Migration {
@@ -22,6 +23,7 @@ const migrations: Migration[] = [
   migration_v1_0_0,
   migration_v1_0_1,
   migration_v1_0_2,
+  migration_v1_0_3,
   // Add future migrations here
 ];
 
