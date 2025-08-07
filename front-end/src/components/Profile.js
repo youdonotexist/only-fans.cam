@@ -8,7 +8,8 @@ import {
     FaSpinner,
     FaSignOutAlt,
     FaKey,
-    FaLock
+    FaLock,
+    FaBell
 } from 'react-icons/fa';
 import styles from './Profile.module.css';
 import Sidebar from "./Sidebar";
@@ -16,6 +17,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getFansByUser, getFanById } from '../network/fanApi';
 import { uploadProfileImage, uploadCoverImage, getUserByUsername, changePassword } from '../network/userApi.ts';
 import Avatar from './Avatar';
+import { useAuth } from '../contexts/AuthContext';
 
 // Import user API functions directly from the file
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
@@ -86,6 +88,7 @@ const Profile = () => {
 
     const params = useParams();
     const navigate = useNavigate();
+    const { currentUser } = useAuth();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -93,6 +96,7 @@ const Profile = () => {
     const [fanPosts, setFanPosts] = useState([]);
     const [fanDetails, setFanDetails] = useState({});
     const [loadingPosts, setLoadingPosts] = useState(false);
+    const [isOwnProfile, setIsOwnProfile] = useState(false);
     
     // Handle logout
     const handleLogout = () => {
@@ -205,14 +209,19 @@ const Profile = () => {
                     }
                     const userData = await getCurrentUser(token);
                     setUser(userData);
+                    setIsOwnProfile(true);
                 } else if (params.username) {
                     // Viewing a profile by username
                     const userData = await getUserByUsername(params.username);
                     setUser(userData);
+                    // Check if this is the current user's profile
+                    setIsOwnProfile(currentUser && currentUser.username === userData.username);
                 } else {
                     // Viewing another user's profile by ID
                     const userData = await getUserById(parseInt(params.id));
                     setUser(userData);
+                    // Check if this is the current user's profile
+                    setIsOwnProfile(currentUser && currentUser.id === userData.id);
                 }
                 setLoading(false);
             } catch (err) {
@@ -223,7 +232,7 @@ const Profile = () => {
         };
 
         fetchUserData();
-    }, [params.id, params.username]);
+    }, [params.id, params.username, currentUser]);
     
     // Fetch user's fan posts
     const fetchUserFanPosts = async (userId) => {
@@ -444,7 +453,7 @@ const Profile = () => {
             {/* Main Profile Content */}
             <main className={styles.mainContent}>
                 <div className={styles.profileHeader}>
-                    <div className={styles.coverPhoto} onClick={(params.id === 'me' || !params.id) && !uploadingCover ? handleEditCoverPress : undefined}>
+                    <div className={styles.coverPhoto} onClick={isOwnProfile && !uploadingCover ? handleEditCoverPress : undefined}>
                         {/* Cover Photo Button */}
                         <img 
                             id={"coverImage"} 
@@ -453,7 +462,7 @@ const Profile = () => {
                         />
                         <input id="coverImagePicker" type="file" accept="image/*" style={{display: "none"}} />
                         
-                        {(params.id === 'me' || !params.id) && (
+                        {isOwnProfile && (
                             uploadingCover ? (
                                 <div className={styles.uploadingCoverOverlay}>
                                     <FaSpinner className={styles.spinner} /> Uploading...
@@ -473,13 +482,13 @@ const Profile = () => {
                                 src={user.profile_image}
                                 alt={`${user?.username}'s avatar`}
                                 className={styles.avatar}
-                                onClick={(params.id === 'me' || !params.id) && !uploadingImage ? handleEditAvatarPress : undefined}
+                                onClick={isOwnProfile && !uploadingImage ? handleEditAvatarPress : undefined}
                             />
 
                             {/* Avatar Edit Button */}
                             <input id="avatarPicker" type="file" accept="image/*" style={{display: "none"}} />
                             
-                            {(params.id === 'me' || !params.id) && (
+                            {isOwnProfile && (
                                 uploadingImage ? (
                                     <div className={styles.uploadingOverlay}>
                                         <FaSpinner className={styles.spinner} />
@@ -551,8 +560,8 @@ const Profile = () => {
                         </div>
                     )}
                     
-                    {/* Edit Profile Button - only show when viewing own profile */}
-                    {(params.id === 'me' || !params.id) && (
+                    {/* Profile Action Buttons */}
+                    {isOwnProfile ? (
                         isEditingBio.username || isEditingBio.bio ? (
                             <div className={styles.editButtons}>
                                 <button
@@ -598,6 +607,18 @@ const Profile = () => {
                                 </button>
                             </div>
                         )
+                    ) : (
+                        <div className={styles.profileActions}>
+                            <button className={styles.subscribeBtn}>
+                                <FaBell/> Subscribe
+                            </button>
+                            <button className={styles.messageBtn}>
+                                <FaEnvelope/> Message
+                            </button>
+                            <button className={styles.bookmarkBtn}>
+                                <FaBookmark/> Bookmark
+                            </button>
+                        </div>
                     )}
                 </div>
 
@@ -675,15 +696,6 @@ const Profile = () => {
                     <div><strong>Following</strong> {user?.following_count || 0}</div>
                     <div><strong>Posts</strong> {fanPosts.length}</div>
                 </div>
-
-                {/* Action Buttons - only show when viewing other profiles and not your own profile by ID */}
-                {params.id !== 'me' && params.id && parseInt(params.id) !== user?.id && (
-                    <div className={styles.actionButtons}>
-                        <button className={styles.subscribeBtn}>Subscribe</button>
-                        <button className={styles.messageBtn}><FaEnvelope/> Message</button>
-                        <button className={styles.bookmarkBtn}><FaBookmark/> Bookmark</button>
-                    </div>
-                )}
 
                 {/* Feed Section */}
                 <section className={styles.feed}>
