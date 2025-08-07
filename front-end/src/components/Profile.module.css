@@ -459,16 +459,19 @@
 }
 
 .subscribeBtn {
-    background: var(--gradient-secondary);
+    background: var(--gradient-primary);
     color: white;
     border: none;
     border-radius: var(--radius-full);
-    padding: var(--space-sm) var(--space-xl);
+    padding: var(--space-sm) var(--space-lg);
     font-weight: var(--font-semibold);
     font-size: var(--text-md);
     cursor: pointer;
     transition: all var(--transition-fast);
     box-shadow: var(--shadow-md);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
 }
 
 .subscribeBtn:hover {
@@ -477,26 +480,37 @@
     filter: brightness(1.1);
 }
 
+.subscribeBtn:active {
+    transform: translateY(0);
+    filter: brightness(0.95);
+}
+
 .messageBtn, .bookmarkBtn {
-    background-color: transparent;
-    color: var(--foreground-dim);
-    border: 1px solid var(--foreground-muted);
+    background: var(--gradient-secondary);
+    color: white;
+    border: none;
     border-radius: var(--radius-full);
     padding: var(--space-sm) var(--space-lg);
-    font-weight: var(--font-medium);
+    font-weight: var(--font-semibold);
     font-size: var(--text-md);
     cursor: pointer;
     transition: all var(--transition-fast);
-    display: flex;
+    box-shadow: var(--shadow-md);
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: var(--space-xs);
     min-width: 120px;
 }
 
 .messageBtn:hover, .bookmarkBtn:hover {
-    background-color: var(--background-lighter);
-    color: var(--foreground);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    filter: brightness(1.1);
+}
+
+.messageBtn:active, .bookmarkBtn:active {
+    transform: translateY(0);
+    filter: brightness(0.95);
 }
 
 /* Responsive styles for stats and action buttons - desktop and mobile only */
@@ -516,12 +530,20 @@
     .subscribeBtn {
         width: auto;
         max-width: 140px;
+        justify-content: center;
     }
     
     .messageBtn, .bookmarkBtn {
         padding: var(--space-sm) var(--space-md);
         width: auto;
         max-width: 120px;
+        justify-content: center;
+    }
+    
+    .changePasswordBtn {
+        width: 100%;
+        max-width: 250px;
+        justify-content: center;
     }
     
     .profileActions {
