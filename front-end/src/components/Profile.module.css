@@ -653,3 +653,98 @@
     color: var(--primary);
     text-decoration: underline;
 }
+/* Password Change Form Styles */
+.passwordFormContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--space-md);
+}
+
+.passwordForm {
+    background-color: var(--background-light);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    width: 100%;
+    max-width: 450px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--background-lighter);
+}
+
+.passwordForm h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+    color: var(--foreground);
+    font-size: var(--text-xl);
+    border-bottom: 1px solid var(--background-lighter);
+    padding-bottom: var(--space-sm);
+}
+
+.passwordForm .formGroup {
+    margin-bottom: var(--space-md);
+}
+
+.passwordForm label {
+    display: block;
+    margin-bottom: var(--space-xs);
+    font-weight: var(--font-medium);
+    color: var(--foreground-dim);
+}
+
+.passwordForm input {
+    width: 100%;
+    padding: var(--space-md);
+    background-color: var(--background);
+    border: 1px solid var(--background-lighter);
+    border-radius: var(--radius-md);
+    color: var(--foreground);
+    font-size: var(--text-md);
+    transition: all var(--transition-fast);
+}
+
+.passwordForm input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
+}
+
+.passwordFormButtons {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-md);
+    margin-top: var(--space-lg);
+}
+
+.changePasswordBtn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    background-color: var(--background-light);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-full);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.changePasswordBtn:hover {
+    background-color: rgba(29, 161, 242, 0.1);
+}
+
+/* Responsive styles for password form */
+@media (max-width: 768px) {
+    .passwordForm {
+        padding: var(--space-lg);
+    }
+}

@@ -241,4 +241,80 @@ router.get('/login-history', auth, async (req: Request, res: Response) => {
     }
 });
 
+/**
+ * @route   POST /api/auth/change-password
+ * @desc    Change user password
+ * @access  Private
+ */
+router.post(
+    '/change-password',
+    [
+        auth,
+        body('currentPassword').exists().withMessage('Current password is required'),
+        body('newPassword')
+            .isLength({ min: 6 })
+            .withMessage('New password must be at least 6 characters long'),
+    ],
+    async (req: Request, res: Response) => {
+        // Check for validation errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+
+        const { currentPassword, newPassword } = req.body;
+        const userId = req.user?.id;
+        const db = getDatabase();
+
+        try {
+            // Get user from database
+            db.get(
+                'SELECT * FROM users WHERE id = ?',
+                [userId],
+                async (err: Error | null, user: User | undefined) => {
+                    if (err) {
+                        console.error(err.message);
+                        return res.status(500).json({ message: 'Server error' });
+                    }
+
+                    if (!user) {
+                        return res.status(404).json({ message: 'User not found' });
+                    }
+
+                    // Verify current password
+                    const isMatch = await bcrypt.compare(currentPassword, user.password);
+                    if (!isMatch) {
+                        return res.status(400).json({ message: 'Current password is incorrect' });
+                    }
+
+                    // Hash new password
+                    const salt = await bcrypt.genSalt(10);
+                    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+                    // Update password in database
+                    db.run(
+                        'UPDATE users SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+                        [hashedPassword, userId],
+                        function (err: Error | null) {
+                            if (err) {
+                                console.error(err.message);
+                                return res.status(500).json({ message: 'Server error' });
+                            }
+
+                            if (this.changes === 0) {
+                                return res.status(404).json({ message: 'User not found' });
+                            }
+
+                            res.json({ message: 'Password updated successfully' });
+                        }
+                    );
+                }
+            );
+        } catch (err: unknown) {
+            console.error(err);
+            res.status(500).json({ message: 'Server error' });
+        }
+    }
+);
+
 export const authRoutes = router;

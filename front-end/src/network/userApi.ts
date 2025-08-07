@@ -237,3 +237,40 @@ export const uploadCoverImage = async (
     throw new Error('Failed to upload cover image');
   }
 };
+
+/**
+ * Change user password
+ * @param currentPassword Current password
+ * @param newPassword New password
+ * @param token JWT token
+ * @returns Promise with success message
+ */
+export const changePassword = async (
+  currentPassword: string,
+  newPassword: string,
+  token: string
+): Promise<{ message: string }> => {
+  try {
+    const response = await fetch(`${API_URL}/auth/change-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        'x-auth-token': token,
+      },
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to change password');
+    }
+
+    return await response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Change password error: ${error.message}`);
+    }
+    throw new Error('Failed to change password');
+  }
+};

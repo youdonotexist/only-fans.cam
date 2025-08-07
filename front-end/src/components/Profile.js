@@ -6,13 +6,15 @@ import {
     FaEdit,
     FaFan,
     FaSpinner,
-    FaSignOutAlt
+    FaSignOutAlt,
+    FaKey,
+    FaLock
 } from 'react-icons/fa';
 import styles from './Profile.module.css';
 import Sidebar from "./Sidebar";
 import { useParams, useNavigate } from 'react-router-dom';
 import { getFansByUser, getFanById } from '../network/fanApi';
-import { uploadProfileImage, uploadCoverImage, getUserByUsername } from '../network/userApi.ts';
+import { uploadProfileImage, uploadCoverImage, getUserByUsername, changePassword } from '../network/userApi.ts';
 import Avatar from './Avatar';
 
 // Import user API functions directly from the file
@@ -104,6 +106,66 @@ const Profile = () => {
             window.location.reload(); // Reload to update UI
         }, 1500);
     };
+    
+    // Handle password change
+    const handlePasswordChange = async (e) => {
+        e.preventDefault();
+        
+        // Validate passwords
+        if (passwordData.newPassword !== passwordData.confirmPassword) {
+            setError('New passwords do not match');
+            return;
+        }
+        
+        if (passwordData.newPassword.length < 6) {
+            setError('New password must be at least 6 characters long');
+            return;
+        }
+        
+        try {
+            setChangingPassword(true);
+            setError(null);
+            setSuccessMessage('');
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setError('You must be logged in to change your password');
+                setChangingPassword(false);
+                return;
+            }
+            
+            // Call API to change password
+            const result = await changePassword(
+                passwordData.currentPassword,
+                passwordData.newPassword,
+                token
+            );
+            
+            // Reset form
+            setPasswordData({
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            });
+            
+            // Hide form
+            setShowPasswordForm(false);
+            
+            // Show success message
+            setSuccessMessage(result.message || 'Password changed successfully!');
+            
+            // Clear success message after 3 seconds
+            setTimeout(() => {
+                setSuccessMessage('');
+            }, 3000);
+            
+        } catch (err) {
+            console.error('Error changing password:', err);
+            setError(err.message || 'Failed to change password');
+        } finally {
+            setChangingPassword(false);
+        }
+    };
 
     // State for editing modes
     const [isEditingCover, setIsEditingCover] = useState(false);
@@ -114,6 +176,15 @@ const Profile = () => {
     });
     const [uploadingImage, setUploadingImage] = useState(false);
     const [uploadingCover, setUploadingCover] = useState(false);
+    
+    // State for password change
+    const [showPasswordForm, setShowPasswordForm] = useState(false);
+    const [passwordData, setPasswordData] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    });
+    const [changingPassword, setChangingPassword] = useState(false);
     
     // State for tracking changes during editing
     const [editedUser, setEditedUser] = useState(null);
@@ -514,6 +585,12 @@ const Profile = () => {
                                     <FaEdit/> Edit Profile
                                 </button>
                                 <button
+                                    className={styles.changePasswordBtn}
+                                    onClick={() => setShowPasswordForm(true)}
+                                >
+                                    <FaKey/> Change Password
+                                </button>
+                                <button
                                     className={styles.logoutBtn}
                                     onClick={handleLogout}
                                 >
@@ -523,6 +600,74 @@ const Profile = () => {
                         )
                     )}
                 </div>
+
+                {/* Password Change Form */}
+                {showPasswordForm && (
+                    <div className={styles.passwordFormContainer}>
+                        <div className={styles.passwordForm}>
+                            <h3><FaLock /> Change Password</h3>
+                            <form onSubmit={handlePasswordChange}>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="currentPassword">Current Password</label>
+                                    <input
+                                        type="password"
+                                        id="currentPassword"
+                                        value={passwordData.currentPassword}
+                                        onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                                        required
+                                    />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="newPassword">New Password</label>
+                                    <input
+                                        type="password"
+                                        id="newPassword"
+                                        value={passwordData.newPassword}
+                                        onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                                        required
+                                        minLength={6}
+                                    />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label htmlFor="confirmPassword">Confirm New Password</label>
+                                    <input
+                                        type="password"
+                                        id="confirmPassword"
+                                        value={passwordData.confirmPassword}
+                                        onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                                        required
+                                        minLength={6}
+                                    />
+                                </div>
+                                <div className={styles.passwordFormButtons}>
+                                    <button
+                                        type="button"
+                                        className={styles.cancelBtn}
+                                        onClick={() => {
+                                            setShowPasswordForm(false);
+                                            setPasswordData({
+                                                currentPassword: '',
+                                                newPassword: '',
+                                                confirmPassword: ''
+                                            });
+                                            setError(null);
+                                        }}
+                                        disabled={changingPassword}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className={styles.saveProfileBtn}
+                                        disabled={changingPassword}
+                                    >
+                                        {changingPassword ? 'Changing...' : 'Change Password'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
 
                 {/* Stats Section */}
                 <div className={styles.stats}>
