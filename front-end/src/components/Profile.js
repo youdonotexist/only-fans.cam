@@ -16,8 +16,10 @@ import Sidebar from "./Sidebar";
 import { useParams, useNavigate } from 'react-router-dom';
 import { getFansByUser, getFanById } from '../network/fanApi';
 import { uploadProfileImage, uploadCoverImage, getUserByUsername, changePassword } from '../network/userApi.ts';
+import { followUser, unfollowUser, checkIfFollowing } from '../network/followApi';
 import Avatar from './Avatar';
 import { useAuth } from '../contexts/AuthContext';
+import { useLoginModal } from '../contexts/LoginModalContext';
 
 // Import user API functions directly from the file
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
@@ -89,6 +91,7 @@ const Profile = () => {
     const params = useParams();
     const navigate = useNavigate();
     const { currentUser } = useAuth();
+    const { openLoginModal } = useLoginModal();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -97,6 +100,8 @@ const Profile = () => {
     const [fanDetails, setFanDetails] = useState({});
     const [loadingPosts, setLoadingPosts] = useState(false);
     const [isOwnProfile, setIsOwnProfile] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [followLoading, setFollowLoading] = useState(false);
     
     // Handle logout
     const handleLogout = () => {
@@ -109,6 +114,66 @@ const Profile = () => {
             navigate('/');
             window.location.reload(); // Reload to update UI
         }, 1500);
+    };
+    
+    // Handle subscribe/unsubscribe (follow/unfollow)
+    const handleSubscribe = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            // Redirect to login if not authenticated
+            openLoginModal(window.location.pathname);
+            return;
+        }
+        
+        if (!user || !user.id) {
+            setError('Cannot subscribe to this user');
+            return;
+        }
+        
+        try {
+            setFollowLoading(true);
+            
+            if (isFollowing) {
+                // Unfollow the user
+                await unfollowUser(user.id, token);
+                setIsFollowing(false);
+                setSuccessMessage('Unsubscribed successfully');
+            } else {
+                // Follow the user
+                await followUser(user.id, token);
+                setIsFollowing(true);
+                setSuccessMessage('Subscribed successfully');
+            }
+            
+            // Clear success message after 3 seconds
+            setTimeout(() => {
+                setSuccessMessage('');
+            }, 3000);
+            
+        } catch (err) {
+            console.error('Error toggling subscription:', err);
+            setError(err.message || 'Failed to update subscription');
+        } finally {
+            setFollowLoading(false);
+        }
+    };
+    
+    // Handle message button click
+    const handleMessage = () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            // Redirect to login if not authenticated
+            openLoginModal(window.location.pathname);
+            return;
+        }
+        
+        if (!user || !user.id) {
+            setError('Cannot message this user');
+            return;
+        }
+        
+        // Navigate to messages page with this user's ID as a parameter
+        navigate(`/messages?userId=${user.id}&username=${user.username}`);
     };
     
     // Handle password change
@@ -193,7 +258,7 @@ const Profile = () => {
     // State for tracking changes during editing
     const [editedUser, setEditedUser] = useState(null);
     
-    // Fetch user data
+    // Fetch user data and check follow status
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -216,12 +281,32 @@ const Profile = () => {
                     setUser(userData);
                     // Check if this is the current user's profile
                     setIsOwnProfile(currentUser && currentUser.username === userData.username);
+                    
+                    // Check if following this user
+                    if (!isOwnProfile && token && userData.id && currentUser) {
+                        try {
+                            const following = await checkIfFollowing(userData.id, token);
+                            setIsFollowing(following);
+                        } catch (err) {
+                            console.error('Error checking follow status:', err);
+                        }
+                    }
                 } else {
                     // Viewing another user's profile by ID
                     const userData = await getUserById(parseInt(params.id));
                     setUser(userData);
                     // Check if this is the current user's profile
                     setIsOwnProfile(currentUser && currentUser.id === userData.id);
+                    
+                    // Check if following this user
+                    if (!isOwnProfile && token && userData.id && currentUser) {
+                        try {
+                            const following = await checkIfFollowing(userData.id, token);
+                            setIsFollowing(following);
+                        } catch (err) {
+                            console.error('Error checking follow status:', err);
+                        }
+                    }
                 }
                 setLoading(false);
             } catch (err) {
@@ -232,7 +317,7 @@ const Profile = () => {
         };
 
         fetchUserData();
-    }, [params.id, params.username, currentUser]);
+    }, [params.id, params.username, currentUser, isOwnProfile]);
     
     // Fetch user's fan posts
     const fetchUserFanPosts = async (userId) => {
@@ -609,14 +694,18 @@ const Profile = () => {
                         )
                     ) : (
                         <div className={styles.profileActions}>
-                            <button className={styles.subscribeBtn}>
-                                <FaBell/> Subscribe
+                            <button 
+                                className={styles.subscribeBtn}
+                                onClick={handleSubscribe}
+                                disabled={followLoading}
+                            >
+                                <FaBell/> {followLoading ? 'Processing...' : isFollowing ? 'Unsubscribe' : 'Subscribe'}
                             </button>
-                            <button className={styles.messageBtn}>
+                            <button 
+                                className={styles.messageBtn}
+                                onClick={handleMessage}
+                            >
                                 <FaEnvelope/> Message
-                            </button>
-                            <button className={styles.bookmarkBtn}>
-                                <FaBookmark/> Bookmark
                             </button>
                         </div>
                     )}

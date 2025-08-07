@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FaEnvelope, FaSearch, FaSpinner, FaList, FaArrowLeft } from 'react-icons/fa';
 import styles from './Messages.module.css';
 import Sidebar from './Sidebar';
 import { getConversations, sendMessage } from '../network/messageApi.ts';
+import { getUserById } from '../network/userApi.ts';
 import MessageList from './MessageList';
 import MessageDetail from './MessageDetail';
 import NewMessageModal from './NewMessageModal';
@@ -19,6 +20,7 @@ const Messages = () => {
   const [startingNewConversation, setStartingNewConversation] = useState(false);
   const [showConversations, setShowConversations] = useState(window.innerWidth > 768);
   const navigate = useNavigate();
+  const location = useLocation();
   
   // Check window size on resize to update showConversations state
   useEffect(() => {
@@ -35,6 +37,77 @@ const Messages = () => {
   useEffect(() => {
     fetchConversations();
   }, []);
+  
+  // Handle URL query parameters for starting a new conversation
+  useEffect(() => {
+    const handleQueryParams = async () => {
+      const searchParams = new URLSearchParams(location.search);
+      const userId = searchParams.get('userId');
+      const username = searchParams.get('username');
+      
+      if (userId) {
+        try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            setError('You must be logged in to send messages');
+            return;
+          }
+          
+          // Get user details if needed
+          const user = { id: parseInt(userId), username };
+          
+          // Start a conversation with this user
+          setStartingNewConversation(true);
+          
+          // Check if we already have a conversation with this user
+          await fetchConversations();
+          
+          const currentUserId = parseInt(localStorage.getItem('userId'));
+          const existingConversation = conversations.find(conv => 
+            (conv.user1_id === currentUserId && conv.user2_id === parseInt(userId)) || 
+            (conv.user2_id === currentUserId && conv.user1_id === parseInt(userId))
+          );
+          
+          if (existingConversation) {
+            // Select the existing conversation
+            setSelectedConversation(existingConversation);
+            setSelectedUserId(parseInt(userId));
+          } else {
+            // Start a new conversation
+            await sendMessage(parseInt(userId), "Hi there!", token);
+            await fetchConversations();
+            setSelectedUserId(parseInt(userId));
+            
+            // Find the new conversation
+            const newConversation = conversations.find(conv => 
+              (conv.user1_id === currentUserId && conv.user2_id === parseInt(userId)) || 
+              (conv.user2_id === currentUserId && conv.user1_id === parseInt(userId))
+            );
+            
+            if (newConversation) {
+              setSelectedConversation(newConversation);
+            }
+          }
+          
+          // On mobile, show the conversation detail
+          if (window.innerWidth <= 768) {
+            setShowConversations(false);
+          }
+          
+          // Clear the URL parameters
+          navigate('/messages', { replace: true });
+          
+        } catch (err) {
+          console.error('Error starting conversation from URL params:', err);
+          setError(err.message || 'Failed to start conversation');
+        } finally {
+          setStartingNewConversation(false);
+        }
+      }
+    };
+    
+    handleQueryParams();
+  }, [location.search, navigate, conversations]);
 
   const fetchConversations = async () => {
     try {
