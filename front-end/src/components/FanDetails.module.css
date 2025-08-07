@@ -268,16 +268,11 @@
 }
 
 .fanImage {
-    width: 100%;
-    height: auto;
-    max-height: 400px;
-    object-fit: contain;
+    max-width: 100%;
+    max-height: 500px;
     border-radius: var(--radius-md);
+    object-fit: contain;
     margin-bottom: var(--space-md);
-    transition: all var(--transition-normal);
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 /* Image Gallery Styles */

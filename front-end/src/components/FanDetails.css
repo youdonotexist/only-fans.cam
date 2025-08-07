@@ -93,16 +93,10 @@
 }
 
 .fanImage {
-    width: 100%;
-    height: auto;
-    max-height: 400px;
-    object-fit: contain;
+    max-width: 100%;
+    max-height: 500px;
     border-radius: 5px;
-    margin-bottom: 15px;
-    transition: all 0.3s ease;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+    object-fit: contain;
 }
 
 .noImagePlaceholder {
