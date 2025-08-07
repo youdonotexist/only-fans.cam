@@ -357,7 +357,7 @@ const HomeScreen = () => {
                 }
                 
                 // Make API call to report the fan
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/flagged-fans`, {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/flagged-fans`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
