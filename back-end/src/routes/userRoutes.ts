@@ -6,6 +6,16 @@ import {User} from "../database/models";
 import multer from 'multer';
 import { uploadFileToS3 } from '../services/s3Service';
 
+// Define interfaces for database query results
+interface UserResult extends User {
+  id: number;
+}
+
+interface CountResult {
+  followers_count: number;
+  following_count: number;
+}
+
 const router = express.Router();
 
 // Configure multer for memory storage
@@ -36,7 +46,7 @@ router.get('/me', auth, (req, res) => {
   db.get(
     'SELECT id, username, email, bio, profile_image, cover_image, created_at FROM users WHERE id = ?',
     [req.user?.id],
-    (err, user) => {
+    (err, user: UserResult) => {
       if (err) {
         console.error(err.message);
         return res.status(500).json({ message: 'Server error' });
@@ -50,7 +60,7 @@ router.get('/me', auth, (req, res) => {
       db.get(
         'SELECT COUNT(*) as followers_count FROM follows WHERE following_id = ?',
         [user.id],
-        (err, followerResult) => {
+        (err, followerResult: CountResult) => {
           if (err) {
             console.error(err.message);
             return res.status(500).json({ message: 'Server error' });
@@ -60,7 +70,7 @@ router.get('/me', auth, (req, res) => {
           db.get(
             'SELECT COUNT(*) as following_count FROM follows WHERE follower_id = ?',
             [user.id],
-            (err, followingResult) => {
+            (err, followingResult: CountResult) => {
               if (err) {
                 console.error(err.message);
                 return res.status(500).json({ message: 'Server error' });
@@ -93,7 +103,7 @@ router.get('/username/:username', (req, res) => {
   db.get(
     'SELECT id, username, bio, profile_image, cover_image, created_at FROM users WHERE username = ?',
     [req.params.username],
-    (err, user) => {
+    (err, user: UserResult) => {
       if (err) {
         console.error(err.message);
         return res.status(500).json({ message: 'Server error' });
@@ -107,7 +117,7 @@ router.get('/username/:username', (req, res) => {
       db.get(
         'SELECT COUNT(*) as followers_count FROM follows WHERE following_id = ?',
         [user.id],
-        (err, followerResult) => {
+        (err, followerResult: CountResult) => {
           if (err) {
             console.error(err.message);
             return res.status(500).json({ message: 'Server error' });
@@ -117,7 +127,7 @@ router.get('/username/:username', (req, res) => {
           db.get(
             'SELECT COUNT(*) as following_count FROM follows WHERE follower_id = ?',
             [user.id],
-            (err, followingResult) => {
+            (err, followingResult: CountResult) => {
               if (err) {
                 console.error(err.message);
                 return res.status(500).json({ message: 'Server error' });
@@ -150,7 +160,7 @@ router.get('/:id', (req, res) => {
   db.get(
     'SELECT id, username, bio, profile_image, cover_image, created_at FROM users WHERE id = ?',
     [req.params.id],
-    (err, user) => {
+    (err, user: UserResult) => {
       if (err) {
         console.error(err.message);
         return res.status(500).json({ message: 'Server error' });
@@ -164,7 +174,7 @@ router.get('/:id', (req, res) => {
       db.get(
         'SELECT COUNT(*) as followers_count FROM follows WHERE following_id = ?',
         [user.id],
-        (err, followerResult) => {
+        (err, followerResult: CountResult) => {
           if (err) {
             console.error(err.message);
             return res.status(500).json({ message: 'Server error' });
@@ -174,7 +184,7 @@ router.get('/:id', (req, res) => {
           db.get(
             'SELECT COUNT(*) as following_count FROM follows WHERE follower_id = ?',
             [user.id],
-            (err, followingResult) => {
+            (err, followingResult: CountResult) => {
               if (err) {
                 console.error(err.message);
                 return res.status(500).json({ message: 'Server error' });
