@@ -293,6 +293,11 @@
     transition: all var(--transition-fast);
 }
 
+.optionsButton svg {
+    width: 20px;
+    height: 20px;
+}
+
 .optionsButton:hover {
     background-color: var(--background-lighter);
     color: var(--foreground);
