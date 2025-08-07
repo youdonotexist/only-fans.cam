@@ -13,11 +13,13 @@ export const NavigationProvider = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Update history when location changes
+  // Update history when location changes and reset scroll position
   useEffect(() => {
     // Don't add duplicate entries for the same path
     if (history.length === 0 || history[history.length - 1] !== location.pathname) {
       setHistory(prev => [...prev, location.pathname]);
+      // Reset scroll position to top when navigating to a new page
+      window.scrollTo(0, 0);
     }
   }, [location.pathname, history]);
 
