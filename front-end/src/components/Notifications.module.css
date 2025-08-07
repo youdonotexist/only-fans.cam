@@ -181,6 +181,12 @@
         font-size: var(--text-xl);
     }
     
+    .notificationsContainer {
+        width: 100%;
+        max-width: 100%;
+        padding: 0 var(--space-sm);
+    }
+    
     .notificationItem {
         padding: var(--space-md) var(--space-sm);
         gap: var(--space-sm);
@@ -208,6 +214,10 @@
     
     .header {
         margin-bottom: var(--space-lg);
+    }
+    
+    .notificationsContainer {
+        padding: 0 var(--space-xs);
     }
     
     .notificationItem {
