@@ -538,13 +538,18 @@ const Profile = () => {
             {/* Main Profile Content */}
             <main className={styles.mainContent}>
                 <div className={styles.profileHeader}>
-                    <div className={styles.coverPhoto} onClick={isOwnProfile && !uploadingCover ? handleEditCoverPress : undefined}>
+                    <div className={styles.coverPhoto}>
                         {/* Cover Photo Button */}
-                        <img 
-                            id={"coverImage"} 
-                            className={styles.coverImg}
-                            src={user?.cover_image || ""}
-                        />
+                        {user?.cover_image ? (
+                            <img 
+                                id={"coverImage"} 
+                                className={styles.coverImg}
+                                src={user.cover_image}
+                                alt={`${user?.username}'s cover`}
+                            />
+                        ) : (
+                            <div className={styles.defaultCoverGradient} id="coverImage"></div>
+                        )}
                         <input id="coverImagePicker" type="file" accept="image/*" style={{display: "none"}} />
                         
                         {isOwnProfile && (
@@ -553,7 +558,10 @@ const Profile = () => {
                                     <FaSpinner className={styles.spinner} /> Uploading...
                                 </div>
                             ) : (
-                                <div className={styles.editCoverButton}>
+                                <div 
+                                    className={styles.editCoverButton}
+                                    onClick={handleEditCoverPress}
+                                >
                                     <FaCamera/> Edit Cover
                                 </div>
                             )
@@ -562,12 +570,11 @@ const Profile = () => {
 
                     {/* Avatar Section */}
                     <div className={styles.profileInfo}>
-                        <div>
+                        <div className={styles.avatarContainer}>
                             <Avatar
                                 src={user.profile_image}
                                 alt={`${user?.username}'s avatar`}
                                 className={styles.avatar}
-                                onClick={isOwnProfile && !uploadingImage ? handleEditAvatarPress : undefined}
                             />
 
                             {/* Avatar Edit Button */}
@@ -579,7 +586,12 @@ const Profile = () => {
                                         <FaSpinner className={styles.spinner} />
                                     </div>
                                 ) : (
-                                    <FaCamera/>
+                                    <div 
+                                        className={styles.cameraIconContainer}
+                                        onClick={handleEditAvatarPress}
+                                    >
+                                        <FaCamera className={styles.cameraIcon} />
+                                    </div>
                                 )
                             )}
                         </div>
@@ -645,6 +657,71 @@ const Profile = () => {
                                 <span className={styles.statLabel}>Posts</span>
                             </div>
                         </div>
+                        
+                        {/* Profile Action Buttons */}
+                        {isOwnProfile ? (
+                            isEditingBio.username || isEditingBio.bio ? (
+                                <div className={styles.editButtons}>
+                                    <button
+                                        className={styles.saveProfileBtn}
+                                        onClick={() => handleProfileUpdate({
+                                            username: editedUser.username,
+                                            bio: editedUser.bio
+                                        })}
+                                    >
+                                        Save Changes
+                                    </button>
+                                    <button
+                                        className={styles.cancelBtn}
+                                        onClick={() => {
+                                            setIsEditingBio({
+                                                username: false,
+                                                bio: false
+                                            });
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className={styles.profileActions}>
+                                    <button
+                                        className={styles.editProfileBtn}
+                                        onClick={handleEditProfilePress}
+                                    >
+                                        <FaEdit/> Edit Profile
+                                    </button>
+                                    <button
+                                        className={styles.changePasswordBtn}
+                                        onClick={() => setShowPasswordForm(true)}
+                                    >
+                                        <FaKey/> Change Password
+                                    </button>
+                                    <button
+                                        className={styles.logoutBtn}
+                                        onClick={handleLogout}
+                                    >
+                                        <FaSignOutAlt/> Logout
+                                    </button>
+                                </div>
+                            )
+                        ) : (
+                            <div className={styles.profileActions}>
+                                <button 
+                                    className={styles.subscribeBtn}
+                                    onClick={handleSubscribe}
+                                    disabled={followLoading}
+                                >
+                                    <FaBell/> {followLoading ? 'Processing...' : isFollowing ? 'Unsubscribe' : 'Subscribe'}
+                                </button>
+                                <button 
+                                    className={styles.messageBtn}
+                                    onClick={handleMessage}
+                                >
+                                    <FaEnvelope/> Message
+                                </button>
+                            </div>
+                        )}
                         
                         {/* Posts Feed Section */}
                         <div className={styles.profilePosts}>
@@ -754,71 +831,6 @@ const Profile = () => {
                     {error && (
                         <div className={styles.error}>
                             {error}
-                        </div>
-                    )}
-                    
-                    {/* Profile Action Buttons */}
-                    {isOwnProfile ? (
-                        isEditingBio.username || isEditingBio.bio ? (
-                            <div className={styles.editButtons}>
-                                <button
-                                    className={styles.saveProfileBtn}
-                                    onClick={() => handleProfileUpdate({
-                                        username: editedUser.username,
-                                        bio: editedUser.bio
-                                    })}
-                                >
-                                    Save Changes
-                                </button>
-                                <button
-                                    className={styles.cancelBtn}
-                                    onClick={() => {
-                                        setIsEditingBio({
-                                            username: false,
-                                            bio: false
-                                        });
-                                    }}
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        ) : (
-                            <div className={styles.profileActions}>
-                                <button
-                                    className={styles.editProfileBtn}
-                                    onClick={handleEditProfilePress}
-                                >
-                                    <FaEdit/> Edit Profile
-                                </button>
-                                <button
-                                    className={styles.changePasswordBtn}
-                                    onClick={() => setShowPasswordForm(true)}
-                                >
-                                    <FaKey/> Change Password
-                                </button>
-                                <button
-                                    className={styles.logoutBtn}
-                                    onClick={handleLogout}
-                                >
-                                    <FaSignOutAlt/> Logout
-                                </button>
-                            </div>
-                        )
-                    ) : (
-                        <div className={styles.profileActions}>
-                            <button 
-                                className={styles.subscribeBtn}
-                                onClick={handleSubscribe}
-                                disabled={followLoading}
-                            >
-                                <FaBell/> {followLoading ? 'Processing...' : isFollowing ? 'Unsubscribe' : 'Subscribe'}
-                            </button>
-                            <button 
-                                className={styles.messageBtn}
-                                onClick={handleMessage}
-                            >
-                                <FaEnvelope/> Message
-                            </button>
                         </div>
                     )}
                 </div>

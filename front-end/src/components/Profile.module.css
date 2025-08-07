@@ -109,7 +109,14 @@
     object-fit: cover;
     position: absolute;
     left: 0;
-    top: 0;
+}
+
+.defaultCoverGradient {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    background: linear-gradient(135deg, #6e45e2 0%, #88d3ce 100%);
 }
 
 .profileInfo {
@@ -119,18 +126,40 @@
     margin-top: -60px;
 }
 
+.avatarContainer {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+}
+
 .avatar {
     width: 120px;
     height: 120px;
     border-radius: var(--radius-full);
     background-color: var(--background-lighter);
-    margin: 0 auto;
     position: relative;
     border: 4px solid var(--background-light);
     box-shadow: var(--shadow-md);
     overflow: hidden;
-    cursor: pointer;
     transition: all var(--transition-normal);
+}
+
+.cameraIconContainer {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: var(--background-lighter);
+    border-radius: var(--radius-full);
+    padding: 8px;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    z-index: 2;
+}
+
+.cameraIcon {
+    font-size: 1rem;
+    color: var(--foreground);
 }
 
 /* Responsive styles for profile header - desktop and mobile only */
@@ -145,10 +174,23 @@
         margin-top: -50px;
     }
     
+    .avatarContainer {
+        width: 90px;
+        height: 90px;
+    }
+    
     .avatar {
         width: 90px;
         height: 90px;
         border-width: 3px;
+    }
+    
+    .cameraIconContainer {
+        padding: 6px;
+    }
+    
+    .cameraIcon {
+        font-size: 0.8rem;
     }
     
     .editCoverButton {
@@ -157,27 +199,7 @@
     }
 }
 
-.avatar:hover {
-    transform: scale(1.05);
-    box-shadow: var(--shadow-lg);
-}
-
-.avatar svg {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    background-color: var(--background-lighter);
-    border-radius: var(--radius-full);
-    padding: 5px;
-    font-size: 1rem;
-    color: var(--foreground);
-    opacity: 0;
-    transition: opacity var(--transition-fast);
-}
-
-.avatar:hover svg {
-    opacity: 1;
-}
+/* Remove hover effect for avatar since it's no longer clickable */
 
 .uploadingOverlay {
     position: absolute;
