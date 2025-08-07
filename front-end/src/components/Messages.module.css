@@ -85,8 +85,13 @@
   
   .toggleConversations {
       display: flex;
-      width:20px;
-      height:20px;
+      width:30px;
+      height:30px;
+  }
+
+  .toggleConversations svg {
+      width: 20px;
+      height: 20px;
   }
   
   .messageDetailPanel.fullWidth {
