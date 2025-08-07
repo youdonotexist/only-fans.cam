@@ -28,6 +28,7 @@ export interface Fan {
   user_id: number;
   title: string;
   description?: string;
+  fan_type?: string;
   created_at: string;
   updated_at?: string;
   username?: string;
@@ -44,11 +45,13 @@ export interface FanWithDetails extends Fan {
 export interface CreateFanRequest {
   title: string;
   description?: string;
+  fan_type?: string;
 }
 
 export interface UpdateFanRequest {
   title?: string;
   description?: string;
+  fan_type?: string;
 }
 
 export interface FansResponse {

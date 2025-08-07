@@ -22,6 +22,7 @@ router.post(
     auth,
     body('title').notEmpty().withMessage('Title is required'),
     body('description').optional(),
+    body('fan_type').optional(),
   ],
   async(req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -29,12 +30,12 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { title, description } = req.body;
+    const { title, description, fan_type = 'ceiling' } = req.body;
     const db = getDatabase();
 
     db.run(
-      'INSERT INTO fans (user_id, title, description) VALUES (?, ?, ?)',
-      [req.user?.id, title, description],
+      'INSERT INTO fans (user_id, title, description, fan_type) VALUES (?, ?, ?, ?)',
+      [req.user?.id, title, description, fan_type],
       function (this: { lastID: number }, err) {
         if (err) {
           console.error(err.message);
@@ -197,6 +198,7 @@ router.put(
     auth,
     body('title').optional().notEmpty().withMessage('Title cannot be empty'),
     body('description').optional(),
+    body('fan_type').optional(),
   ],
   async(req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -204,7 +206,7 @@ router.put(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { title, description } = req.body;
+    const { title, description, fan_type } = req.body;
     const db = getDatabase();
 
     // Check if fan exists and belongs to user
@@ -238,6 +240,11 @@ router.put(
         if (description !== undefined) {
           updateFields.push('description = ?');
           values.push(description);
+        }
+        
+        if (fan_type !== undefined) {
+          updateFields.push('fan_type = ?');
+          values.push(fan_type);
         }
 
         if (updateFields.length === 0) {

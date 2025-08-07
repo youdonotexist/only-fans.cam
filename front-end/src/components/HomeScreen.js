@@ -41,7 +41,8 @@ const HomeScreen = () => {
     const [showPostForm, setShowPostForm] = useState(false);
     const [newPost, setNewPost] = useState({
         title: '',
-        description: ''
+        description: '',
+        fan_type: 'ceiling'
     });
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [previewUrls, setPreviewUrls] = useState([]);
@@ -458,7 +459,8 @@ const HomeScreen = () => {
             // Reset form
             setNewPost({
                 title: '',
-                description: ''
+                description: '',
+                fan_type: 'ceiling'
             });
             setSelectedFiles([]);
             
@@ -542,6 +544,28 @@ const HomeScreen = () => {
                                 </div>
                                 
                                 <div className={uiStyles.formGroup}>
+                                    <label htmlFor="fan_type">Fan Type</label>
+                                    <select
+                                        id="fan_type"
+                                        name="fan_type"
+                                        value={newPost.fan_type}
+                                        onChange={handleInputChange}
+                                        disabled={isSubmitting}
+                                        className={uiStyles.input}
+                                    >
+                                        <option value="ceiling">Ceiling Fan</option>
+                                        <option value="table">Table Fan</option>
+                                        <option value="tower">Tower Fan</option>
+                                        <option value="box">Box Fan</option>
+                                        <option value="industrial">Industrial Fan</option>
+                                        <option value="bladeless">Bladeless Fan</option>
+                                        <option value="hand">Hand Fan</option>
+                                        <option value="computer">Computer Cooling Fan</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                
+                                <div className={uiStyles.formGroup}>
                                     <label>
                                         <span>Add Photos</span>
                                         <div className={createPostStyles.uploadButton} onClick={() => fileInputRef.current.click()}>
@@ -562,7 +586,7 @@ const HomeScreen = () => {
                                         <div className={createPostStyles.imagePreviewContainer}>
                                             {previewUrls.map((url, index) => (
                                                 <div key={index} className={createPostStyles.imagePreview}>
-                                                    <img src={url} alt={`Preview ${index + 1}`} />
+                                                    <img className={createPostStyles.createPostImagePreviewsrc}={url} alt={`Preview ${index + 1}`} />
                                                     <button
                                                         type="button"
                                                         className={createPostStyles.removeImageButton}

@@ -6,6 +6,7 @@ export class Fan {
   user_id: number;
   title: string;
   description: string | null;
+  fan_type: string;
   created_at: string;
   updated_at: string;
   
@@ -18,6 +19,7 @@ export class Fan {
     user_id: number,
     title: string,
     description: string | null = null,
+    fan_type: string = "ceiling",
     created_at: string = new Date().toISOString(),
     updated_at: string = new Date().toISOString(),
     username?: string,
@@ -27,6 +29,7 @@ export class Fan {
     this.user_id = user_id;
     this.title = title;
     this.description = description;
+    this.fan_type = fan_type;
     this.created_at = created_at;
     this.updated_at = updated_at;
     this.username = username;

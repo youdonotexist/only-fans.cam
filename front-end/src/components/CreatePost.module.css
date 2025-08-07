@@ -47,6 +47,14 @@
     animation: slideDown 0.3s ease-out;
 }
 
+.createPostImagePreview {
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-full);
+    object-fit: fill;
+    margin-right: var(--space-sm);
+}
+
 .createPostForm h3 {
     margin-top: 0;
     margin-bottom: var(--space-md);
