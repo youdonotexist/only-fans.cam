@@ -39,7 +39,7 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  z-index: var(--z-20);
+  z-index: var(--z-40); /* Increased z-index to ensure it's above other elements */
   background-color: var(--primary);
   color: white;
   border: none;
@@ -98,6 +98,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+@media (max-width: 768px) {
+  .conversationsHeader {
+    padding-left: 60px; /* Add space for the toggle button */
+  }
 }
 
 .conversationsHeader h2 {
@@ -191,6 +197,7 @@
   display: flex;
   flex-direction: column;
   background-color: var(--background-light);
+  width: 100%; /* Ensure it takes full width */
 }
 
 .noConversationSelected {

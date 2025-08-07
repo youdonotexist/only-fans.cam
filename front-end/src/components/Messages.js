@@ -139,8 +139,10 @@ const Messages = () => {
     
     setSelectedUserId(otherUserId);
     
-    // Keep the conversations panel visible even after selecting a conversation
-    // This ensures users can easily switch between conversations
+    // On mobile, hide the conversations panel after selecting a conversation
+    if (window.innerWidth <= 768) {
+      setShowConversations(false);
+    }
   };
   
   // Toggle conversations panel visibility on mobile
