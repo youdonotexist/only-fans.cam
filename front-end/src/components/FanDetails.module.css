@@ -114,6 +114,11 @@
     margin-left: var(--space-sm);
 }
 
+.optionsContainer svg {
+    width:20px;
+    height:20px;
+}
+
 .optionsButton {
     background: none;
     border: none;
