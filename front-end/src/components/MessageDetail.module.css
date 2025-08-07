@@ -260,6 +260,12 @@
     width: 36px;
     height: 36px;
   }
+
+    .userInfo {
+        display: flex;
+        align-items: center;
+        padding-left: 45px;
+    }
   
   .header {
     padding: var(--space-sm) var(--space-xs); /* Reduced horizontal padding */
