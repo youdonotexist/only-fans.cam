@@ -24,7 +24,7 @@ const AdminReportedFans = () => {
             setLoading(true);
             const token = localStorage.getItem('token');
             
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/flagged-fans`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/flagged-fans`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -55,7 +55,7 @@ const AdminReportedFans = () => {
             setLoading(true);
             const token = localStorage.getItem('token');
             
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/flagged-fans/${id}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/flagged-fans/${id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -81,7 +81,7 @@ const AdminReportedFans = () => {
             setLoading(true);
             const token = localStorage.getItem('token');
             
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/flagged-fans/${id}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/flagged-fans/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
