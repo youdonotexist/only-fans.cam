@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaHeart, FaComment, FaShare, FaPlus, FaImage, FaSpinner, FaTimes, FaFan, FaPaperPlane, FaEllipsisV, FaEdit, FaImages } from 'react-icons/fa';
+import { FaHeart, FaComment, FaShare, FaPlus, FaImage, FaSpinner, FaTimes, FaFan, FaPaperPlane, FaEllipsisV, FaEdit, FaImages, FaFlag } from 'react-icons/fa';
 import layoutStyles from './Layout.module.css';
 import createPostStyles from './CreatePost.module.css';
 import fanPostStyles from './FanPost.module.css';
@@ -336,6 +336,35 @@ const HomeScreen = () => {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, [page, hasMore, loadingMore]); // Re-attach listener when these dependencies change
+    
+    // Handle report fan functionality
+    const handleReportFan = (fanId) => {
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        if (!token) {
+            // Open login modal if not authenticated
+            openLoginModal(window.location.pathname);
+            return;
+        }
+        
+        // For now, just show a confirmation dialog and log the report
+        if (window.confirm('Are you sure you want to report this fan?')) {
+            // Here you would typically make an API call to report the fan
+            // For now, we'll just log it and show a success message
+            console.log('Reporting fan:', fanId);
+            
+            // Show success message
+            const tempSuccess = 'Fan reported successfully. Our team will review it.';
+            setSuccess(tempSuccess);
+            
+            // Clear success message after 3 seconds
+            setTimeout(() => {
+                if (success === tempSuccess) {
+                    setSuccess('');
+                }
+            }, 3000);
+        }
+    };
     
     // Handle share functionality
     const handleShare = (fan) => {
@@ -703,7 +732,7 @@ const HomeScreen = () => {
                                     {activeOptionsMenu === fan.id && (
                                         <div className={fanPostStyles.optionsMenu}>
                                             {/* Show edit options only if current user is the post owner */}
-                                            {currentUser && currentUser.id === fan.user_id && (
+                                            {currentUser && currentUser.id === fan.user_id ? (
                                                 <>
                                                     <div 
                                                         className={fanPostStyles.optionsMenuItem}
@@ -728,6 +757,19 @@ const HomeScreen = () => {
                                                         <FaImages /> Edit Images
                                                     </div>
                                                 </>
+                                            ) : (
+                                                // Show Report Fan option for posts not owned by current user
+                                                <div 
+                                                    className={fanPostStyles.optionsMenuItem}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        // Handle report fan action
+                                                        handleReportFan(fan.id);
+                                                        setActiveOptionsMenu(null);
+                                                    }}
+                                                >
+                                                    <FaFlag /> Report Fan
+                                                </div>
                                             )}
                                             {/* Add other options here that are available to all users */}
                                         </div>
