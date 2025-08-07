@@ -338,7 +338,7 @@ const HomeScreen = () => {
     }, [page, hasMore, loadingMore]); // Re-attach listener when these dependencies change
     
     // Handle report fan functionality
-    const handleReportFan = (fanId) => {
+    const handleReportFan = async (fanId) => {
         // Check if user is logged in
         const token = localStorage.getItem('token');
         if (!token) {
@@ -347,22 +347,53 @@ const HomeScreen = () => {
             return;
         }
         
-        // For now, just show a confirmation dialog and log the report
+        // Show confirmation dialog
         if (window.confirm('Are you sure you want to report this fan?')) {
-            // Here you would typically make an API call to report the fan
-            // For now, we'll just log it and show a success message
-            console.log('Reporting fan:', fanId);
-            
-            // Show success message
-            const tempSuccess = 'Fan reported successfully. Our team will review it.';
-            setSuccess(tempSuccess);
-            
-            // Clear success message after 3 seconds
-            setTimeout(() => {
-                if (success === tempSuccess) {
-                    setSuccess('');
+            try {
+                // Get reason from user
+                const reason = prompt('Please provide a reason for reporting this fan:');
+                if (!reason) {
+                    return; // User cancelled or provided empty reason
                 }
-            }, 3000);
+                
+                // Make API call to report the fan
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/flagged-fans`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        fan_id: fanId,
+                        reason: reason
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to report fan');
+                }
+                
+                // Show success message
+                const tempSuccess = 'Fan reported successfully. Our team will review it.';
+                setSuccess(tempSuccess);
+                
+                // Clear success message after 3 seconds
+                setTimeout(() => {
+                    if (success === tempSuccess) {
+                        setSuccess('');
+                    }
+                }, 3000);
+            } catch (error) {
+                console.error('Error reporting fan:', error);
+                setError(error.message || 'Failed to report fan');
+                
+                // Clear error message after 3 seconds
+                setTimeout(() => {
+                    setError('');
+                }, 3000);
+            }
         }
     };
     

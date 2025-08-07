@@ -27,6 +27,30 @@
 .subtitle {
   font-size: var(--text-md);
   color: var(--foreground-dim);
+  margin-bottom: var(--space-md);
+}
+
+.adminNav {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+  border-bottom: 1px solid var(--background-lighter);
+  padding-bottom: var(--space-sm);
+}
+
+.adminNavLink {
+  font-size: var(--text-md);
+  font-weight: var(--font-medium);
+  color: var(--foreground-dim);
+  text-decoration: none;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.adminNavLink:hover {
+  color: var(--primary);
+  background-color: var(--background-lighter);
 }
 
 .error {

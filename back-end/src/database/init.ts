@@ -184,6 +184,21 @@ export async function initializeDatabase(): Promise<Database> {
       FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL
     )
   `);
+  
+  // Create flagged_fans table for reported fan posts
+  db.run(`
+    CREATE TABLE IF NOT EXISTS flagged_fans (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      fan_id INTEGER NOT NULL,
+      reporter_id INTEGER NOT NULL,
+      reason TEXT NOT NULL,
+      status TEXT DEFAULT 'pending',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (fan_id) REFERENCES fans (id) ON DELETE CASCADE,
+      FOREIGN KEY (reporter_id) REFERENCES users (id) ON DELETE CASCADE
+    )
+  `);
 
   return db;
 }

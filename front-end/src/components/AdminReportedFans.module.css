@@ -1,0 +1,273 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    margin-left: 20px;
+    font-size: 24px;
+}
+
+.adminNav {
+    display: flex;
+    gap: 20px;
+    margin-top: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-left: 20px;
+}
+
+.adminNavLink {
+    font-size: 16px;
+    font-weight: 500;
+    color: #666;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.adminNavLink:hover {
+    color: #2196f3;
+    background-color: #f5f5f5;
+}
+
+.error {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.content {
+    display: flex;
+    gap: 20px;
+}
+
+.reportsList {
+    flex: 1;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 400px;
+}
+
+.reportsList h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.reportsList ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.reportItem {
+    background-color: white;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 4px solid #ddd;
+}
+
+.reportItem:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reportItem.selected {
+    border-left-color: #2196f3;
+    background-color: #e3f2fd;
+}
+
+.reportTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.fanTitle {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.reportMeta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #666;
+}
+
+.status {
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+}
+
+.pending {
+    background-color: #fff3e0;
+    color: #e65100;
+}
+
+.approved {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.rejected {
+    background-color: #f5f5f5;
+    color: #616161;
+}
+
+.loading, .noReports, .noSelection {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+}
+
+.reportDetails {
+    flex: 2;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.fanDetails h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.fanInfo {
+    background-color: white;
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.fanInfo h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.description {
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.imageContainer {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.fanImage {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 4px;
+}
+
+.reportInfo {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
+.reportInfo h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.reportInfo p {
+    margin: 5px 0;
+}
+
+.actions {
+    margin-top: 20px;
+}
+
+.actions h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.actionButtons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.actionButton {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.actionButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.approveButton {
+    background-color: #e53935;
+    color: white;
+}
+
+.approveButton:hover:not(:disabled) {
+    background-color: #c62828;
+}
+
+.rejectButton {
+    background-color: #757575;
+    color: white;
+}
+
+.rejectButton:hover:not(:disabled) {
+    background-color: #616161;
+}
+
+.actionButton:not(.approveButton):not(.rejectButton) {
+    background-color: #e0e0e0;
+    color: #212121;
+}
+
+.actionButton:not(.approveButton):not(.rejectButton):hover {
+    background-color: #bdbdbd;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .content {
+        flex-direction: column;
+    }
+    
+    .reportsList {
+        max-width: 100%;
+    }
+}

@@ -8,6 +8,7 @@ import Messages from './components/Messages';
 import Profile from './components/Profile';
 import FeedbackForm from './components/FeedbackForm';
 import AdminFeedback from './components/AdminFeedback';
+import AdminReportedFans from './components/AdminReportedFans';
 import FanWiki from './components/FanWiki';
 import ProtectedRoute from './components/ProtectedRoute';
 import Footer from './components/Footer';
@@ -50,6 +51,11 @@ function App() {
                                 <Route path="/admin/feedback" element={
                                     <ProtectedRoute>
                                         <AdminFeedback />
+                                    </ProtectedRoute>
+                                } />
+                                <Route path="/admin/reported-fans" element={
+                                    <ProtectedRoute>
+                                        <AdminReportedFans />
                                     </ProtectedRoute>
                                 } />
                                 <Route path="/fanwiki" element={<FanWiki />} />

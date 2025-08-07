@@ -6,7 +6,7 @@ import { getFanById, likeFan, unlikeFan, addComment, updateFan, deleteFan } from
 import { getMediaUrl, uploadMedia, deleteMedia } from '../network/mediaApi.ts';
 import Sidebar from './Sidebar';
 import PageLayout from './PageLayout';
-import { FaSpinner, FaFan, FaHeart, FaComment, FaShare, FaUser, FaPaperPlane, FaTimes, FaEllipsisV, FaEdit, FaTrash, FaImage, FaPlus } from 'react-icons/fa';
+import { FaSpinner, FaFan, FaHeart, FaComment, FaShare, FaUser, FaPaperPlane, FaTimes, FaEllipsisV, FaEdit, FaTrash, FaImage, FaPlus, FaFlag } from 'react-icons/fa';
 import { useLoginModal } from '../contexts/LoginModalContext';
 import Avatar from './Avatar';
 
@@ -243,6 +243,27 @@ const FanDetails = () => {
         }
     };
     
+    // Handle report fan functionality
+    const handleReportFan = () => {
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        if (!token) {
+            // Open login modal if not authenticated
+            openLoginModal(window.location.pathname);
+            return;
+        }
+        
+        // For now, just show a confirmation dialog and log the report
+        if (window.confirm('Are you sure you want to report this fan?')) {
+            // Here you would typically make an API call to report the fan
+            // For now, we'll just log it and show a success message
+            console.log('Reporting fan:', id);
+            
+            // Show success message
+            alert('Fan reported successfully. Our team will review it.');
+        }
+    };
+    
     // Toggle image manager
     const toggleImageManager = () => {
         if (!isCurrentUserAuthor) return;
@@ -411,52 +432,65 @@ const FanDetails = () => {
                                     {new Date(fan.created_at).toLocaleDateString()}
                                 </span>
                                 
-                                {/* Options menu for post author */}
-                                {isCurrentUserAuthor && (
-                                    <div className={styles.optionsContainer}>
-                                        <button 
-                                            className={styles.optionsButton}
-                                            onClick={() => setShowOptionsMenu(!showOptionsMenu)}
-                                            aria-label="Post options"
-                                        >
-                                            <FaEllipsisV />
-                                        </button>
-                                        
-                                        {showOptionsMenu && (
-                                            <div className={styles.optionsMenu}>
+                                {/* Options menu for all posts */}
+                                <div className={styles.optionsContainer}>
+                                    <button 
+                                        className={styles.optionsButton}
+                                        onClick={() => setShowOptionsMenu(!showOptionsMenu)}
+                                        aria-label="Post options"
+                                    >
+                                        <FaEllipsisV />
+                                    </button>
+                                    
+                                    {showOptionsMenu && (
+                                        <div className={styles.optionsMenu}>
+                                            {isCurrentUserAuthor ? (
+                                                <>
+                                                    <button 
+                                                        className={styles.optionItem}
+                                                        onClick={() => {
+                                                            setIsEditing(true);
+                                                            setShowOptionsMenu(false);
+                                                        }}
+                                                    >
+                                                        <FaEdit /> Edit
+                                                    </button>
+                                                    <button 
+                                                        className={styles.optionItem}
+                                                        onClick={() => {
+                                                            setShowImageManager(true);
+                                                            setShowOptionsMenu(false);
+                                                        }}
+                                                    >
+                                                        <FaImage /> Manage Images
+                                                    </button>
+                                                    <button 
+                                                        className={styles.optionItem}
+                                                        onClick={() => {
+                                                            if (window.confirm('Are you sure you want to delete this post?')) {
+                                                                handleDeletePost();
+                                                            }
+                                                            setShowOptionsMenu(false);
+                                                        }}
+                                                    >
+                                                        <FaTrash /> Delete
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                // Show Report Fan option for posts not owned by current user
                                                 <button 
                                                     className={styles.optionItem}
                                                     onClick={() => {
-                                                        setIsEditing(true);
+                                                        handleReportFan();
                                                         setShowOptionsMenu(false);
                                                     }}
                                                 >
-                                                    <FaEdit /> Edit
+                                                    <FaFlag /> Report Fan
                                                 </button>
-                                                <button 
-                                                    className={styles.optionItem}
-                                                    onClick={() => {
-                                                        setShowImageManager(true);
-                                                        setShowOptionsMenu(false);
-                                                    }}
-                                                >
-                                                    <FaImage /> Manage Images
-                                                </button>
-                                                <button 
-                                                    className={styles.optionItem}
-                                                    onClick={() => {
-                                                        if (window.confirm('Are you sure you want to delete this post?')) {
-                                                            handleDeletePost();
-                                                        }
-                                                        setShowOptionsMenu(false);
-                                                    }}
-                                                >
-                                                    <FaTrash /> Delete
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         
                             <div className={styles.fanContent}>

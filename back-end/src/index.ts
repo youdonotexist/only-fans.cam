@@ -10,6 +10,7 @@ import { messageRoutes } from './routes/messageRoutes';
 import { feedbackRoutes } from './routes/feedbackRoutes';
 import { initializeDatabase } from './database/init';
 import {authRoutes} from "./routes/authRoutes";
+import flaggedFanRoutes from './routes/flaggedFanRoutes';
 
 // Load environment variables
 dotenv.config();
@@ -45,6 +46,7 @@ app.use(express.urlencoded({ extended: true }));
     app.use('/api/notifications', notificationRoutes);
     app.use('/api/messages', messageRoutes);
     app.use('/api/feedback', feedbackRoutes);
+    app.use('/api/flagged-fans', flaggedFanRoutes);
 
     // Health check endpoint
     app.get('/health', (req, res) => {

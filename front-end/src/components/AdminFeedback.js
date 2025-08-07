@@ -166,6 +166,10 @@ const AdminFeedback = () => {
           <p className={styles.subtitle}>
             Review and manage user feedback and bug reports
           </p>
+          <div className={styles.adminNav}>
+            <a href="/admin/feedback" className={styles.adminNavLink}>Feedback</a>
+            <a href="/admin/reported-fans" className={styles.adminNavLink}>Reported Fans</a>
+          </div>
         </div>
         
         {error && (
