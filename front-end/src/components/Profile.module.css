@@ -514,12 +514,14 @@
     }
     
     .subscribeBtn {
-        flex: 1;
+        width: auto;
+        max-width: 140px;
     }
     
     .messageBtn, .bookmarkBtn {
         padding: var(--space-sm) var(--space-md);
-        min-width: 100px;
+        width: auto;
+        max-width: 120px;
     }
     
     .profileActions {
