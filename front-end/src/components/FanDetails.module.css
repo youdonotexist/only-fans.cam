@@ -358,6 +358,11 @@
     gap: var(--space-xs);
 }
 
+.likeButton svg, .commentButton svg, .shareButton svg {
+    width: 20px;
+    height: 20px;
+}
+
 .likeButton.liked {
     color: var(--error);
 }

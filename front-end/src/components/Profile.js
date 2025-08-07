@@ -538,7 +538,10 @@ const Profile = () => {
             {/* Main Profile Content */}
             <main className={styles.mainContent}>
                 <div className={styles.profileHeader}>
-                    <div className={styles.coverPhoto}>
+                    <div 
+                        className={styles.coverPhoto} 
+                        onClick={isOwnProfile && !uploadingCover ? handleEditCoverPress : undefined}
+                    >
                         {/* Cover Photo Button */}
                         {user?.cover_image ? (
                             <img 
