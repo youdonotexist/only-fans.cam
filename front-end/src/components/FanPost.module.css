@@ -20,6 +20,7 @@
     display: flex;
     align-items: center;
     margin-bottom: var(--space-md);
+    position: relative;
 }
 
 .avatar {
@@ -48,10 +49,13 @@
     width: 100%;
     height: auto;
     max-height: 400px;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: var(--radius-md);
     margin-bottom: var(--space-md);
     transition: all var(--transition-normal);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .fanImage:hover {
@@ -110,6 +114,24 @@
 .icon {
     margin-right: var(--space-xs);
     font-size: 1.1em;
+}
+
+/* Mobile styles for interaction icons */
+@media (max-width: 768px) {
+    .icon {
+        font-size: 0.85em;
+        margin-right: 4px;
+    }
+    
+    .interactionButtons {
+        font-size: var(--text-xs);
+        padding-top: 8px;
+        padding-bottom: 4px;
+    }
+    
+    .interactionButtons > div {
+        padding: 4px 8px;
+    }
 }
 
 /* Image Upload Styles */
@@ -251,4 +273,63 @@
 .fanImageContainer {
     width: 100%;
     margin-bottom: 0;
+}
+
+/* Options Menu Styles */
+.optionsMenuContainer {
+    margin-left: auto;
+    position: relative;
+}
+
+.optionsButton {
+    background: none;
+    border: none;
+    color: var(--foreground-muted);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.optionsButton:hover {
+    background-color: var(--background-lighter);
+    color: var(--foreground);
+}
+
+.optionsMenu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--background-light);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 10;
+    min-width: 150px;
+    border: 1px solid var(--background-lighter);
+    overflow: hidden;
+}
+
+.optionsMenuItem {
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--foreground);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.optionsMenuItem:hover {
+    background-color: var(--background-lighter);
+}
+
+/* Mobile styles for options button */
+@media (max-width: 768px) {
+    .optionsButton {
+        padding: 6px;
+        font-size: 0.85em;
+    }
 }

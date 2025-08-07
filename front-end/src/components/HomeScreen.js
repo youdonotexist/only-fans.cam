@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaHeart, FaComment, FaShare, FaPlus, FaImage, FaSpinner, FaTimes, FaFan, FaPaperPlane } from 'react-icons/fa';
+import { FaHeart, FaComment, FaShare, FaPlus, FaImage, FaSpinner, FaTimes, FaFan, FaPaperPlane, FaEllipsisV, FaEdit, FaImages } from 'react-icons/fa';
 import layoutStyles from './Layout.module.css';
 import createPostStyles from './CreatePost.module.css';
 import fanPostStyles from './FanPost.module.css';
@@ -12,12 +12,14 @@ import { uploadMedia } from '../network/mediaApi.ts';
 import { getMediaUrl } from '../network/mediaApi.ts';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLoginModal } from '../contexts/LoginModalContext';
+import { useAuth } from '../contexts/AuthContext';
 import Avatar from "./Avatar";
 
 const HomeScreen = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { openLoginModal } = useLoginModal();
+    const { currentUser } = useAuth();
     
     // State for fans from backend
     const [fans, setFans] = useState([]);
@@ -50,6 +52,23 @@ const HomeScreen = () => {
     
     // State for fan media
     const [fanMedia, setFanMedia] = useState({});
+    
+    // State for post options menu
+    const [activeOptionsMenu, setActiveOptionsMenu] = useState(null);
+    
+    // Click outside handler for options menu
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (activeOptionsMenu && !event.target.closest(`.${fanPostStyles.optionsMenuContainer}`)) {
+                setActiveOptionsMenu(null);
+            }
+        };
+        
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [activeOptionsMenu, fanPostStyles.optionsMenuContainer]);
     
     // Check for URL parameter to open post form
     useEffect(() => {
@@ -427,7 +446,7 @@ const HomeScreen = () => {
             // Upload images if any are selected
             if (selectedFiles.length > 0) {
                 try {
-                    await uploadMedia(createdFan.id, selectedFiles, token);
+                    await uploadMedia(parseInt(createdFan.id), selectedFiles, token);
                 } catch (uploadError) {
                     console.error('Error uploading images:', uploadError);
                     setError(`Post created but failed to upload images: ${uploadError.message}`);
@@ -643,6 +662,53 @@ const HomeScreen = () => {
                                     <span className={fanPostStyles.postDate}>
                                         {new Date(fan.created_at).toLocaleDateString()} at {new Date(fan.created_at).toLocaleTimeString()}
                                     </span>
+                                </div>
+                                
+                                {/* Three dots menu */}
+                                <div className={fanPostStyles.optionsMenuContainer}>
+                                    <button 
+                                        className={fanPostStyles.optionsButton}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setActiveOptionsMenu(activeOptionsMenu === fan.id ? null : fan.id);
+                                        }}
+                                    >
+                                        <FaEllipsisV />
+                                    </button>
+                                    
+                                    {/* Dropdown menu */}
+                                    {activeOptionsMenu === fan.id && (
+                                        <div className={fanPostStyles.optionsMenu}>
+                                            {/* Show edit options only if current user is the post owner */}
+                                            {currentUser && currentUser.id === fan.user_id && (
+                                                <>
+                                                    <div 
+                                                        className={fanPostStyles.optionsMenuItem}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            // Handle edit post action
+                                                            console.log('Edit post', fan.id);
+                                                            setActiveOptionsMenu(null);
+                                                        }}
+                                                    >
+                                                        <FaEdit /> Edit Post
+                                                    </div>
+                                                    <div 
+                                                        className={fanPostStyles.optionsMenuItem}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            // Handle edit images action
+                                                            console.log('Edit images', fan.id);
+                                                            setActiveOptionsMenu(null);
+                                                        }}
+                                                    >
+                                                        <FaImages /> Edit Images
+                                                    </div>
+                                                </>
+                                            )}
+                                            {/* Add other options here that are available to all users */}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
