@@ -18,7 +18,7 @@
 
 @media (max-width: 768px) {
   .conversationItem {
-    padding: var(--space-sm) var(--space-xs); /* Reduced horizontal padding on mobile */
+    padding: var(--space-sm) 10px; /* Horizontal padding reduced to exactly 10px */
   }
 }
 
