@@ -10,15 +10,15 @@ const AdminReportedFans = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [selectedFan, setSelectedFan] = useState(null);
-    const { user } = useAuth();
+    const { currentUser } = useAuth();
     const navigate = useNavigate();
 
     // Check if user is admin
     useEffect(() => {
-        if (!user || !user.is_admin) {
+        if (!currentUser || !currentUser.is_admin) {
             navigate('/');
         }
-    }, [user, navigate]);
+    }, [currentUser, navigate]);
 
     // Fetch reported fans
     const fetchReportedFans = async () => {
