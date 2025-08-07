@@ -102,7 +102,12 @@
 
 @media (max-width: 768px) {
   .conversationsHeader {
+    padding: var(--space-sm) var(--space-xs);
     padding-left: 60px; /* Add space for the toggle button */
+  }
+  
+  .searchContainer {
+    padding: var(--space-sm) var(--space-xs);
   }
 }
 

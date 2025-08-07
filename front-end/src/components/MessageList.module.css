@@ -16,6 +16,12 @@
   z-index: 1; /* Ensure it's above other elements */
 }
 
+@media (max-width: 768px) {
+  .conversationItem {
+    padding: var(--space-sm) var(--space-xs); /* Reduced horizontal padding on mobile */
+  }
+}
+
 .conversationItem:hover {
   background-color: var(--background-light);
 }

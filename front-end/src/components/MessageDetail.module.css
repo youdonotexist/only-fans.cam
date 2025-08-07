@@ -260,6 +260,18 @@
     width: 36px;
     height: 36px;
   }
+  
+  .header {
+    padding: var(--space-sm) var(--space-xs); /* Reduced horizontal padding */
+  }
+  
+  .messageList {
+    padding: var(--space-sm) var(--space-xs); /* Reduced horizontal padding */
+  }
+  
+  .messageForm {
+    padding: var(--space-sm) var(--space-xs); /* Reduced horizontal padding */
+  }
 }
 
 @media (max-width: 480px) {
