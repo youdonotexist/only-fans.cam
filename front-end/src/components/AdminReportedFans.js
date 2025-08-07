@@ -15,9 +15,7 @@ const AdminReportedFans = () => {
 
     // Check if user is admin
     useEffect(() => {
-        if (!currentUser || !currentUser.is_admin) {
-            navigate('/');
-        }
+
     }, [currentUser, navigate]);
 
     // Fetch reported fans
