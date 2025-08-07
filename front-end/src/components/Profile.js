@@ -640,6 +640,106 @@ const Profile = () => {
                                 <span className={styles.statCount}>{user?.following_count || 0}</span>
                                 <span className={styles.statLabel}>Following</span>
                             </div>
+                            <div className={styles.statItem}>
+                                <span className={styles.statCount}>{fanPosts.length}</span>
+                                <span className={styles.statLabel}>Posts</span>
+                            </div>
+                        </div>
+                        
+                        {/* Posts Feed Section */}
+                        <div className={styles.profilePosts}>
+                            <h3 className={styles.postsHeader}>Posts</h3>
+                            
+                            {/* Loading state for posts */}
+                            {loadingPosts && (
+                                <p>Loading posts...</p>
+                            )}
+                            
+                            {/* No posts message */}
+                            {!loadingPosts && fanPosts.length === 0 && (
+                                <p>No fan posts yet. Create your first post!</p>
+                            )}
+                            
+                            {/* Display user's fan posts */}
+                            <div className={styles.postsGrid}>
+                                {fanPosts.map(post => (
+                                    <div key={post.id} className={styles.post}>
+                                        <h4 
+                                            onClick={() => navigate(`/fandetails/${post.id}`)}
+                                            style={{ cursor: 'pointer' }}
+                                            className={styles.clickableTitle}
+                                        >{post.title}</h4>
+                                        {(() => {
+                                            // Check if we have detailed information with media
+                                            const details = fanDetails[post.id];
+                                            if (details && details.media && details.media.length > 0) {
+                                                // Use the first media item from AWS
+                                                const mediaItem = details.media[0];
+                                                return (
+                                                    <div 
+                                                        onClick={() => navigate(`/fandetails/${post.id}`)}
+                                                        style={{ cursor: 'pointer' }}
+                                                    >
+                                                        <img 
+                                                            src={mediaItem.file_path} 
+                                                            alt={post.title}
+                                                            className={styles.postImage}
+                                                        />
+                                                    </div>
+                                                );
+                                            } else if (post.media_count > 0) {
+                                                // If we know there's media but don't have details yet, use a fallback
+                                                try {
+                                                    // Try to load a dynamic image based on post ID
+                                                    const imgSrc = require(`../assets/fan${(post.id % 4) + 1}.png`);
+                                                    return (
+                                                        <div 
+                                                            onClick={() => navigate(`/fandetails/${post.id}`)}
+                                                            style={{ cursor: 'pointer' }}
+                                                        >
+                                                            <img 
+                                                                src={imgSrc} 
+                                                                alt={post.title}
+                                                                className={styles.postImage}
+                                                            />
+                                                        </div>
+                                                    );
+                                                } catch (error) {
+                                                    // Fallback to placeholder if image can't be loaded
+                                                    console.error('Error loading image:', error);
+                                                    return (
+                                                        <div 
+                                                            className={styles.noImagePlaceholder}
+                                                            onClick={() => navigate(`/fandetails/${post.id}`)}
+                                                            style={{ cursor: 'pointer' }}
+                                                        >
+                                                            <FaFan size={40} />
+                                                        </div>
+                                                    );
+                                                }
+                                            } else {
+                                                // Show placeholder if no media
+                                                return (
+                                                    <div 
+                                                        className={styles.noImagePlaceholder}
+                                                        onClick={() => navigate(`/fandetails/${post.id}`)}
+                                                        style={{ cursor: 'pointer' }}
+                                                    >
+                                                        <FaFan size={40} />
+                                                    </div>
+                                                );
+                                            }
+                                        })()}
+                                        <p className={styles.postDescription}>
+                                            {post.description || 'No description provided.'}
+                                        </p>
+                                        <div className={styles.postMeta}>
+                                            <span>{new Date(post.created_at).toLocaleDateString()}</span>
+                                            <span>{post.likes_count || 0} likes</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
@@ -791,110 +891,6 @@ const Profile = () => {
                     </div>
                 )}
 
-                {/* Stats Section */}
-                <div className={styles.stats}>
-                    <div><strong>Fans</strong> {user?.fans_count || 0}</div>
-                    <div><strong>Following</strong> {user?.following_count || 0}</div>
-                    <div><strong>Posts</strong> {fanPosts.length}</div>
-                </div>
-
-                {/* Feed Section */}
-                <section className={styles.feed}>
-                    <div className={styles.feedHeader}>
-                        <h3>Posts</h3>
-                    </div>
-                    
-                    {/* Loading state for posts */}
-                    {loadingPosts && (
-                        <p>Loading posts...</p>
-                    )}
-                    
-                    {/* No posts message */}
-                    {!loadingPosts && fanPosts.length === 0 && (
-                        <p>No fan posts yet. Create your first post!</p>
-                    )}
-                    
-                    {/* Display user's fan posts */}
-                    <div className={styles.feedContent}>
-                        {fanPosts.map(post => (
-                            <div key={post.id} className={styles.post}>
-                                <h4 
-                                    onClick={() => navigate(`/fandetails/${post.id}`)}
-                                    style={{ cursor: 'pointer' }}
-                                    className={styles.clickableTitle}
-                                >{post.title}</h4>
-                                {(() => {
-                                    // Check if we have detailed information with media
-                                    const details = fanDetails[post.id];
-                                    if (details && details.media && details.media.length > 0) {
-                                        // Use the first media item from AWS
-                                        const mediaItem = details.media[0];
-                                        return (
-                                            <div 
-                                                onClick={() => navigate(`/fandetails/${post.id}`)}
-                                                style={{ cursor: 'pointer' }}
-                                            >
-                                                <img 
-                                                    src={mediaItem.file_path} 
-                                                    alt={post.title}
-                                                    className={styles.postImage}
-                                                />
-                                            </div>
-                                        );
-                                    } else if (post.media_count > 0) {
-                                        // If we know there's media but don't have details yet, use a fallback
-                                        try {
-                                            // Try to load a dynamic image based on post ID
-                                            const imgSrc = require(`../assets/fan${(post.id % 4) + 1}.png`);
-                                            return (
-                                                <div 
-                                                    onClick={() => navigate(`/fandetails/${post.id}`)}
-                                                    style={{ cursor: 'pointer' }}
-                                                >
-                                                    <img 
-                                                        src={imgSrc} 
-                                                        alt={post.title}
-                                                        className={styles.postImage}
-                                                    />
-                                                </div>
-                                            );
-                                        } catch (error) {
-                                            // Fallback to placeholder if image can't be loaded
-                                            console.error('Error loading image:', error);
-                                            return (
-                                                <div 
-                                                    className={styles.noImagePlaceholder}
-                                                    onClick={() => navigate(`/fandetails/${post.id}`)}
-                                                    style={{ cursor: 'pointer' }}
-                                                >
-                                                    <FaFan size={40} />
-                                                </div>
-                                            );
-                                        }
-                                    } else {
-                                        // Show placeholder if no media
-                                        return (
-                                            <div 
-                                                className={styles.noImagePlaceholder}
-                                                onClick={() => navigate(`/fandetails/${post.id}`)}
-                                                style={{ cursor: 'pointer' }}
-                                            >
-                                                <FaFan size={40} />
-                                            </div>
-                                        );
-                                    }
-                                })()}
-                                <p className={styles.postDescription}>
-                                    {post.description || 'No description provided.'}
-                                </p>
-                                <div className={styles.postMeta}>
-                                    <span>{new Date(post.created_at).toLocaleDateString()}</span>
-                                    <span>{post.likes_count || 0} likes</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
 
             </main>
         </div>

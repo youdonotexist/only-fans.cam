@@ -252,6 +252,7 @@
     margin-top: var(--space-md);
     gap: var(--space-lg);
     justify-content: center;
+    margin-bottom: var(--space-md);
 }
 
 .statItem {
@@ -270,6 +271,99 @@
     font-size: var(--text-xs);
     color: var(--foreground-dim);
     margin-top: var(--space-xs);
+}
+
+/* Profile Posts Section */
+.profilePosts {
+    margin-top: var(--space-lg);
+    width: 100%;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: var(--space-md);
+    background-color: var(--background-lighter);
+    border-radius: var(--radius-lg);
+}
+
+.postsHeader {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--foreground);
+    margin-bottom: var(--space-md);
+    text-align: center;
+}
+
+.postsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--space-md);
+}
+
+.post {
+    background-color: var(--background);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-md);
+    transition: all var(--transition-fast);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.post:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.clickableTitle {
+    font-size: var(--text-md);
+    font-weight: var(--font-semibold);
+    margin-bottom: var(--space-sm);
+    color: var(--foreground);
+    cursor: pointer;
+}
+
+.clickableTitle:hover {
+    color: var(--primary);
+}
+
+.postImage {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.noImagePlaceholder {
+    width: 100%;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-lighter);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-sm);
+    color: var(--foreground-dim);
+}
+
+.postDescription {
+    font-size: var(--text-sm);
+    color: var(--foreground-dim);
+    margin-bottom: var(--space-sm);
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.postMeta {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--text-xs);
+    color: var(--foreground-dim);
 }
 
 .bio textarea {
@@ -308,6 +402,19 @@
     
     .bio {
         margin-top: var(--space-xs);
+    }
+    
+    .profilePosts {
+        padding: var(--space-sm);
+        margin-top: var(--space-md);
+    }
+    
+    .postsGrid {
+        grid-template-columns: 1fr;
+    }
+    
+    .statsContainer {
+        gap: var(--space-md);
     }
 }
 
