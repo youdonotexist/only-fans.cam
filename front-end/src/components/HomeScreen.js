@@ -789,19 +789,19 @@ const HomeScreen = () => {
                                                             // Fetch fan details to get media
                                                             try {
                                                                 const fanDetails = await getFanById(fan.id);
-                                                                // Set editing state after fetching details
-                                                                setIsEditing(true);
-                                                                setShowPostForm(true);
-                                                                // Store media in fanMedia state
+                                                                // Store media in fanMedia state first
                                                                 setFanMedia(prev => ({
                                                                     ...prev,
                                                                     [fan.id]: fanDetails.media
                                                                 }));
-                                                            } catch (err) {
-                                                                console.error('Error fetching fan details for editing:', err);
-                                                                // Still allow editing without media
+                                                                
+                                                                // Only after media is stored, set editing state
                                                                 setIsEditing(true);
                                                                 setShowPostForm(true);
+                                                            } catch (err) {
+                                                                console.error('Error fetching fan details for editing:', err);
+                                                                alert('Error loading post details. Please try again.');
+                                                                // Don't show the modal if there's an error
                                                             }
                                                             
                                                             setActiveOptionsMenu(null);
