@@ -7,7 +7,7 @@ import commentStyles from './Comments.module.css';
 import animationStyles from './Animations.module.css';
 import uiStyles from './UI.module.css';
 import Sidebar from "./Sidebar";
-import { createFan, getAllFans, likeFan, unlikeFan, getFanById, addComment } from '../network/fanApi.ts';
+import { createFan, getAllFans, likeFan, unlikeFan, getFanById, addComment, updateFan } from '../network/fanApi.ts';
 import { uploadMedia } from '../network/mediaApi.ts';
 import { getMediaUrl } from '../network/mediaApi.ts';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -56,6 +56,13 @@ const HomeScreen = () => {
     
     // State for post options menu
     const [activeOptionsMenu, setActiveOptionsMenu] = useState(null);
+    
+    // State for editing posts
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingFanId, setEditingFanId] = useState(null);
+    const [editTitle, setEditTitle] = useState('');
+    const [editDescription, setEditDescription] = useState('');
+    const [editFanType, setEditFanType] = useState('ceiling');
     
     // Click outside handler for options menu
     useEffect(() => {
@@ -505,11 +512,20 @@ const HomeScreen = () => {
             return;
         }
 
-        // Create preview URLs for selected files
-        const newPreviewUrls = validFiles.map(file => URL.createObjectURL(file));
-
+        // Add files to selectedFiles state
         setSelectedFiles(prev => [...prev, ...validFiles]);
-        setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
+        
+        // Create preview URLs using FileReader for better mobile compatibility
+        validFiles.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                if (event.target && event.target.result) {
+                    setPreviewUrls(prev => [...prev, event.target.result.toString()]);
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+        
         setError('');
     };
     
@@ -525,9 +541,16 @@ const HomeScreen = () => {
         e.preventDefault();
         
         // Validate form
-        if (!newPost.title.trim()) {
-            setError('Title is required');
-            return;
+        if (isEditing) {
+            if (!editTitle.trim()) {
+                setError('Title is required');
+                return;
+            }
+        } else {
+            if (!newPost.title.trim()) {
+                setError('Title is required');
+                return;
+            }
         }
         
         try {
@@ -536,39 +559,75 @@ const HomeScreen = () => {
             
             const token = localStorage.getItem('token');
             if (!token) {
-                setError('You must be logged in to create a post');
+                setError('You must be logged in to create or edit a post');
                 setIsSubmitting(false);
                 return;
             }
             
-            // Create fan post
-            const createdFan = await createFan(newPost, token);
-            
-            // Upload images if any are selected
-            if (selectedFiles.length > 0) {
-                try {
-                    await uploadMedia(parseInt(createdFan.id), selectedFiles, token);
-                } catch (uploadError) {
-                    console.error('Error uploading images:', uploadError);
-                    setError(`Post created but failed to upload images: ${uploadError.message}`);
-                    setIsSubmitting(false);
-                    return;
+            if (isEditing) {
+                // Update existing fan post
+                const updateData = {
+                    title: editTitle,
+                    description: editDescription,
+                    fan_type: editFanType
+                };
+                
+                await updateFan(editingFanId, updateData, token);
+                
+                // Update the fan in the local state
+                setFans(prevFans => 
+                    prevFans.map(fan => 
+                        fan.id === editingFanId 
+                            ? { 
+                                ...fan, 
+                                title: editTitle, 
+                                description: editDescription,
+                                fan_type: editFanType
+                              } 
+                            : fan
+                    )
+                );
+                
+                // Reset editing state
+                setIsEditing(false);
+                setEditingFanId(null);
+                setEditTitle('');
+                setEditDescription('');
+                setEditFanType('ceiling');
+                
+                setShowPostForm(false);
+                setSuccess('Post updated successfully!');
+            } else {
+                // Create new fan post
+                const createdFan = await createFan(newPost, token);
+                
+                // Upload images if any are selected
+                if (selectedFiles.length > 0) {
+                    try {
+                        await uploadMedia(parseInt(createdFan.id), selectedFiles, token);
+                    } catch (uploadError) {
+                        console.error('Error uploading images:', uploadError);
+                        setError(`Post created but failed to upload images: ${uploadError.message}`);
+                        setIsSubmitting(false);
+                        return;
+                    }
                 }
+                
+                // Reset form
+                setNewPost({
+                    title: '',
+                    description: '',
+                    fan_type: 'ceiling'
+                });
+                setSelectedFiles([]);
+                setPreviewUrls([]);
+                
+                setShowPostForm(false);
+                setSuccess('Post created successfully!');
             }
             
-            // Reset form
-            setNewPost({
-                title: '',
-                description: '',
-                fan_type: 'ceiling'
-            });
-            setSelectedFiles([]);
-            
-            // Simply clear the preview URLs
-            setPreviewUrls([]);
-            
-            setShowPostForm(false);
-            setSuccess('Post created successfully!');
+            // Refresh the fans list to show the updated data
+            fetchFans();
             
             // Clear success message after 3 seconds
             setTimeout(() => {
@@ -576,8 +635,8 @@ const HomeScreen = () => {
             }, 3000);
             
         } catch (err) {
-            console.error('Error creating post:', err);
-            setError(err.message || 'Failed to create post');
+            console.error(`Error ${isEditing ? 'updating' : 'creating'} post:`, err);
+            setError(err.message || `Failed to ${isEditing ? 'update' : 'create'} post`);
         } finally {
             setIsSubmitting(false);
         }
@@ -607,7 +666,7 @@ const HomeScreen = () => {
                         </button>
                     ) : (
                         <div className={createPostStyles.createPostForm}>
-                            <h3>Create New Fan Post</h3>
+                            <h3>{isEditing ? 'Edit Fan Post' : 'Create New Fan Post'}</h3>
                             {error && <div className={uiStyles.error}>{error}</div>}
                             {success && <div className={uiStyles.success}>{success}</div>}
                             
@@ -618,15 +677,18 @@ const HomeScreen = () => {
                                         type="text"
                                         id="title"
                                         name="title"
-                                        value={newPost.title}
-                                        onChange={handleInputChange}
+                                        value={isEditing ? editTitle : newPost.title}
+                                        onChange={isEditing 
+                                            ? (e) => setEditTitle(e.target.value)
+                                            : handleInputChange
+                                        }
                                         placeholder="Enter fan title"
                                         maxLength={100}
                                         disabled={isSubmitting}
                                         className={uiStyles.input}
                                     />
                                     <div className={uiStyles.charCount}>
-                                        {newPost.title.length}/100 characters
+                                        {isEditing ? editTitle.length : newPost.title.length}/100 characters
                                     </div>
                                 </div>
                                 
@@ -635,8 +697,11 @@ const HomeScreen = () => {
                                     <textarea
                                         id="description"
                                         name="description"
-                                        value={newPost.description}
-                                        onChange={handleInputChange}
+                                        value={isEditing ? editDescription : newPost.description}
+                                        onChange={isEditing 
+                                            ? (e) => setEditDescription(e.target.value)
+                                            : handleInputChange
+                                        }
                                         placeholder="Describe your fan"
                                         maxLength={500}
                                         rows={3}
@@ -644,7 +709,7 @@ const HomeScreen = () => {
                                         className={uiStyles.textarea}
                                     />
                                     <div className={uiStyles.charCount}>
-                                        {newPost.description.length}/500 characters
+                                        {isEditing ? editDescription.length : newPost.description.length}/500 characters
                                     </div>
                                 </div>
                                 
@@ -653,8 +718,11 @@ const HomeScreen = () => {
                                     <select
                                         id="fan_type"
                                         name="fan_type"
-                                        value={newPost.fan_type}
-                                        onChange={handleInputChange}
+                                        value={isEditing ? editFanType : newPost.fan_type}
+                                        onChange={isEditing 
+                                            ? (e) => setEditFanType(e.target.value)
+                                            : handleInputChange
+                                        }
                                         disabled={isSubmitting}
                                         className={uiStyles.input}
                                     >
@@ -680,6 +748,7 @@ const HomeScreen = () => {
                                             type="file"
                                             ref={fileInputRef}
                                             onChange={handleFileSelect}
+                                            accept="image/*"
                                             multiple
                                             style={{ display: 'none' }}
                                             disabled={isSubmitting}
@@ -710,10 +779,19 @@ const HomeScreen = () => {
                                         type="button" 
                                         className={createPostStyles.cancelButton}
                                         onClick={() => {
-                                            // Simply reset state
+                                            // Reset all state
                                             setPreviewUrls([]);
                                             setSelectedFiles([]);
                                             setShowPostForm(false);
+                                            
+                                            // Reset editing state if we were editing
+                                            if (isEditing) {
+                                                setIsEditing(false);
+                                                setEditingFanId(null);
+                                                setEditTitle('');
+                                                setEditDescription('');
+                                                setEditFanType('ceiling');
+                                            }
                                         }}
                                         disabled={isSubmitting}
                                     >
@@ -814,7 +892,12 @@ const HomeScreen = () => {
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             // Handle edit post action
-                                                            console.log('Edit post', fan.id);
+                                                            setEditingFanId(fan.id);
+                                                            setEditTitle(fan.title || '');
+                                                            setEditDescription(fan.description || '');
+                                                            setEditFanType(fan.fan_type || 'ceiling');
+                                                            setIsEditing(true);
+                                                            setShowPostForm(true);
                                                             setActiveOptionsMenu(null);
                                                         }}
                                                     >
