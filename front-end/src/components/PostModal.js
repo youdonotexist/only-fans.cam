@@ -46,6 +46,8 @@ const PostModal = ({
     // Image upload state
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [previewUrls, setPreviewUrls] = useState([]);
+    const [existingMedia, setExistingMedia] = useState([]);
+    const [deletedMediaIds, setDeletedMediaIds] = useState([]);
     const fileInputRef = useRef(null);
 
     // Update form values when initialValues change
@@ -53,7 +55,17 @@ const PostModal = ({
         setTitle(initialValues.title || '');
         setDescription(initialValues.description || '');
         setFanType(initialValues.fan_type || 'ceiling');
-    }, [initialValues]);
+        
+        // Load existing media if available
+        if (isEditing && initialValues.media && initialValues.media.length > 0) {
+            setExistingMedia(initialValues.media);
+        } else {
+            setExistingMedia([]);
+        }
+        
+        // Reset deleted media IDs when modal opens
+        setDeletedMediaIds([]);
+    }, [initialValues, isEditing]);
 
     // Clean up preview URLs when component unmounts
     useEffect(() => {
@@ -97,7 +109,9 @@ const PostModal = ({
             title,
             description,
             fan_type: fanType,
-            selectedFiles
+            selectedFiles,
+            existingMedia,
+            deletedMediaIds
         };
         
         // Call onSubmit callback
@@ -136,6 +150,15 @@ const PostModal = ({
         // Simply remove the file and preview URL from state
         setSelectedFiles(prev => prev.filter((_, i) => i !== index));
         setPreviewUrls(prev => prev.filter((_, i) => i !== index));
+    };
+    
+    // Remove an existing media item
+    const removeExistingMedia = (mediaId) => {
+        // Add the media ID to the list of deleted media IDs
+        setDeletedMediaIds(prev => [...prev, mediaId]);
+        
+        // Remove the media item from the existing media state
+        setExistingMedia(prev => prev.filter(media => media.id !== mediaId));
     };
 
     // If the modal is not open, don't render anything
@@ -232,6 +255,34 @@ const PostModal = ({
                     )}
                     
                     <div className={uiStyles.formGroup}>
+                        {/* Display existing images when editing */}
+                        {isEditing && existingMedia.length > 0 && (
+                            <div className={styles.existingImagesSection}>
+                                <h4>Current Images</h4>
+                                <div className={styles.imagePreviewContainer}>
+                                    {existingMedia.map((media) => (
+                                        <div key={media.id} className={styles.imagePreview}>
+                                            <img 
+                                                className={styles.previewImage} 
+                                                src={media.file_path.startsWith('http') 
+                                                    ? media.file_path 
+                                                    : `${process.env.REACT_APP_API_URL}/media/${media.file_path}`} 
+                                                alt={`Existing ${media.id}`} 
+                                            />
+                                            <button
+                                                type="button"
+                                                className={styles.removeImageButton}
+                                                onClick={() => removeExistingMedia(media.id)}
+                                                disabled={isSubmitting}
+                                            >
+                                                <FaTimes />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        
                         <input
                             id="photo-input"
                             type="file"
@@ -243,11 +294,12 @@ const PostModal = ({
                             className={styles.visuallyHiddenFileInput}
                         />
                         <label htmlFor="photo-input" className={styles.uploadButton}>
-                            <FaImage /> Add Photos
+                            <FaImage /> {isEditing ? 'Add More Photos' : 'Add Photos'}
                         </label>
                         
                         {previewUrls.length > 0 && (
                             <div className={styles.imagePreviewContainer}>
+                                <h4>New Images</h4>
                                 {previewUrls.map((url, index) => (
                                     <div key={index} className={styles.imagePreview}>
                                         <img className={styles.previewImage} src={url} alt={`Preview ${index + 1}`} />

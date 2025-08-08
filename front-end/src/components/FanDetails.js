@@ -181,6 +181,44 @@ const FanDetails = () => {
         if (formData) {
             setEditTitle(formData.title);
             setEditDescription(formData.description);
+            
+            // Handle deleted media IDs
+            const deletedMediaIds = formData.deletedMediaIds || [];
+            
+            // Handle new files
+            const selectedFiles = formData.selectedFiles || [];
+            
+            // If there are deleted media IDs or new files, we need to update the media
+            if (deletedMediaIds.length > 0 || selectedFiles.length > 0) {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    openLoginModal(window.location.pathname);
+                    return;
+                }
+                
+                try {
+                    // Delete media items
+                    if (deletedMediaIds.length > 0) {
+                        const deletePromises = deletedMediaIds.map(mediaId => 
+                            deleteMedia(mediaId, token)
+                        );
+                        await Promise.all(deletePromises);
+                    }
+                    
+                    // Upload new files
+                    if (selectedFiles.length > 0) {
+                        await uploadMedia(parseInt(id), selectedFiles, token);
+                    }
+                    
+                    // Refresh fan data to show updated media
+                    const updatedFan = await getFanById(parseInt(id));
+                    setFan(updatedFan);
+                } catch (err) {
+                    console.error('Error updating media:', err);
+                    alert('Failed to update media. Please try again.');
+                    return;
+                }
+            }
         }
         
         if (!editTitle.trim()) return;
@@ -650,7 +688,8 @@ const FanDetails = () => {
                                     isEditing={true}
                                     initialValues={{
                                         title: editTitle,
-                                        description: editDescription
+                                        description: editDescription,
+                                        media: fan.media || []
                                     }}
                                     isSubmitting={isSubmitting}
                                     showFanType={false}

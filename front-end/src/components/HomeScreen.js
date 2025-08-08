@@ -9,7 +9,7 @@ import uiStyles from './UI.module.css';
 import Sidebar from "./Sidebar";
 import PostModal from "./PostModal";
 import { createFan, getAllFans, likeFan, unlikeFan, getFanById, addComment, updateFan } from '../network/fanApi.ts';
-import { uploadMedia } from '../network/mediaApi.ts';
+import { uploadMedia, deleteMedia } from '../network/mediaApi.ts';
 import { getMediaUrl } from '../network/mediaApi.ts';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLoginModal } from '../contexts/LoginModalContext';
@@ -529,6 +529,18 @@ const HomeScreen = () => {
             }
             
             if (isEditing) {
+                // Upload new images if any are selected
+                if (selectedFiles.length > 0) {
+                    try {
+                        await uploadMedia(editingFanId, selectedFiles, token);
+                    } catch (uploadError) {
+                        console.error('Error uploading images:', uploadError);
+                        setError(`Failed to upload images: ${uploadError.message}`);
+                        setIsSubmitting(false);
+                        return;
+                    }
+                }
+                
                 // Update existing fan post
                 const updateData = {
                     title: editTitle,
@@ -650,14 +662,33 @@ const HomeScreen = () => {
                                 setEditTitle(formData.title);
                                 setEditDescription(formData.description);
                                 setEditFanType(formData.fan_type);
+                                
+                                // Store the selected files and deleted media IDs
+                                setSelectedFiles(formData.selectedFiles);
+                                
+                                // Handle deleted media IDs
+                                const deletedMediaIds = formData.deletedMediaIds || [];
+                                if (deletedMediaIds.length > 0) {
+                                    const token = localStorage.getItem('token');
+                                    if (token) {
+                                        // Delete media items
+                                        deletedMediaIds.forEach(async (mediaId) => {
+                                            try {
+                                                await deleteMedia(mediaId, token);
+                                            } catch (err) {
+                                                console.error(`Error deleting media ${mediaId}:`, err);
+                                            }
+                                        });
+                                    }
+                                }
                             } else {
                                 setNewPost({
                                     title: formData.title,
                                     description: formData.description,
                                     fan_type: formData.fan_type
                                 });
+                                setSelectedFiles(formData.selectedFiles);
                             }
-                            setSelectedFiles(formData.selectedFiles);
                             
                             // Submit the form
                             handleSubmit();
@@ -666,7 +697,8 @@ const HomeScreen = () => {
                         initialValues={{
                             title: isEditing ? editTitle : newPost.title,
                             description: isEditing ? editDescription : newPost.description,
-                            fan_type: isEditing ? editFanType : newPost.fan_type
+                            fan_type: isEditing ? editFanType : newPost.fan_type,
+                            media: isEditing && editingFanId && fanMedia[editingFanId] ? fanMedia[editingFanId] : []
                         }}
                         isSubmitting={isSubmitting}
                         error={error}
@@ -746,30 +778,36 @@ const HomeScreen = () => {
                                                 <>
                                                     <div 
                                                         className={fanPostStyles.optionsMenuItem}
-                                                        onClick={(e) => {
+                                                        onClick={async (e) => {
                                                             e.stopPropagation();
                                                             // Handle edit post action
                                                             setEditingFanId(fan.id);
                                                             setEditTitle(fan.title || '');
                                                             setEditDescription(fan.description || '');
                                                             setEditFanType(fan.fan_type || 'ceiling');
-                                                            setIsEditing(true);
-                                                            setShowPostForm(true);
+                                                            
+                                                            // Fetch fan details to get media
+                                                            try {
+                                                                const fanDetails = await getFanById(fan.id);
+                                                                // Set editing state after fetching details
+                                                                setIsEditing(true);
+                                                                setShowPostForm(true);
+                                                                // Store media in fanMedia state
+                                                                setFanMedia(prev => ({
+                                                                    ...prev,
+                                                                    [fan.id]: fanDetails.media
+                                                                }));
+                                                            } catch (err) {
+                                                                console.error('Error fetching fan details for editing:', err);
+                                                                // Still allow editing without media
+                                                                setIsEditing(true);
+                                                                setShowPostForm(true);
+                                                            }
+                                                            
                                                             setActiveOptionsMenu(null);
                                                         }}
                                                     >
                                                         <FaEdit /> Edit Post
-                                                    </div>
-                                                    <div 
-                                                        className={fanPostStyles.optionsMenuItem}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            // Handle edit images action
-                                                            console.log('Edit images', fan.id);
-                                                            setActiveOptionsMenu(null);
-                                                        }}
-                                                    >
-                                                        <FaImages /> Edit Images
                                                     </div>
                                                 </>
                                             ) : (

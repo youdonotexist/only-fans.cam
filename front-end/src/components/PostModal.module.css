@@ -115,6 +115,18 @@
     color: #ff1f1f;
 }
 
+/* Existing images section */
+.existingImagesSection {
+    margin-bottom: 20px;
+}
+
+.existingImagesSection h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: #333;
+}
+
 /* Form actions container */
 .formActions {
     display: flex;
@@ -176,7 +188,7 @@
 }
 
 .uploadButton {
-    width: 120px;
+    width: 140px;
     display: inline-flex;
     align-items: center;
     gap: var(--space-sm);
