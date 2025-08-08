@@ -499,7 +499,7 @@ const HomeScreen = () => {
         if (files.length === 0) return;
         
         // Validate files (only images)
-        const validFiles = files.filter(file => file.type.startsWith('image/'));
+        const validFiles = files;//.filter(file => file.type.startsWith('image/'));
         if (validFiles.length !== files.length) {
             setError('Only image files are allowed');
             return;
