@@ -95,72 +95,73 @@ const HomeScreen = () => {
         }
     }, [location, navigate, openLoginModal]);
     
+    // Function to fetch fans (can be called from anywhere in the component)
+    const fetchFans = async () => {
+        try {
+            setLoading(true);
+            setLoadError('');
+            setPage(1); // Reset to page 1
+            
+            const response = await getAllFans(1, 10);
+            setFans(response.fans || []);
+            
+            // Check if there are more fans to load
+            setHasMore(response.pagination.page < response.pagination.totalPages);
+            
+            // Initialize liked status based on likes_count
+            const initialLikedState = {};
+            response.fans?.forEach(fan => {
+                initialLikedState[fan.id] = false; // Initially set all to unliked
+            });
+            setLikedFans(initialLikedState);
+            
+            // Fetch details (media and comments) for each fan
+            const detailsPromises = response.fans.map(async (fan) => {
+                try {
+                    const fanDetails = await getFanById(fan.id);
+                    return { 
+                        fanId: fan.id, 
+                        media: fanDetails.media,
+                        commentsCount: fanDetails.comments ? fanDetails.comments.length : 0
+                    };
+                } catch (err) {
+                    console.error(`Error fetching details for fan ${fan.id}:`, err);
+                    return { fanId: fan.id, media: [], commentsCount: 0 };
+                }
+            });
+            
+            const detailsResults = await Promise.all(detailsPromises);
+            
+            // Process media results
+            const mediaMap = {};
+            detailsResults.forEach(result => {
+                if (result.media && result.media.length > 0) {
+                    mediaMap[result.fanId] = result.media[0]; // Use the first media item
+                }
+            });
+            
+            // Add comments count to fans
+            const updatedFans = response.fans.map(fan => {
+                const details = detailsResults.find(d => d.fanId === fan.id);
+                return {
+                    ...fan,
+                    comments_count: details ? details.commentsCount : 0
+                };
+            });
+            
+            setFans(updatedFans);
+            setFanMedia(mediaMap);
+        } catch (err) {
+            console.error('Error fetching fans:', err);
+            setLoadError(err.message || 'Failed to load fans');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     // Fetch initial fans from backend
     useEffect(() => {
-        const fetchInitialFans = async () => {
-            try {
-                setLoading(true);
-                setLoadError('');
-                setPage(1); // Reset to page 1
-                
-                const response = await getAllFans(1, 10);
-                setFans(response.fans || []);
-                
-                // Check if there are more fans to load
-                setHasMore(response.pagination.page < response.pagination.totalPages);
-                
-                // Initialize liked status based on likes_count
-                const initialLikedState = {};
-                response.fans?.forEach(fan => {
-                    initialLikedState[fan.id] = false; // Initially set all to unliked
-                });
-                setLikedFans(initialLikedState);
-                
-                // Fetch details (media and comments) for each fan
-                const detailsPromises = response.fans.map(async (fan) => {
-                    try {
-                        const fanDetails = await getFanById(fan.id);
-                        return { 
-                            fanId: fan.id, 
-                            media: fanDetails.media,
-                            commentsCount: fanDetails.comments ? fanDetails.comments.length : 0
-                        };
-                    } catch (err) {
-                        console.error(`Error fetching details for fan ${fan.id}:`, err);
-                        return { fanId: fan.id, media: [], commentsCount: 0 };
-                    }
-                });
-                
-                const detailsResults = await Promise.all(detailsPromises);
-                
-                // Process media results
-                const mediaMap = {};
-                detailsResults.forEach(result => {
-                    if (result.media && result.media.length > 0) {
-                        mediaMap[result.fanId] = result.media[0]; // Use the first media item
-                    }
-                });
-                
-                // Add comments count to fans
-                const updatedFans = response.fans.map(fan => {
-                    const details = detailsResults.find(d => d.fanId === fan.id);
-                    return {
-                        ...fan,
-                        comments_count: details ? details.commentsCount : 0
-                    };
-                });
-                
-                setFans(updatedFans);
-                setFanMedia(mediaMap);
-            } catch (err) {
-                console.error('Error fetching fans:', err);
-                setLoadError(err.message || 'Failed to load fans');
-            } finally {
-                setLoading(false);
-            }
-        };
-        
-        fetchInitialFans();
+        fetchFans();
     }, [success]); // Refetch when a new post is created successfully
     
     // Handle like/unlike
