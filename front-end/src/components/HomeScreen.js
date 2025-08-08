@@ -505,18 +505,24 @@ const HomeScreen = () => {
             return;
         }
         
-        // Create preview URLs for selected files
-        const newPreviewUrls = validFiles.map(file => URL.createObjectURL(file));
-        
+        // Add files to selectedFiles state
         setSelectedFiles(prev => [...prev, ...validFiles]);
-        setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
+        
+        // Create preview URLs using FileReader for better mobile compatibility
+        validFiles.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                if (event.target && event.target.result) {
+                    setPreviewUrls(prev => [...prev, event.target.result.toString()]);
+                }
+            };
+            reader.readAsDataURL(file);
+        });
     };
     
     // Remove a selected file
     const removeFile = (index) => {
-        // Revoke the object URL to avoid memory leaks
-        URL.revokeObjectURL(previewUrls[index]);
-        
+        // Simply remove the file and preview URL from state
         setSelectedFiles(prev => prev.filter((_, i) => i !== index));
         setPreviewUrls(prev => prev.filter((_, i) => i !== index));
     };
@@ -565,8 +571,7 @@ const HomeScreen = () => {
             });
             setSelectedFiles([]);
             
-            // Revoke all object URLs to avoid memory leaks
-            previewUrls.forEach(url => URL.revokeObjectURL(url));
+            // Simply clear the preview URLs
             setPreviewUrls([]);
             
             setShowPostForm(false);
@@ -597,7 +602,13 @@ const HomeScreen = () => {
                     {!showPostForm ? (
                         <button 
                             className={createPostStyles.createPostButton}
-                            onClick={() => setShowPostForm(true)}
+                            onClick={() => {
+                                if (currentUser) {
+                                    setShowPostForm(true);
+                                } else {
+                                    openLoginModal('/');
+                                }
+                            }}
                         >
                             <FaPlus /> Create New Post
                         </button>
@@ -706,8 +717,7 @@ const HomeScreen = () => {
                                         type="button" 
                                         className={createPostStyles.cancelButton}
                                         onClick={() => {
-                                            // Clean up preview URLs before closing
-                                            previewUrls.forEach(url => URL.revokeObjectURL(url));
+                                            // Simply reset state
                                             setPreviewUrls([]);
                                             setSelectedFiles([]);
                                             setShowPostForm(false);
