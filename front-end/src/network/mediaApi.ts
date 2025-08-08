@@ -127,6 +127,12 @@ export const deleteMedia = async (id: number, token: string): Promise<{ message:
  * @returns Full URL to media file
  */
 export const getMediaUrl = (filePath: string): string => {
+  // Handle undefined or null filePath
+  if (!filePath) {
+    console.warn('getMediaUrl called with undefined or null filePath');
+    return '';
+  }
+
   // If the path already starts with http, it's either an S3 URL or a full URL, so return it as is
   if (filePath.startsWith('http')) {
     return filePath;

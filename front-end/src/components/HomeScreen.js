@@ -839,7 +839,7 @@ const HomeScreen = () => {
                                 >
                                     {/* Use the actual uploaded image if available, otherwise fallback to placeholder */}
                                     <img 
-                                        src={fanMedia[fan.id] ? getMediaUrl(fanMedia[fan.id].file_path) : require(`../assets/fan${(fan.id % 4) + 1}.png`)} 
+                                        src={fanMedia[fan.id] && fanMedia[fan.id].file_path ? getMediaUrl(fanMedia[fan.id].file_path) : require(`../assets/fan${(fan.id % 4) + 1}.png`)} 
                                         alt={fan.title} 
                                         className={fanPostStyles.fanImage} 
                                     />
