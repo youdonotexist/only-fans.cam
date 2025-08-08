@@ -6,6 +6,7 @@ import { getFanById, likeFan, unlikeFan, addComment, updateFan, deleteFan } from
 import { getMediaUrl, uploadMedia, deleteMedia } from '../network/mediaApi.ts';
 import Sidebar from './Sidebar';
 import PageLayout from './PageLayout';
+import PostModal from './PostModal';
 import { FaSpinner, FaFan, FaHeart, FaComment, FaShare, FaUser, FaPaperPlane, FaTimes, FaEllipsisV, FaEdit, FaTrash, FaImage, FaPlus, FaFlag } from 'react-icons/fa';
 import { useLoginModal } from '../contexts/LoginModalContext';
 import Avatar from './Avatar';
@@ -175,7 +176,13 @@ const FanDetails = () => {
     };
     
     // Handle post update
-    const handleUpdatePost = async () => {
+    const handleUpdatePost = async (formData) => {
+        // If formData is provided, update the state
+        if (formData) {
+            setEditTitle(formData.title);
+            setEditDescription(formData.description);
+        }
+        
         if (!editTitle.trim()) return;
         
         const token = localStorage.getItem('token');
@@ -625,59 +632,29 @@ const FanDetails = () => {
                                     </div>
                                 )}
                                 
-                                {isEditing ? (
-                                    <div className={styles.editForm}>
-                                        <h3>Edit Post</h3>
-                                        <div className={styles.formGroup}>
-                                            <label htmlFor="editTitle">Title</label>
-                                            <input
-                                                id="editTitle"
-                                                type="text"
-                                                value={editTitle}
-                                                onChange={(e) => setEditTitle(e.target.value)}
-                                                className={styles.editInput}
-                                                placeholder="Enter title"
-                                                disabled={isSubmitting}
-                                            />
-                                        </div>
-                                        <div className={styles.formGroup}>
-                                            <label htmlFor="editDescription">Description</label>
-                                            <textarea
-                                                id="editDescription"
-                                                value={editDescription}
-                                                onChange={(e) => setEditDescription(e.target.value)}
-                                                className={styles.editTextarea}
-                                                placeholder="Enter description"
-                                                rows={4}
-                                                disabled={isSubmitting}
-                                            />
-                                        </div>
-                                        <div className={styles.editButtons}>
-                                            <button
-                                                className={styles.cancelButton}
-                                                onClick={() => {
-                                                    setIsEditing(false);
-                                                    setEditTitle(fan.title || '');
-                                                    setEditDescription(fan.description || '');
-                                                }}
-                                                disabled={isSubmitting}
-                                            >
-                                                Cancel
-                                            </button>
-                                            <button
-                                                className={styles.saveButton}
-                                                onClick={handleUpdatePost}
-                                                disabled={!editTitle.trim() || isSubmitting}
-                                            >
-                                                {isSubmitting ? <FaSpinner className={styles.spinner} /> : 'Save Changes'}
-                                            </button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className={styles.description}>
-                                        <p>{fan.description || "No description provided."}</p>
-                                    </div>
-                                )}
+                                <div className={styles.description}>
+                                    <p>{fan.description || "No description provided."}</p>
+                                </div>
+                                
+                                {/* Post Edit Modal */}
+                                <PostModal 
+                                    isOpen={isEditing}
+                                    onClose={() => {
+                                        setIsEditing(false);
+                                        setEditTitle(fan.title || '');
+                                        setEditDescription(fan.description || '');
+                                    }}
+                                    onSubmit={(formData) => {
+                                        handleUpdatePost(formData);
+                                    }}
+                                    isEditing={true}
+                                    initialValues={{
+                                        title: editTitle,
+                                        description: editDescription
+                                    }}
+                                    isSubmitting={isSubmitting}
+                                    showFanType={false}
+                                />
                                 
                                 <div className={styles.stats}>
                                     <div 

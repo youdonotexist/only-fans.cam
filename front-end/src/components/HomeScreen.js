@@ -7,6 +7,7 @@ import commentStyles from './Comments.module.css';
 import animationStyles from './Animations.module.css';
 import uiStyles from './UI.module.css';
 import Sidebar from "./Sidebar";
+import PostModal from "./PostModal";
 import { createFan, getAllFans, likeFan, unlikeFan, getFanById, addComment, updateFan } from '../network/fanApi.ts';
 import { uploadMedia } from '../network/mediaApi.ts';
 import { getMediaUrl } from '../network/mediaApi.ts';
@@ -45,11 +46,9 @@ const HomeScreen = () => {
         fan_type: 'ceiling'
     });
     const [selectedFiles, setSelectedFiles] = useState([]);
-    const [previewUrls, setPreviewUrls] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const fileInputRef = useRef(null);
     
     // State for fan media
     const [fanMedia, setFanMedia] = useState({});
@@ -501,45 +500,9 @@ const HomeScreen = () => {
         }));
     };
     
-    // Handle file selection
-    const handleFileSelect = (e) => {
-        const files = Array.from(e.target.files);
-        if (files.length === 0) return;
-
-        // Validate files (only images)
-        const validFiles = files.filter(file => file.type.startsWith('image/'));
-        if (validFiles.length !== files.length) {
-            setError('Only image files are allowed');
-            return;
-        }
-
-        // Add files to selectedFiles state
-        setSelectedFiles(prev => [...prev, ...validFiles]);
-        
-        // Create preview URLs using FileReader for better mobile compatibility
-        validFiles.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                if (event.target && event.target.result) {
-                    setPreviewUrls(prev => [...prev, event.target.result.toString()]);
-                }
-            };
-            reader.readAsDataURL(file);
-        });
-        
-        setError('');
-    };
-    
-    // Remove a selected file
-    const removeFile = (index) => {
-        // Simply remove the file and preview URL from state
-        setSelectedFiles(prev => prev.filter((_, i) => i !== index));
-        setPreviewUrls(prev => prev.filter((_, i) => i !== index));
-    };
     
     // Handle form submission
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         
         // Validate form
         if (isEditing) {
@@ -621,7 +584,6 @@ const HomeScreen = () => {
                     fan_type: 'ceiling'
                 });
                 setSelectedFiles([]);
-                setPreviewUrls([]);
                 
                 setShowPostForm(false);
                 setSuccess('Post created successfully!');
@@ -652,170 +614,64 @@ const HomeScreen = () => {
             <main className={layoutStyles.mainContent}>
                 {/* Create Post Section */}
                 <div className={createPostStyles.createPostSection}>
-                    {!showPostForm ? (
-                        <button 
-                            className={createPostStyles.createPostButton}
-                            onClick={() => {
-                                if (currentUser) {
-                                    setShowPostForm(true);
-                                } else {
-                                    openLoginModal('/');
-                                }
-                            }}
-                        >
-                            <FaPlus /> Create New Post
-                        </button>
-                    ) : (
-                        <div className={createPostStyles.createPostForm}>
-                            <h3>{isEditing ? 'Edit Fan Post' : 'Create New Fan Post'}</h3>
-                            {error && <div className={uiStyles.error}>{error}</div>}
-                            {success && <div className={uiStyles.success}>{success}</div>}
+                    <button 
+                        className={createPostStyles.createPostButton}
+                        onClick={() => {
+                            if (currentUser) {
+                                setShowPostForm(true);
+                            } else {
+                                openLoginModal('/');
+                            }
+                        }}
+                    >
+                        <FaPlus /> Create New Post
+                    </button>
+                    
+                    {/* Post Modal */}
+                    <PostModal 
+                        isOpen={showPostForm}
+                        onClose={() => {
+                            // Reset all state
+                            setSelectedFiles([]);
+                            setShowPostForm(false);
                             
-                            <form onSubmit={handleSubmit}>
-                                <div className={uiStyles.formGroup}>
-                                    <label htmlFor="title">Title</label>
-                                    <input
-                                        type="text"
-                                        id="title"
-                                        name="title"
-                                        value={isEditing ? editTitle : newPost.title}
-                                        onChange={isEditing 
-                                            ? (e) => setEditTitle(e.target.value)
-                                            : handleInputChange
-                                        }
-                                        placeholder="Enter fan title"
-                                        maxLength={100}
-                                        disabled={isSubmitting}
-                                        className={uiStyles.input}
-                                    />
-                                    <div className={uiStyles.charCount}>
-                                        {isEditing ? editTitle.length : newPost.title.length}/100 characters
-                                    </div>
-                                </div>
-                                
-                                <div className={uiStyles.formGroup}>
-                                    <label htmlFor="description">Description</label>
-                                    <textarea
-                                        id="description"
-                                        name="description"
-                                        value={isEditing ? editDescription : newPost.description}
-                                        onChange={isEditing 
-                                            ? (e) => setEditDescription(e.target.value)
-                                            : handleInputChange
-                                        }
-                                        placeholder="Describe your fan"
-                                        maxLength={500}
-                                        rows={3}
-                                        disabled={isSubmitting}
-                                        className={uiStyles.textarea}
-                                    />
-                                    <div className={uiStyles.charCount}>
-                                        {isEditing ? editDescription.length : newPost.description.length}/500 characters
-                                    </div>
-                                </div>
-                                
-                                <div className={uiStyles.formGroup}>
-                                    <label htmlFor="fan_type">Fan Type</label>
-                                    <select
-                                        id="fan_type"
-                                        name="fan_type"
-                                        value={isEditing ? editFanType : newPost.fan_type}
-                                        onChange={isEditing 
-                                            ? (e) => setEditFanType(e.target.value)
-                                            : handleInputChange
-                                        }
-                                        disabled={isSubmitting}
-                                        className={uiStyles.input}
-                                    >
-                                        <option value="ceiling">Ceiling Fan</option>
-                                        <option value="table">Table Fan</option>
-                                        <option value="tower">Tower Fan</option>
-                                        <option value="box">Box Fan</option>
-                                        <option value="industrial">Industrial Fan</option>
-                                        <option value="bladeless">Bladeless Fan</option>
-                                        <option value="hand">Hand Fan</option>
-                                        <option value="computer">Computer Cooling Fan</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                </div>
-                                
-                                <div className={uiStyles.formGroup}>
-                                    <label>
-                                        <div className={createPostStyles.uploadButton} onClick={() => fileInputRef.current.click()}>
-                                            <FaImage /> Add Photos
-                                        </div>
-
-                                        <input
-                                            type="file"
-                                            ref={fileInputRef}
-                                            onChange={handleFileSelect}
-                                            accept="image/*"
-                                            multiple
-                                            style={{ display: 'none' }}
-                                            disabled={isSubmitting}
-                                        />
-                                    </label>
-                                    
-                                    {previewUrls.length > 0 && (
-                                        <div className={createPostStyles.imagePreviewContainer}>
-                                            {previewUrls.map((url, index) => (
-                                                <div key={index} className={createPostStyles.imagePreview}>
-                                                    <img className={createPostStyles.createPostImagePreview} src={url} alt={`Preview ${index + 1}`} />
-                                                    <button
-                                                        type="button"
-                                                        className={createPostStyles.removeImageButton}
-                                                        onClick={() => removeFile(index)}
-                                                        disabled={isSubmitting}
-                                                    >
-                                                        <FaTimes />
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                                
-                                <div className={createPostStyles.formActions}>
-                                    <button 
-                                        type="button" 
-                                        className={createPostStyles.cancelButton}
-                                        onClick={() => {
-                                            // Reset all state
-                                            setPreviewUrls([]);
-                                            setSelectedFiles([]);
-                                            setShowPostForm(false);
-                                            
-                                            // Reset editing state if we were editing
-                                            if (isEditing) {
-                                                setIsEditing(false);
-                                                setEditingFanId(null);
-                                                setEditTitle('');
-                                                setEditDescription('');
-                                                setEditFanType('ceiling');
-                                            }
-                                        }}
-                                        disabled={isSubmitting}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button 
-                                        type="submit" 
-                                        className={createPostStyles.submitButton}
-                                        disabled={isSubmitting}
-                                    >
-                                        {isSubmitting ? (
-                                            <>
-                                                <FaSpinner className={animationStyles.spin} /> 
-                                                Posting...
-                                            </>
-                                        ) : (
-                                            'Post'
-                                        )}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    )}
+                            // Reset editing state if we were editing
+                            if (isEditing) {
+                                setIsEditing(false);
+                                setEditingFanId(null);
+                                setEditTitle('');
+                                setEditDescription('');
+                                setEditFanType('ceiling');
+                            }
+                        }}
+                        onSubmit={(formData) => {
+                            // Update state with form data
+                            if (isEditing) {
+                                setEditTitle(formData.title);
+                                setEditDescription(formData.description);
+                                setEditFanType(formData.fan_type);
+                            } else {
+                                setNewPost({
+                                    title: formData.title,
+                                    description: formData.description,
+                                    fan_type: formData.fan_type
+                                });
+                            }
+                            setSelectedFiles(formData.selectedFiles);
+                            
+                            // Submit the form
+                            handleSubmit();
+                        }}
+                        isEditing={isEditing}
+                        initialValues={{
+                            title: isEditing ? editTitle : newPost.title,
+                            description: isEditing ? editDescription : newPost.description,
+                            fan_type: isEditing ? editFanType : newPost.fan_type
+                        }}
+                        isSubmitting={isSubmitting}
+                        error={error}
+                        success={success}
+                    />
                 </div>
                 
                 {/* Success Message (outside of form) */}
