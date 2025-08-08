@@ -109,27 +109,41 @@ const HomeScreen = () => {
                 });
                 setLikedFans(initialLikedState);
                 
-                // Fetch media for each fan with media_count > 0
-                const mediaPromises = response.fans
-                    .filter(fan => fan.media_count > 0)
-                    .map(async (fan) => {
-                        try {
-                            const fanDetails = await getFanById(fan.id);
-                            return { fanId: fan.id, media: fanDetails.media };
-                        } catch (err) {
-                            console.error(`Error fetching media for fan ${fan.id}:`, err);
-                            return { fanId: fan.id, media: [] };
-                        }
-                    });
+                // Fetch details (media and comments) for each fan
+                const detailsPromises = response.fans.map(async (fan) => {
+                    try {
+                        const fanDetails = await getFanById(fan.id);
+                        return { 
+                            fanId: fan.id, 
+                            media: fanDetails.media,
+                            commentsCount: fanDetails.comments ? fanDetails.comments.length : 0
+                        };
+                    } catch (err) {
+                        console.error(`Error fetching details for fan ${fan.id}:`, err);
+                        return { fanId: fan.id, media: [], commentsCount: 0 };
+                    }
+                });
                 
-                const mediaResults = await Promise.all(mediaPromises);
+                const detailsResults = await Promise.all(detailsPromises);
+                
+                // Process media results
                 const mediaMap = {};
-                mediaResults.forEach(result => {
+                detailsResults.forEach(result => {
                     if (result.media && result.media.length > 0) {
                         mediaMap[result.fanId] = result.media[0]; // Use the first media item
                     }
                 });
                 
+                // Add comments count to fans
+                const updatedFans = response.fans.map(fan => {
+                    const details = detailsResults.find(d => d.fanId === fan.id);
+                    return {
+                        ...fan,
+                        comments_count: details ? details.commentsCount : 0
+                    };
+                });
+                
+                setFans(updatedFans);
                 setFanMedia(mediaMap);
             } catch (err) {
                 console.error('Error fetching fans:', err);
@@ -250,6 +264,19 @@ const HomeScreen = () => {
             // Update comments list
             setComments(prev => [...prev, newComment]);
             
+            // Update comment count in fans list
+            setFans(prevFans => 
+                prevFans.map(fan => {
+                    if (fan.id === currentFanId) {
+                        return { 
+                            ...fan, 
+                            comments_count: (fan.comments_count || 0) + 1 
+                        };
+                    }
+                    return fan;
+                })
+            );
+            
             // Clear comment text
             setCommentText('');
         } catch (err) {
@@ -275,8 +302,7 @@ const HomeScreen = () => {
             const response = await getAllFans(nextPage, 10);
             
             if (response.fans && response.fans.length > 0) {
-                // Add new fans to the existing list
-                setFans(prevFans => [...prevFans, ...response.fans]);
+                // Will set fans after adding comments_count
                 setPage(nextPage);
                 
                 // Update hasMore flag
@@ -289,27 +315,42 @@ const HomeScreen = () => {
                 });
                 setLikedFans(newLikedState);
                 
-                // Fetch media for new fans with media_count > 0
-                const mediaPromises = response.fans
-                    .filter(fan => fan.media_count > 0)
-                    .map(async (fan) => {
-                        try {
-                            const fanDetails = await getFanById(fan.id);
-                            return { fanId: fan.id, media: fanDetails.media };
-                        } catch (err) {
-                            console.error(`Error fetching media for fan ${fan.id}:`, err);
-                            return { fanId: fan.id, media: [] };
-                        }
-                    });
-                
-                const mediaResults = await Promise.all(mediaPromises);
-                const newMediaMap = { ...fanMedia };
-                mediaResults.forEach(result => {
-                    if (result.media && result.media.length > 0) {
-                        newMediaMap[result.fanId] = result.media[0];
+                // Fetch details (media and comments) for each new fan
+                const detailsPromises = response.fans.map(async (fan) => {
+                    try {
+                        const fanDetails = await getFanById(fan.id);
+                        return { 
+                            fanId: fan.id, 
+                            media: fanDetails.media,
+                            commentsCount: fanDetails.comments ? fanDetails.comments.length : 0
+                        };
+                    } catch (err) {
+                        console.error(`Error fetching details for fan ${fan.id}:`, err);
+                        return { fanId: fan.id, media: [], commentsCount: 0 };
                     }
                 });
                 
+                const detailsResults = await Promise.all(detailsPromises);
+                
+                // Process media results
+                const newMediaMap = { ...fanMedia };
+                detailsResults.forEach(result => {
+                    if (result.media && result.media.length > 0) {
+                        newMediaMap[result.fanId] = result.media[0]; // Use the first media item
+                    }
+                });
+                
+                // Add comments count to new fans
+                const updatedNewFans = response.fans.map(fan => {
+                    const details = detailsResults.find(d => d.fanId === fan.id);
+                    return {
+                        ...fan,
+                        comments_count: details ? details.commentsCount : 0
+                    };
+                });
+                
+                // Update fans list with the new fans that have comments_count
+                setFans(prevFans => [...prevFans, ...updatedNewFans]);
                 setFanMedia(newMediaMap);
             } else {
                 setHasMore(false);
@@ -852,7 +893,7 @@ const HomeScreen = () => {
                                     {fan.likes_count || 0} {fan.likes_count === 1 ? 'Like' : 'Likes'}
                                 </div>
                                 <div onClick={() => handleCommentClick(fan.id)}>
-                                    <FaComment className={fanPostStyles.icon} /> Comment
+                                    <FaComment className={fanPostStyles.icon} /> Comment {fan.comments_count ? `(${fan.comments_count})` : ''}
                                 </div>
                                 <div onClick={() => handleShare(fan)}>
                                     <FaShare className={fanPostStyles.icon} /> Share
