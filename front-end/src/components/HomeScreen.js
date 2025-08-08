@@ -497,27 +497,20 @@ const HomeScreen = () => {
     const handleFileSelect = (e) => {
         const files = Array.from(e.target.files);
         if (files.length === 0) return;
-        
+
         // Validate files (only images)
-        const validFiles = files;//.filter(file => file.type.startsWith('image/'));
+        const validFiles = files.filter(file => file.type.startsWith('image/'));
         if (validFiles.length !== files.length) {
             setError('Only image files are allowed');
             return;
         }
-        
-        // Add files to selectedFiles state
+
+        // Create preview URLs for selected files
+        const newPreviewUrls = validFiles.map(file => URL.createObjectURL(file));
+
         setSelectedFiles(prev => [...prev, ...validFiles]);
-        
-        // Create preview URLs using FileReader for better mobile compatibility
-        validFiles.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                if (event.target && event.target.result) {
-                    setPreviewUrls(prev => [...prev, event.target.result.toString()]);
-                }
-            };
-            reader.readAsDataURL(file);
-        });
+        setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
+        setError('');
     };
     
     // Remove a selected file
@@ -682,6 +675,7 @@ const HomeScreen = () => {
                                         <div className={createPostStyles.uploadButton} onClick={() => fileInputRef.current.click()}>
                                             <FaImage /> Add Photos
                                         </div>
+
                                         <input
                                             type="file"
                                             ref={fileInputRef}

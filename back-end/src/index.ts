@@ -17,11 +17,11 @@ dotenv.config();
 
 // Initialize express app
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:3001',
+  origin: process.env.FRONTEND_URL || 'http:///192.168.68.88:3000',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token'],
   credentials: true
