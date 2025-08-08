@@ -686,7 +686,6 @@ const HomeScreen = () => {
                                             type="file"
                                             ref={fileInputRef}
                                             onChange={handleFileSelect}
-                                            accept="image/*"
                                             multiple
                                             style={{ display: 'none' }}
                                             disabled={isSubmitting}
