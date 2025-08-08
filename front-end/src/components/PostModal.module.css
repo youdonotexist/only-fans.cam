@@ -16,7 +16,7 @@
 /* Modal content container */
 .modalContent {
     background-color: white;
-    border-radius: 8px;
+    border-radius: 16px;
     width: 100%;
     max-width: 600px;
     max-height: 90vh;
@@ -166,6 +166,7 @@
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
 }
 
@@ -195,7 +196,7 @@
     .modalContent {
         width: 100%;
         max-height: 100vh;
-        border-radius: 0;
+        border-radius: 16px;
         padding: 15px 10px;
     }
     

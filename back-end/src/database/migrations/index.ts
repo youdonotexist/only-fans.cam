@@ -47,14 +47,14 @@ export async function initializeVersionTracking(db: Database): Promise<void> {
           // Set initial version if not exists
           db.run(
             'INSERT INTO system_settings (key, value) VALUES (?, ?)',
-            [DB_VERSION_KEY, CURRENT_DB_VERSION],
+            [DB_VERSION_KEY, '0.0.0'],
             (err) => {
               if (err) {
                 console.error('Error setting initial database version:', err.message);
                 reject(err);
                 return;
               }
-              console.log(`Database version initialized to ${CURRENT_DB_VERSION}`);
+              console.log(`Database version initialized to '0.0.0'`);
               resolve();
             }
           );

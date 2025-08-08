@@ -233,17 +233,13 @@ const PostModal = ({
                     
                     <div className={uiStyles.formGroup}>
                         <label>
-                            <div className={styles.uploadButton} onClick={() => fileInputRef.current.click()}>
-                                <FaImage /> Add Photos
-                            </div>
-
                             <input
+                                id="photo-input"
                                 type="file"
                                 ref={fileInputRef}
                                 onChange={handleFileSelect}
                                 accept="image/*"
                                 multiple
-                                style={{ display: 'none' }}
                                 disabled={isSubmitting}
                             />
                         </label>

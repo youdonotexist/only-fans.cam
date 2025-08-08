@@ -25,14 +25,6 @@ export async function initializeDatabase(): Promise<Database> {
 
   // Enable foreign keys
   db.run('PRAGMA foreign_keys = ON');
-  
-  // Run migrations
-  try {
-    await runMigrations(db);
-    console.log('Database migrations completed successfully.');
-  } catch (error) {
-    console.error('Error running database migrations:', error);
-  }
 
   // Create users table
   db.run(`
@@ -199,6 +191,14 @@ export async function initializeDatabase(): Promise<Database> {
       FOREIGN KEY (reporter_id) REFERENCES users (id) ON DELETE CASCADE
     )
   `);
+
+    // Run migrations
+    try {
+        await runMigrations(db);
+        console.log('Database migrations completed successfully.');
+    } catch (error) {
+        console.error('Error running database migrations:', error);
+    }
 
   return db;
 }

@@ -7,7 +7,7 @@ import { logUserLogin } from '../services/loginTrackingService';
 import { auth } from '../middleware/auth';
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_change_in_production';
 const INVITE_CODE = process.env.INVITE_CODE || 'ONLYFANS2025';
 const ADMIN_EMAIL = 'youdonotexist@gmail.com';
 
@@ -207,7 +207,6 @@ router.post(
                                 console.error('Error logging login:', logError);
                                 // Continue even if logging fails
                             }
-                            
                             res.json({ token });
                         }
                     );

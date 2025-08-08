@@ -12,7 +12,7 @@ declare global {
   }
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_change_in_production';
 
 /**
  * Middleware to authenticate JWT tokens
