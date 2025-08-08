@@ -232,16 +232,18 @@ const PostModal = ({
                     )}
                     
                     <div className={uiStyles.formGroup}>
-                        <label>
-                            <input
-                                id="photo-input"
-                                type="file"
-                                ref={fileInputRef}
-                                onChange={handleFileSelect}
-                                accept="image/*"
-                                multiple
-                                disabled={isSubmitting}
-                            />
+                        <input
+                            id="photo-input"
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileSelect}
+                            accept="image/*"
+                            multiple
+                            disabled={isSubmitting}
+                            className={styles.visuallyHiddenFileInput}
+                        />
+                        <label htmlFor="photo-input" className={styles.uploadButton}>
+                            <FaImage /> Add Photos
                         </label>
                         
                         {previewUrls.length > 0 && (
