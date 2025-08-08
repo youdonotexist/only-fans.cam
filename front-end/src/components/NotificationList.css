@@ -293,6 +293,11 @@
     padding: 20px;
   }
   
+  .notification-list {
+    width: 100%;
+    padding: 15px;
+  }
+  
   .notification-items {
     max-height: none;
     flex: 1;
