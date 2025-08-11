@@ -4,6 +4,9 @@ import styles from './PostModal.module.css';
 import uiStyles from './UI.module.css';
 import animationStyles from './Animations.module.css';
 
+// Detect Android device
+const isAndroid = /Android/i.test(navigator.userAgent);
+
 /**
  * A reusable modal component for creating and editing posts
  * 
@@ -118,8 +121,61 @@ const PostModal = ({
         onSubmit(formData);
     };
 
+    // Resize image and create preview
+    const resizeAndCreatePreview = (file) => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                if (!event.target || !event.target.result) {
+                    resolve(null);
+                    return;
+                }
+                
+                // For small files, just use the data URL directly
+                if (file.size < 300000) { // Less than 300KB
+                    resolve(event.target.result.toString());
+                    return;
+                }
+                
+                // For larger files, resize the image
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 800;
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Get the data URL from the canvas with reduced quality
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    resolve(dataUrl);
+                };
+                
+                img.src = event.target.result.toString();
+            };
+            reader.readAsDataURL(file);
+        });
+    };
+
     // Handle file selection
-    const handleFileSelect = (e) => {
+    const handleFileSelect = async (e) => {
         const files = Array.from(e.target.files);
         if (files.length === 0) return;
 
@@ -133,16 +189,13 @@ const PostModal = ({
         // Add files to selectedFiles state
         setSelectedFiles(prev => [...prev, ...validFiles]);
         
-        // Create preview URLs using FileReader for better mobile compatibility
-        validFiles.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                if (event.target && event.target.result) {
-                    setPreviewUrls(prev => [...prev, event.target.result.toString()]);
-                }
-            };
-            reader.readAsDataURL(file);
-        });
+        // Create preview URLs with resizing
+        for (const file of validFiles) {
+            const previewUrl = await resizeAndCreatePreview(file);
+            if (previewUrl) {
+                setPreviewUrls(prev => [...prev, previewUrl]);
+            }
+        }
     };
 
     // Remove a selected file
@@ -293,9 +346,21 @@ const PostModal = ({
                             disabled={isSubmitting}
                             className={styles.visuallyHiddenFileInput}
                         />
-                        <label htmlFor="photo-input" className={styles.uploadButton}>
-                            <FaImage /> {isEditing ? 'Add More Photos' : 'Add Photos'}
-                        </label>
+                        
+                        {isAndroid ? (
+                            <button 
+                                type="button" 
+                                className={styles.uploadButton}
+                                onClick={() => fileInputRef.current.click()}
+                                disabled={isSubmitting}
+                            >
+                                <FaImage /> {isEditing ? 'Add More Photos' : 'Add Photos'}
+                            </button>
+                        ) : (
+                            <label htmlFor="photo-input" className={styles.uploadButton}>
+                                <FaImage /> {isEditing ? 'Add More Photos' : 'Add Photos'}
+                            </label>
+                        )}
                         
                         {previewUrls.length > 0 && (
                             <div className={styles.imagePreviewContainer}>

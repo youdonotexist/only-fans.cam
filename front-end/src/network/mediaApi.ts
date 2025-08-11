@@ -2,6 +2,9 @@ import { Media, UploadMediaResponse } from './models';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
+// Detect Android Chrome
+const isAndroidChrome = /Android/i.test(navigator.userAgent) && /Chrome/i.test(navigator.userAgent);
+
 /**
  * Upload media for a fan
  * @param fanId Fan ID
@@ -17,9 +20,11 @@ export const uploadMedia = async (
   try {
     const formData = new FormData();
     
-    // Append each file to the form data
-    mediaFiles.forEach(file => {
-      formData.append('media', file);
+    // Append each file to the form data with explicit filename and type
+    mediaFiles.forEach((file, index) => {
+      // Use the original filename if available, or generate one
+      const filename = file.name || `image_${index}.${file.type.split('/')[1] || 'jpg'}`;
+      formData.append('media', file, filename);
     });
     
     const response = await fetch(`${API_URL}/media/upload/${fanId}`, {
@@ -27,6 +32,8 @@ export const uploadMedia = async (
       headers: {
         'Authorization': `Bearer ${token}`,
         'x-auth-token': token,
+        // Explicitly remove Content-Type for FormData on Android Chrome
+        ...(isAndroidChrome ? { 'Content-Type': undefined } : {})
       },
       body: formData,
     });
@@ -38,9 +45,16 @@ export const uploadMedia = async (
 
     return await response.json();
   } catch (error) {
+    // Log detailed error information including user agent
+    console.error(`Upload error on ${navigator.userAgent}:`, error);
+    
+    // Add more context to the error message
     if (error instanceof Error) {
-      throw new Error(`Upload media error: ${error.message}`);
+      // Include device info in the error message
+      const deviceInfo = isAndroidChrome ? ' on Android Chrome' : '';
+      throw new Error(`Upload media error${deviceInfo}: ${error.message}`);
     }
+    
     throw new Error('Failed to upload media');
   }
 };

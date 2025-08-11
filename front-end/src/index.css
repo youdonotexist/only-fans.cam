@@ -284,11 +284,11 @@ button {
     --space-xl: 24px;
     --space-2xl: 32px;
     
-    /* Adjust font sizes for mobile */
+    /* Adjust font sizes for mobile - minimum 16px (1rem) for iOS */
     --text-2xl: 1.25rem;
     --text-xl: 1.125rem;
     --text-lg: 1rem;
-    --text-md: 0.875rem;
+    --text-md: 1rem; /* Increased from 0.875rem to 1rem (16px) to prevent iOS zoom */
   }
 }
 
