@@ -18,6 +18,11 @@ const s3 = new AWS.S3();
 // Bucket name from environment variables
 const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME || 'only-fans-uploads';
 
+// CloudFront domain from environment variables (optional)
+// If set, S3 URLs will be replaced with CloudFront URLs
+// Example: https://d24u7zy2lxe3ij.cloudfront.net
+const CLOUDFRONT_DOMAIN = process.env.CLOUDFRONT_DOMAIN;
+
 /**
  * Upload a file to S3
  * @param file File buffer to upload
@@ -38,7 +43,7 @@ export const uploadFileToS3 = async (
     Bucket: BUCKET_NAME,
     Key: fileName,
     Body: file,
-    ContentType: fileType,
+    ContentType: fileType, CacheControl: 'public, max-age=31536000, immutable',
     ACL: 'public-read' // Make the file publicly accessible
   };
   
@@ -56,7 +61,16 @@ export const uploadFileToS3 = async (
     
     console.log('S3 Upload successful:', data.Location);
     
-    // Return the URL of the uploaded file
+    // If CloudFront domain is configured, replace S3 domain with CloudFront domain
+    if (CLOUDFRONT_DOMAIN) {
+      const s3Url = data.Location;
+      const path = s3Url.split('/').slice(3).join('/');
+      const cloudfrontUrl = `${CLOUDFRONT_DOMAIN}/${path}`;
+      console.log('Using CloudFront URL:', cloudfrontUrl);
+      return cloudfrontUrl;
+    }
+    
+    // Return the original S3 URL if CloudFront is not configured
     return data.Location;
   } catch (error) {
     console.error('Error uploading file to S3:', error);
@@ -71,7 +85,19 @@ export const uploadFileToS3 = async (
  */
 export const deleteFileFromS3 = async (fileUrl: string): Promise<void> => {
   // Extract the key from the file URL
-  const key = fileUrl.split('/').slice(3).join('/');
+  // Handle both S3 and CloudFront URLs
+  let key: string;
+  
+  if (CLOUDFRONT_DOMAIN && fileUrl.includes(CLOUDFRONT_DOMAIN)) {
+    // Handle CloudFront URL
+    const urlWithoutProtocol = fileUrl.replace(/^https?:\/\//, '');
+    const pathParts = urlWithoutProtocol.split('/');
+    // Remove the domain part
+    key = pathParts.slice(1).join('/');
+  } else {
+    // Handle S3 URL
+    key = fileUrl.split('/').slice(3).join('/');
+  }
   
   // Set up the S3 delete parameters
   const params = {
