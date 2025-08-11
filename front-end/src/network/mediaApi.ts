@@ -18,24 +18,31 @@ export const uploadMedia = async (
   token: string
 ): Promise<UploadMediaResponse> => {
   try {
-    const formData = new FormData();
-    
-    // Append each file to the form data with explicit filename and type
-    mediaFiles.forEach((file, index) => {
-      // Use the original filename if available, or generate one
-      const filename = file.name || `image_${index}.${file.type.split('/')[1] || 'jpg'}`;
-      formData.append('media', file, filename);
-    });
+      // Simplify FormData construction for Android
+      const formData = new FormData();
+
+      // For Android Chrome, use a simpler approach
+      if (isAndroidChrome) {
+          // Just append files with minimal information
+          mediaFiles.forEach(file => {
+              formData.append('media', file);
+          });
+      } else {
+          // Use the more detailed approach for other browsers
+          mediaFiles.forEach((file, index) => {
+              const filename = file.name || `image_${index}.${file.type.split('/')[1] || 'jpg'}`;
+              formData.append('media', file, filename);
+          });
+      }
     
     const response = await fetch(`${API_URL}/media/upload/${fanId}`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'x-auth-token': token,
+        'x-auth-token': token
         // Explicitly remove Content-Type for FormData on Android Chrome
-        ...(isAndroidChrome ? { 'Content-Type': undefined } : {})
       },
-      body: formData,
+      body: formData
     });
 
     if (!response.ok) {
@@ -45,16 +52,9 @@ export const uploadMedia = async (
 
     return await response.json();
   } catch (error) {
-    // Log detailed error information including user agent
-    console.error(`Upload error on ${navigator.userAgent}:`, error);
-    
-    // Add more context to the error message
     if (error instanceof Error) {
-      // Include device info in the error message
-      const deviceInfo = isAndroidChrome ? ' on Android Chrome' : '';
-      throw new Error(`Upload media error${deviceInfo}: ${error.message}`);
+      throw new Error(`Upload media error: ${error.message}`);
     }
-    
     throw new Error('Failed to upload media');
   }
 };

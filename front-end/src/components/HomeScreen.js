@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { FaHeart, FaComment, FaShare, FaPlus, FaImage, FaSpinner, FaTimes, FaFan, FaPaperPlane, FaEllipsisV, FaEdit, FaImages, FaFlag } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaHeart, FaComment, FaShare, FaPlus, FaSpinner, FaTimes, FaFan, FaPaperPlane, FaEllipsisV, FaEdit, FaFlag } from 'react-icons/fa';
 import layoutStyles from './Layout.module.css';
 import createPostStyles from './CreatePost.module.css';
 import fanPostStyles from './FanPost.module.css';
@@ -8,9 +8,9 @@ import animationStyles from './Animations.module.css';
 import uiStyles from './UI.module.css';
 import Sidebar from "./Sidebar";
 import PostModal from "./PostModal";
-import { createFan, getAllFans, likeFan, unlikeFan, getFanById, addComment, updateFan } from '../network/fanApi.ts';
-import { uploadMedia, deleteMedia } from '../network/mediaApi.ts';
-import { getMediaUrl } from '../network/mediaApi.ts';
+import { createFan, getAllFans, likeFan, unlikeFan, getFanById, addComment, updateFan } from '../network';
+import { uploadMedia, deleteMedia } from '../network';
+import { getMediaUrl } from '../network';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLoginModal } from '../contexts/LoginModalContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -159,8 +159,8 @@ const HomeScreen = () => {
     };
 
     // Fetch initial fans from backend
-    useEffect(() => {
-        fetchFans();
+    useEffect(async () => {
+        await fetchFans();
     }, [success]); // Refetch when a new post is created successfully
     
     // Handle like/unlike
@@ -371,13 +371,13 @@ const HomeScreen = () => {
 
     // Handle scroll event to load more fans
     useEffect(() => {
-        const handleScroll = () => {
+        const handleScroll = async () => {
             // Check if user has scrolled to the bottom of the page
             if (
-                window.innerHeight + document.documentElement.scrollTop >= 
+                window.innerHeight + document.documentElement.scrollTop >=
                 document.documentElement.offsetHeight - 300 // Load more when 300px from bottom
             ) {
-                loadMoreFans();
+                await loadMoreFans();
             }
         };
         
@@ -580,7 +580,7 @@ const HomeScreen = () => {
                 // Upload images if any are selected
                 if (selectedFiles.length > 0) {
                     try {
-                        await uploadMedia(parseInt(createdFan.id), selectedFiles, token);
+                        await uploadMedia(createdFan.id, selectedFiles, token);
                     } catch (uploadError) {
                         console.error('Error uploading images:', uploadError);
                         setError(`Post created but failed to upload images: ${uploadError.message}`);
@@ -602,7 +602,7 @@ const HomeScreen = () => {
             }
             
             // Refresh the fans list to show the updated data
-            fetchFans();
+            await fetchFans();
             
             // Clear success message after 3 seconds
             setTimeout(() => {
@@ -656,29 +656,29 @@ const HomeScreen = () => {
                                 setEditFanType('ceiling');
                             }
                         }}
-                        onSubmit={(formData) => {
+                        onSubmit={async (formData) => {
                             // Update state with form data
                             if (isEditing) {
                                 setEditTitle(formData.title);
                                 setEditDescription(formData.description);
                                 setEditFanType(formData.fan_type);
-                                
+
                                 // Store the selected files and deleted media IDs
                                 setSelectedFiles(formData.selectedFiles);
-                                
+
                                 // Handle deleted media IDs
                                 const deletedMediaIds = formData.deletedMediaIds || [];
                                 if (deletedMediaIds.length > 0) {
                                     const token = localStorage.getItem('token');
                                     if (token) {
                                         // Delete media items
-                                        deletedMediaIds.forEach(async (mediaId) => {
+                                        for (const mediaId of deletedMediaIds) {
                                             try {
                                                 await deleteMedia(mediaId, token);
                                             } catch (err) {
                                                 console.error(`Error deleting media ${mediaId}:`, err);
                                             }
-                                        });
+                                        }
                                     }
                                 }
                             } else {
@@ -689,9 +689,9 @@ const HomeScreen = () => {
                                 });
                                 setSelectedFiles(formData.selectedFiles);
                             }
-                            
+
                             // Submit the form
-                            handleSubmit();
+                            await handleSubmit();
                         }}
                         isEditing={isEditing}
                         initialValues={{
@@ -814,10 +814,10 @@ const HomeScreen = () => {
                                                 // Show Report Fan option for posts not owned by current user
                                                 <div 
                                                     className={fanPostStyles.optionsMenuItem}
-                                                    onClick={(e) => {
+                                                    onClick={async (e) => {
                                                         e.stopPropagation();
                                                         // Handle report fan action
-                                                        handleReportFan(fan.id);
+                                                        await handleReportFan(fan.id);
                                                         setActiveOptionsMenu(null);
                                                     }}
                                                 >
