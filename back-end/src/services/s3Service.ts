@@ -60,18 +60,12 @@ export const uploadFileToS3 = async (
     const data = await s3.upload(params).promise();
     
     console.log('S3 Upload successful:', data.Location);
-    
-    // If CloudFront domain is configured, replace S3 domain with CloudFront domain
-    if (CLOUDFRONT_DOMAIN) {
+
+
       const s3Url = data.Location;
       const path = s3Url.split('/').slice(3).join('/');
-      const cloudfrontUrl = `${CLOUDFRONT_DOMAIN}/${path}`;
-      console.log('Using CloudFront URL:', cloudfrontUrl);
-      return cloudfrontUrl;
-    }
-    
-    // Return the original S3 URL if CloudFront is not configured
-    return data.Location;
+
+      return path;
   } catch (error) {
     console.error('Error uploading file to S3:', error);
     console.error('Error details:', JSON.stringify(error, null, 2));

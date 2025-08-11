@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaSpinner, FaImage, FaTimes, FaPlus } from 'react-icons/fa';
+import { FaSpinner, FaImage, FaTimes } from 'react-icons/fa';
 import styles from './PostModal.module.css';
 import uiStyles from './UI.module.css';
 import animationStyles from './Animations.module.css';
+import { createFan, updateFan, getFanById } from '../network/fanApi.ts';
+import { uploadMedia, deleteMedia } from '../network/mediaApi.ts';
 
 // Detect Android device
 const isAndroid = /Android/i.test(navigator.userAgent);
@@ -28,7 +30,8 @@ const isAndroid = /Android/i.test(navigator.userAgent);
 const PostModal = ({
     isOpen,
     onClose,
-    onSubmit,
+    onPostCreated, // New callback for when a post is created/updated
+    fanId = null,  // Pass fanId when editing
     isEditing = false,
     initialValues = {
         title: '',
@@ -36,15 +39,17 @@ const PostModal = ({
         fan_type: 'ceiling',
         media: []
     },
-    isSubmitting = false,
-    error = '',
-    success = '',
     showFanType = true
 }) => {
     // Form state
     const [title, setTitle] = useState(initialValues.title || '');
     const [description, setDescription] = useState(initialValues.description || '');
     const [fanType, setFanType] = useState(initialValues.fan_type || 'ceiling');
+    
+    // Submission state
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     
     // Image upload state
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -99,26 +104,106 @@ const PostModal = ({
     };
 
     // Handle form submission
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         
         // Validate form
         if (!title.trim()) {
+            setError('Title is required');
             return;
         }
         
-        // Prepare form data
-        const formData = {
-            title,
-            description,
-            fan_type: fanType,
-            selectedFiles,
-            existingMedia,
-            deletedMediaIds
-        };
-        
-        // Call onSubmit callback
-        onSubmit(formData);
+        try {
+            setIsSubmitting(true);
+            setError('');
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setError('You must be logged in to create or edit a post');
+                return;
+            }
+            
+            let createdOrUpdatedFan;
+            
+            if (isEditing && fanId) {
+                // Handle deleted media
+                if (deletedMediaIds.length > 0) {
+                    try {
+                        const deletePromises = deletedMediaIds.map(mediaId => 
+                            deleteMedia(mediaId, token)
+                        );
+                        await Promise.all(deletePromises);
+                    } catch (err) {
+                        console.error('Error deleting media:', err);
+                        setError(`Failed to delete media: ${err.message}`);
+                        return;
+                    }
+                }
+                
+                // Update existing fan post
+                const updateData = {
+                    title,
+                    description,
+                    fan_type: fanType
+                };
+                
+                createdOrUpdatedFan = await updateFan(fanId, updateData, token);
+                
+                // Upload new files if any
+                if (selectedFiles.length > 0) {
+                    try {
+                        await uploadMedia(fanId, selectedFiles, token);
+                    } catch (err) {
+                        console.error('Error uploading images:', err);
+                        setError(`Failed to upload images: ${err.message}`);
+                        return;
+                    }
+                }
+                
+                setSuccess('Post updated successfully!');
+            } else {
+                // Create new fan post
+                const newPost = {
+                    title,
+                    description,
+                    fan_type: fanType
+                };
+                
+                createdOrUpdatedFan = await createFan(newPost, token);
+                
+                // Upload images if any
+                if (selectedFiles.length > 0) {
+                    try {
+                        await uploadMedia(createdOrUpdatedFan.id, selectedFiles, token);
+                    } catch (err) {
+                        console.error('Error uploading images:', err);
+                        setError(`Post created but failed to upload images: ${err.message}`);
+                        return;
+                    }
+                }
+                
+                setSuccess('Post created successfully!');
+            }
+            
+            // Get the updated fan with media
+            const updatedFan = await getFanById(createdOrUpdatedFan.id);
+            
+            // Notify parent component
+            if (onPostCreated) {
+                onPostCreated(updatedFan);
+            }
+            
+            // Close modal after a short delay to show success message
+            setTimeout(() => {
+                handleClose();
+            }, 1500);
+            
+        } catch (err) {
+            console.error(`Error ${isEditing ? 'updating' : 'creating'} post:`, err);
+            setError(err.message || `Failed to ${isEditing ? 'update' : 'create'} post`);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     // Resize image and create preview

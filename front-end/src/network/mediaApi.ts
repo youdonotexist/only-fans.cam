@@ -1,6 +1,11 @@
-import { Media, UploadMediaResponse } from './models';
+import {Media, UploadMediaResponse} from './models';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
+// CloudFront domain from environment variables (optional)
+// If set, S3 URLs will be replaced with CloudFront URLs
+// Example: https://d24u7zy2lxe3ij.cloudfront.net
+const CLOUDFRONT_DOMAIN = process.env.CLOUDFRONT_DOMAIN || 'https://d24u7zy2lxe3ij.cloudfront.net';
 
 // Detect Android Chrome
 const isAndroidChrome = /Android/i.test(navigator.userAgent) && /Chrome/i.test(navigator.userAgent);
@@ -149,17 +154,10 @@ export const getMediaUrl = (filePath: string): string => {
 
   // If the path already starts with http, it's either an S3 URL or a full URL, so return it as is
   if (filePath.startsWith('http')) {
-    return filePath;
+      const path = filePath.split('/').slice(3).join('/');
+      return `${CLOUDFRONT_DOMAIN}/${path}`;
   }
-  
-  // If it's an S3 path (unlikely but possible)
-  if (filePath.includes('s3.amazonaws.com')) {
-    return filePath;
+  else {
+    return `${CLOUDFRONT_DOMAIN}/${filePath}`;
   }
-  
-  // Remove leading slash if present for local paths
-  const cleanPath = filePath.startsWith('/') ? filePath.substring(1) : filePath;
-  
-  // Construct the full URL for local paths
-  return `${API_URL.replace('/api', '')}/${cleanPath}`;
 };

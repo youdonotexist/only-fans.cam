@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaHeart, FaComment, FaShare, FaPlus, FaSpinner, FaTimes, FaFan, FaPaperPlane, FaEllipsisV, FaEdit, FaFlag } from 'react-icons/fa';
+import { FaHeart, FaComment, FaShare, FaPlus, FaSpinner, FaTimes, FaFan, FaPaperPlane, FaEllipsisV, FaEdit, FaFlag, FaTrash } from 'react-icons/fa';
 import layoutStyles from './Layout.module.css';
 import createPostStyles from './CreatePost.module.css';
 import fanPostStyles from './FanPost.module.css';
@@ -8,9 +8,9 @@ import animationStyles from './Animations.module.css';
 import uiStyles from './UI.module.css';
 import Sidebar from "./Sidebar";
 import PostModal from "./PostModal";
-import { createFan, getAllFans, likeFan, unlikeFan, getFanById, addComment, updateFan } from '../network';
-import { uploadMedia, deleteMedia } from '../network';
-import { getMediaUrl } from '../network';
+import { getAllFans, likeFan, unlikeFan, getFanById, addComment, updateFan, deleteFan } from '../network/fanApi.ts';
+import { deleteMedia } from '../network/mediaApi.ts';
+import { getMediaUrl } from '../network/mediaApi.ts';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLoginModal } from '../contexts/LoginModalContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -38,17 +38,10 @@ const HomeScreen = () => {
     const [comments, setComments] = useState([]);
     const [loadingComments, setLoadingComments] = useState(false);
     
-    // State for new post form
+    // State for post form
     const [showPostForm, setShowPostForm] = useState(false);
-    const [newPost, setNewPost] = useState({
-        title: '',
-        description: '',
-        fan_type: 'ceiling'
-    });
-    const [selectedFiles, setSelectedFiles] = useState([]);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [error, setError] = useState('');
     
     // State for fan media
     const [fanMedia, setFanMedia] = useState({});
@@ -159,8 +152,8 @@ const HomeScreen = () => {
     };
 
     // Fetch initial fans from backend
-    useEffect(async () => {
-        await fetchFans();
+    useEffect( () => {
+        fetchFans();
     }, [success]); // Refetch when a new post is created successfully
     
     // Handle like/unlike
@@ -481,141 +474,6 @@ const HomeScreen = () => {
         }
     };
     
-    // Handle form input changes
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        
-        // Apply character limits
-        if (name === 'title' && value.length > 100) {
-            return; // Limit title to 100 characters
-        }
-        
-        if (name === 'description' && value.length > 500) {
-            return; // Limit description to 500 characters
-        }
-        
-        setNewPost(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-    
-    
-    // Handle form submission
-    const handleSubmit = async () => {
-        
-        // Validate form
-        if (isEditing) {
-            if (!editTitle.trim()) {
-                setError('Title is required');
-                return;
-            }
-        } else {
-            if (!newPost.title.trim()) {
-                setError('Title is required');
-                return;
-            }
-        }
-        
-        try {
-            setIsSubmitting(true);
-            setError('');
-            
-            const token = localStorage.getItem('token');
-            if (!token) {
-                setError('You must be logged in to create or edit a post');
-                setIsSubmitting(false);
-                return;
-            }
-            
-            if (isEditing) {
-                // Upload new images if any are selected
-                if (selectedFiles.length > 0) {
-                    try {
-                        await uploadMedia(editingFanId, selectedFiles, token);
-                    } catch (uploadError) {
-                        console.error('Error uploading images:', uploadError);
-                        setError(`Failed to upload images: ${uploadError.message}`);
-                        setIsSubmitting(false);
-                        return;
-                    }
-                }
-                
-                // Update existing fan post
-                const updateData = {
-                    title: editTitle,
-                    description: editDescription,
-                    fan_type: editFanType
-                };
-                
-                await updateFan(editingFanId, updateData, token);
-                
-                // Update the fan in the local state
-                setFans(prevFans => 
-                    prevFans.map(fan => 
-                        fan.id === editingFanId 
-                            ? { 
-                                ...fan, 
-                                title: editTitle, 
-                                description: editDescription,
-                                fan_type: editFanType
-                              } 
-                            : fan
-                    )
-                );
-                
-                // Reset editing state
-                setIsEditing(false);
-                setEditingFanId(null);
-                setEditTitle('');
-                setEditDescription('');
-                setEditFanType('ceiling');
-                
-                setShowPostForm(false);
-                setSuccess('Post updated successfully!');
-            } else {
-                // Create new fan post
-                const createdFan = await createFan(newPost, token);
-                
-                // Upload images if any are selected
-                if (selectedFiles.length > 0) {
-                    try {
-                        await uploadMedia(createdFan.id, selectedFiles, token);
-                    } catch (uploadError) {
-                        console.error('Error uploading images:', uploadError);
-                        setError(`Post created but failed to upload images: ${uploadError.message}`);
-                        setIsSubmitting(false);
-                        return;
-                    }
-                }
-                
-                // Reset form
-                setNewPost({
-                    title: '',
-                    description: '',
-                    fan_type: 'ceiling'
-                });
-                setSelectedFiles([]);
-                
-                setShowPostForm(false);
-                setSuccess('Post created successfully!');
-            }
-            
-            // Refresh the fans list to show the updated data
-            await fetchFans();
-            
-            // Clear success message after 3 seconds
-            setTimeout(() => {
-                setSuccess('');
-            }, 3000);
-            
-        } catch (err) {
-            console.error(`Error ${isEditing ? 'updating' : 'creating'} post:`, err);
-            setError(err.message || `Failed to ${isEditing ? 'update' : 'create'} post`);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
     
     return (
         <div className={layoutStyles.container}>
@@ -643,66 +501,56 @@ const HomeScreen = () => {
                     <PostModal 
                         isOpen={showPostForm}
                         onClose={() => {
-                            // Reset all state
-                            setSelectedFiles([]);
                             setShowPostForm(false);
                             
                             // Reset editing state if we were editing
                             if (isEditing) {
                                 setIsEditing(false);
                                 setEditingFanId(null);
-                                setEditTitle('');
-                                setEditDescription('');
-                                setEditFanType('ceiling');
                             }
                         }}
-                        onSubmit={async (formData) => {
-                            // Update state with form data
+                        onPostCreated={(updatedFan) => {
+                            // Handle the newly created or updated fan
                             if (isEditing) {
-                                setEditTitle(formData.title);
-                                setEditDescription(formData.description);
-                                setEditFanType(formData.fan_type);
-
-                                // Store the selected files and deleted media IDs
-                                setSelectedFiles(formData.selectedFiles);
-
-                                // Handle deleted media IDs
-                                const deletedMediaIds = formData.deletedMediaIds || [];
-                                if (deletedMediaIds.length > 0) {
-                                    const token = localStorage.getItem('token');
-                                    if (token) {
-                                        // Delete media items
-                                        for (const mediaId of deletedMediaIds) {
-                                            try {
-                                                await deleteMedia(mediaId, token);
-                                            } catch (err) {
-                                                console.error(`Error deleting media ${mediaId}:`, err);
-                                            }
-                                        }
-                                    }
+                                // Update the fan in the list
+                                setFans(prevFans => 
+                                    prevFans.map(fan => 
+                                        fan.id === updatedFan.id ? updatedFan : fan
+                                    )
+                                );
+                                
+                                // Update fan media
+                                if (updatedFan.media && updatedFan.media.length > 0) {
+                                    setFanMedia(prev => ({
+                                        ...prev,
+                                        [updatedFan.id]: updatedFan.media
+                                    }));
                                 }
                             } else {
-                                setNewPost({
-                                    title: formData.title,
-                                    description: formData.description,
-                                    fan_type: formData.fan_type
-                                });
-                                setSelectedFiles(formData.selectedFiles);
+                                // Add the new fan to the beginning of the list
+                                setFans(prevFans => [updatedFan, ...prevFans]);
+                                
+                                // Add fan media
+                                if (updatedFan.media && updatedFan.media.length > 0) {
+                                    setFanMedia(prev => ({
+                                        ...prev,
+                                        [updatedFan.id]: updatedFan.media
+                                    }));
+                                }
                             }
-
-                            // Submit the form
-                            await handleSubmit();
+                            
+                            // Reset editing state
+                            setIsEditing(false);
+                            setEditingFanId(null);
                         }}
+                        fanId={editingFanId}
                         isEditing={isEditing}
                         initialValues={{
-                            title: isEditing ? editTitle : newPost.title,
-                            description: isEditing ? editDescription : newPost.description,
-                            fan_type: isEditing ? editFanType : newPost.fan_type,
+                            title: isEditing ? editTitle : '',
+                            description: isEditing ? editDescription : '',
+                            fan_type: isEditing ? editFanType : 'ceiling',
                             media: isEditing && editingFanId && fanMedia[editingFanId] ? fanMedia[editingFanId] : []
                         }}
-                        isSubmitting={isSubmitting}
-                        error={error}
-                        success={success}
                     />
                 </div>
                 
@@ -808,6 +656,47 @@ const HomeScreen = () => {
                                                         }}
                                                     >
                                                         <FaEdit /> Edit Post
+                                                    </div>
+                                                    <div 
+                                                        className={fanPostStyles.optionsMenuItem}
+                                                        onClick={async (e) => {
+                                                            e.stopPropagation();
+                                                            // Handle delete post action
+                                                            if (window.confirm('Are you sure you want to delete this post?')) {
+                                                                try {
+                                                                    const token = localStorage.getItem('token');
+                                                                    if (!token) {
+                                                                        openLoginModal(window.location.pathname);
+                                                                        return;
+                                                                    }
+                                                                    
+                                                                    // Delete the fan post
+                                                                    await deleteFan(fan.id, token);
+                                                                    
+                                                                    // Remove the deleted fan from the state
+                                                                    setFans(prevFans => prevFans.filter(f => f.id !== fan.id));
+                                                                    
+                                                                    // Show success message
+                                                                    setSuccess('Post deleted successfully!');
+                                                                    
+                                                                    // Clear success message after 3 seconds
+                                                                    setTimeout(() => {
+                                                                        setSuccess('');
+                                                                    }, 3000);
+                                                                } catch (err) {
+                                                                    console.error('Error deleting post:', err);
+                                                                    setError(err.message || 'Failed to delete post');
+                                                                    
+                                                                    // Clear error message after 3 seconds
+                                                                    setTimeout(() => {
+                                                                        setError('');
+                                                                    }, 3000);
+                                                                }
+                                                            }
+                                                            setActiveOptionsMenu(null);
+                                                        }}
+                                                    >
+                                                        <FaTrash /> Delete Post
                                                     </div>
                                                 </>
                                             ) : (

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './FanDetails.module.css';
-import LoginButton from './LoginButton';
 import { getFanById, likeFan, unlikeFan, addComment, updateFan, deleteFan } from '../network/fanApi.ts';
 import { getMediaUrl, uploadMedia, deleteMedia } from '../network/mediaApi.ts';
 import Sidebar from './Sidebar';
