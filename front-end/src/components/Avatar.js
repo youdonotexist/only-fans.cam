@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {getMediaUrl} from "../network/mediaApi.ts";
 
 /**
  * Avatar component that displays a user's profile image or a placeholder
@@ -28,7 +29,7 @@ const Avatar = ({
   };
 
   // Use the provided image source or fall back to a placeholder
-  const imageSrc = src || generatePlaceholder();
+  const imageSrc = getMediaUrl(src) || generatePlaceholder();
 
   return (
     <img
