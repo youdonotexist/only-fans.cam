@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaBug, FaHeart } from 'react-icons/fa';
 import styles from './Footer.module.css';
+import versionInfo from '../version.json';
 
 /**
  * Footer component that appears at the bottom of all pages
@@ -9,6 +10,7 @@ import styles from './Footer.module.css';
  */
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const version = versionInfo?.version || 'dev';
   
   return (
     <footer className={styles.footer}>
@@ -24,6 +26,7 @@ const Footer = () => {
         <div className={styles.copyright}>
           <p>© {currentYear} OnlyFans. All rights reserved.</p>
           <p className={styles.tagline}>Made with <FaHeart className={styles.heartIcon} /> for fans of fans</p>
+          <p className={styles.version}>Version: {version}</p>
         </div>
       </div>
     </footer>

@@ -727,11 +727,22 @@ const HomeScreen = () => {
                                     style={{ cursor: 'pointer' }}
                                 >
                                     {/* Use the actual uploaded image if available, otherwise fallback to placeholder */}
-                                    <img 
-                                        src={getMediaUrl(fanMedia[fan.id].file_path)}
-                                        alt={fan.title} 
-                                        className={fanPostStyles.fanImage} 
-                                    />
+                                    {(() => {
+                                        const mediaEntry = fanMedia?.[fan.id];
+                                        const filePath = Array.isArray(mediaEntry) ? mediaEntry[0]?.file_path : mediaEntry?.file_path;
+                                        return filePath ? (
+                                            <img 
+                                                src={getMediaUrl(filePath)}
+                                                alt={fan.title} 
+                                                className={fanPostStyles.fanImage} 
+                                            />
+                                        ) : (
+                                            <div className={fanPostStyles.noImagePlaceholder}>
+                                                <FaFan size={40} />
+                                                <p>Loading image...</p>
+                                            </div>
+                                        );
+                                    })()}
                                 </div>
                             ) : (
                                 <div 

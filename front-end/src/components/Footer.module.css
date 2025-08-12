@@ -69,6 +69,11 @@
   margin-top: var(--space-xs);
 }
 
+.version {
+  margin-top: var(--space-xs);
+  color: var(--foreground-dim);
+}
+
 .heartIcon {
   color: var(--error);
   font-size: 0.75rem;
