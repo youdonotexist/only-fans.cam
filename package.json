@@ -8,7 +8,7 @@
     "undici": "^7.13.0"
   },
   "scripts": {
-    "prepare": "node front-end/scripts/install-hooks.js",
-    "update-version": "node front-end/scripts/update-version.js"
+    "prepare": "node scripts/install-hooks.js",
+    "update-version": "node scripts/update-version.js"
   }
 }
