@@ -362,21 +362,6 @@ const HomeScreen = () => {
         }
     };
 
-    // Handle scroll event to load more fans
-    useEffect(() => {
-        const handleScroll = async () => {
-            // Check if user has scrolled to the bottom of the page
-            if (
-                window.innerHeight + document.documentElement.scrollTop >=
-                document.documentElement.offsetHeight - 300 // Load more when 300px from bottom
-            ) {
-                await loadMoreFans();
-            }
-        };
-        
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [page, hasMore, loadingMore]); // Re-attach listener when these dependencies change
     
     // Handle report fan functionality
     const handleReportFan = async (fanId) => {
@@ -782,6 +767,19 @@ const HomeScreen = () => {
                             </div>
                         </div>
                     ))
+                )}
+                
+                {/* Load More button */}
+                {hasMore && fans.length > 0 && !loadingMore && (
+                    <div className={uiStyles.loadMoreContainer}>
+                        <button
+                            className={uiStyles.loadMoreButton}
+                            onClick={loadMoreFans}
+                            disabled={loadingMore}
+                        >
+                            Load More
+                        </button>
+                    </div>
                 )}
                 
                 {/* Loading more indicator */}
