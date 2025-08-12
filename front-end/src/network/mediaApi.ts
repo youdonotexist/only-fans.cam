@@ -5,7 +5,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 // CloudFront domain from environment variables (optional)
 // If set, S3 URLs will be replaced with CloudFront URLs
 // Example: https://d24u7zy2lxe3ij.cloudfront.net
-const CLOUDFRONT_DOMAIN = process.env.CLOUDFRONT_DOMAIN || 'https://d24u7zy2lxe3ij.cloudfront.net';
+const CLOUDFRONT_DOMAIN = process.env.CLOUDFRONT_DOMAIN;
 
 // Detect Android Chrome
 const isAndroidChrome = /Android/i.test(navigator.userAgent) && /Chrome/i.test(navigator.userAgent);
@@ -152,12 +152,34 @@ export const getMediaUrl = (filePath: string): string => {
     return '';
   }
 
-  // If the path already starts with http, it's either an S3 URL or a full URL, so return it as is
-  if (filePath.startsWith('http')) {
-      const path = filePath.split('/').slice(3).join('/');
-      return `${CLOUDFRONT_DOMAIN}/${path}`;
+  const trimSlashes = (s: string) => s.replace(/^\/+|\/+$/g, '');
+  const joinUrl = (base: string, path: string) => `${base.replace(/\/+$/,'')}/${path.replace(/^\/+/, '')}`;
+
+  // Absolute URL provided
+  if (/^https?:\/\//i.test(filePath)) {
+    // If a CloudFront domain is configured, rewrite to it using the original path
+    if (CLOUDFRONT_DOMAIN) {
+      try {
+        const u = new URL(filePath);
+        const pathPart = trimSlashes(u.pathname);
+        return joinUrl(CLOUDFRONT_DOMAIN, pathPart);
+      } catch {
+        // If URL parsing fails, fall back to the original URL
+        return filePath;
+      }
+    }
+    // No CloudFront configured: use the URL as-is
+    return filePath;
   }
-  else {
-    return `${CLOUDFRONT_DOMAIN}/${filePath}`;
+
+  // Relative path provided
+  const pathPart = filePath.replace(/^\/+/, '');
+
+  if (CLOUDFRONT_DOMAIN) {
+    return joinUrl(CLOUDFRONT_DOMAIN, pathPart);
   }
+
+  // Default to API origin (strip trailing /api if present)
+  const apiOrigin = API_URL.replace(/\/?api\/?$/, '');
+  return joinUrl(apiOrigin, pathPart);
 };
