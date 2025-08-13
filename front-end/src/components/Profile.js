@@ -768,36 +768,6 @@ const Profile = () => {
                                                         />
                                                     </div>
                                                 );
-                                            } else if (post.media_count > 0) {
-                                                // If we know there's media but don't have details yet, use a fallback
-                                                try {
-                                                    // Try to load a dynamic image based on post ID
-                                                    const imgSrc = require(`../assets/fan${(post.id % 4) + 1}.png`);
-                                                    return (
-                                                        <div 
-                                                            onClick={() => navigate(`/fandetails/${post.id}`)}
-                                                            style={{ cursor: 'pointer' }}
-                                                        >
-                                                            <img 
-                                                                src={imgSrc} 
-                                                                alt={post.title}
-                                                                className={styles.postImage}
-                                                            />
-                                                        </div>
-                                                    );
-                                                } catch (error) {
-                                                    // Fallback to placeholder if image can't be loaded
-                                                    console.error('Error loading image:', error);
-                                                    return (
-                                                        <div 
-                                                            className={styles.noImagePlaceholder}
-                                                            onClick={() => navigate(`/fandetails/${post.id}`)}
-                                                            style={{ cursor: 'pointer' }}
-                                                        >
-                                                            <FaFan size={40} />
-                                                        </div>
-                                                    );
-                                                }
                                             } else {
                                                 // Show placeholder if no media
                                                 return (
