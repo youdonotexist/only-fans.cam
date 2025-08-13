@@ -20,6 +20,7 @@ import { followUser, unfollowUser, checkIfFollowing } from '../network/followApi
 import Avatar from './Avatar';
 import { useAuth } from '../contexts/AuthContext';
 import { useLoginModal } from '../contexts/LoginModalContext';
+import {getMediaUrl} from "../network/mediaApi.ts";
 
 // Import user API functions directly from the file
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
@@ -547,7 +548,7 @@ const Profile = () => {
                             <img 
                                 id={"coverImage"} 
                                 className={styles.coverImg}
-                                src={user.cover_image}
+                                src={getMediaUrl(user.cover_image)}
                                 alt={`${user?.username}'s cover`}
                             />
                         ) : (
@@ -575,7 +576,7 @@ const Profile = () => {
                     <div className={styles.profileInfo}>
                         <div className={styles.avatarContainer}>
                             <Avatar
-                                src={user.profile_image}
+                                src={getMediaUrl(user.profile_image)}
                                 alt={`${user?.username}'s avatar`}
                                 className={styles.avatar}
                             />
@@ -761,7 +762,7 @@ const Profile = () => {
                                                         style={{ cursor: 'pointer' }}
                                                     >
                                                         <img 
-                                                            src={mediaItem.file_path} 
+                                                            src={getMediaUrl(mediaItem.file_path)}
                                                             alt={post.title}
                                                             className={styles.postImage}
                                                         />
