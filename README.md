@@ -2,6 +2,8 @@
 
 OnlyFans is a social media platform dedicated to fans of all types - ceiling fans, desk fans, industrial fans, and more! Share your favorite fans, follow other enthusiasts, and engage with a community that shares your passion.
 
+WARNING: THIS WAS BUILT AS AN EXPERIMENT UTILIZING AN CODING AGENT (Jetbrains Junie to be exact). 
+
 ## Tech Stack
 
 ### Frontend
