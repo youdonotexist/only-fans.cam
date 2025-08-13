@@ -5,7 +5,7 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 // CloudFront domain from environment variables (optional)
 // If set, S3 URLs will be replaced with CloudFront URLs
 // Example: https://d24u7zy2lxe3ij.cloudfront.net
-const CLOUDFRONT_DOMAIN = process.env.CLOUDFRONT_DOMAIN;
+const CLOUDFRONT_DOMAIN = process.env.REACT_APP_CLOUDFRONT_DOMAIN;
 
 // Detect Android Chrome
 const isAndroidChrome = /Android/i.test(navigator.userAgent) && /Chrome/i.test(navigator.userAgent);
