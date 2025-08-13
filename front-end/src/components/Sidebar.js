@@ -1,34 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {NavLink, Link, useNavigate} from 'react-router-dom';
-import { FaHome, FaBell, FaEnvelope, FaUser, FaPlus, FaBook } from 'react-icons/fa';
+import { FaHome, FaBell, FaEnvelope, FaPlus, FaBook } from 'react-icons/fa';
 import styles from './Sidebar.module.css';
 import logo from '../assets/logo.png';
-import { getCurrentUser } from '../network/userApi.ts';
 import LoginButton from './LoginButton';
 import Avatar from './Avatar';
+import { useAuth } from '../contexts/AuthContext';
 
 const Sidebar = () => {
-    // Sidebar is always visible, no need for toggle state
-    const [user, setUser] = useState(null);
     const navigate = useNavigate();
-    
-    // Fetch user data on component mount
-    useEffect(() => {
-        const fetchUser = async () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const userData = await getCurrentUser(token);
-                    setUser(userData);
-                } catch (error) {
-                    console.error('Error fetching user data:', error);
-                }
-            }
-        };
-        
-        fetchUser();
-    }, []);
-    
+    const { currentUser: user } = useAuth();
+
     // Navigation links click handler
     const handleLinkClick = () => {
         // No action needed as sidebar is always visible
