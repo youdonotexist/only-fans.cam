@@ -209,6 +209,13 @@ const PostModal = ({
     // Resize image and create preview
     const resizeAndCreatePreview = (file) => {
         return new Promise((resolve) => {
+            // Preserve animation for GIFs by using an object URL and skipping canvas resizing
+            if (file.type === 'image/gif') {
+                const url = URL.createObjectURL(file);
+                resolve(url);
+                return;
+            }
+
             const reader = new FileReader();
             reader.onload = (event) => {
                 if (!event.target || !event.target.result) {
