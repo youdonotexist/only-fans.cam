@@ -52,7 +52,7 @@ router.post('/upload/:fanId', auth, upload.array('media', 5), async (req, res) =
   const db = getDatabase();
   
   try {
-    // Check if fan exists and belongs to user
+    // Check if fan exists and whether user is owner or admin
     const fanPromise = new Promise<Fan>((resolve, reject) => {
       db.get('SELECT * FROM fans WHERE id = ?', [fanId], (err: Error, fan: Fan) => {
         if (err) {
@@ -60,10 +60,25 @@ router.post('/upload/:fanId', auth, upload.array('media', 5), async (req, res) =
           reject(new Error('Server error'));
         } else if (!fan) {
           reject(new Error('Fan not found'));
-        } else if (fan.user_id !== req.user?.id) {
-          reject(new Error('Not authorized'));
-        } else {
+        } else if (fan.user_id === req.user?.id) {
+          // Owner
           resolve(fan);
+        } else {
+          // Not owner: check if current user is admin
+          db.get(
+            'SELECT is_admin FROM users WHERE id = ?',
+            [req.user?.id],
+            (uErr: Error | null, user: { is_admin: number } | undefined) => {
+              if (uErr) {
+                console.error('Error checking admin status:', uErr.message);
+                reject(new Error('Server error'));
+              } else if (!user || user.is_admin !== 1) {
+                reject(new Error('Not authorized'));
+              } else {
+                resolve(fan);
+              }
+            }
+          );
         }
       });
     });
@@ -200,10 +215,25 @@ router.delete('/:id', auth, async (req, res) => {
             reject(new Error('Server error'));
           } else if (!media) {
             reject(new Error('Media not found'));
-          } else if (media.user_id !== req.user?.id) {
-            reject(new Error('Not authorized'));
-          } else {
+          } else if (media.user_id === req.user?.id) {
+            // Owner can delete
             resolve(media);
+          } else {
+            // Not owner: check if current user is admin
+            db.get(
+              'SELECT is_admin FROM users WHERE id = ?',
+              [req.user?.id],
+              (uErr: Error | null, user: { is_admin: number } | undefined) => {
+                if (uErr) {
+                  console.error('Error checking admin status:', uErr.message);
+                  reject(new Error('Server error'));
+                } else if (!user || user.is_admin !== 1) {
+                  reject(new Error('Not authorized'));
+                } else {
+                  resolve(media);
+                }
+              }
+            );
           }
         }
       );

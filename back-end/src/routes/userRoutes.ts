@@ -44,7 +44,7 @@ router.get('/me', auth, (req, res) => {
   const db = getDatabase();
   
   db.get(
-    'SELECT id, username, email, bio, profile_image, cover_image, created_at FROM users WHERE id = ?',
+    'SELECT id, username, email, bio, profile_image, cover_image, is_admin, created_at FROM users WHERE id = ?',
     [req.user?.id],
     (err, user: UserResult) => {
       if (err) {

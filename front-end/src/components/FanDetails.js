@@ -9,6 +9,7 @@ import PostModal from './PostModal';
 import { FaSpinner, FaFan, FaHeart, FaComment, FaShare, FaUser, FaPaperPlane, FaTimes, FaEllipsisV, FaEdit, FaTrash, FaImage, FaPlus, FaFlag } from 'react-icons/fa';
 import { useLoginModal } from '../contexts/LoginModalContext';
 import Avatar from './Avatar';
+import { useAuth } from '../contexts/AuthContext';
 
 const FanDetails = () => {
     const { id } = useParams();

@@ -606,8 +606,8 @@ const HomeScreen = () => {
                                     {/* Dropdown menu */}
                                     {activeOptionsMenu === fan.id && (
                                         <div className={fanPostStyles.optionsMenu}>
-                                            {/* Show edit options only if current user is the post owner */}
-                                            {currentUser && currentUser.id === fan.user_id ? (
+                                            {/* Show edit options if current user is the post owner or an admin */}
+                                            {currentUser && (currentUser.id === fan.user_id || currentUser.is_admin) ? (
                                                 <>
                                                     <div 
                                                         className={fanPostStyles.optionsMenuItem}

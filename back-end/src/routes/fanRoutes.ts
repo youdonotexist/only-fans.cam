@@ -225,12 +225,84 @@ router.put(
         }
 
         if (fan.user_id !== req.user?.id) {
-          return res.status(403).json({ message: 'Not authorized' });
+          // Not owner: check if current user is admin
+          db.get(
+            'SELECT is_admin FROM users WHERE id = ?',
+            [req.user?.id],
+            (uErr: Error | null, user: { is_admin: number } | undefined) => {
+              if (uErr) {
+                console.error('Error checking admin status:', uErr.message);
+                return res.status(500).json({ message: 'Server error' });
+              }
+              if (!user || user.is_admin !== 1) {
+                return res.status(403).json({ message: 'Not authorized' });
+              }
+
+              // Admin: proceed with update
+              const updateFields = [] as string[];
+              const values = [] as any[];
+
+              if (title) {
+                updateFields.push('title = ?');
+                values.push(title);
+              }
+
+              if (description !== undefined) {
+                updateFields.push('description = ?');
+                values.push(description);
+              }
+              
+              if (fan_type !== undefined) {
+                updateFields.push('fan_type = ?');
+                values.push(fan_type);
+              }
+
+              if (updateFields.length === 0) {
+                return res.status(400).json({ message: 'No fields to update' });
+              }
+
+              updateFields.push('updated_at = CURRENT_TIMESTAMP');
+
+              // Add fan ID to values array
+              values.push(req.params.id);
+
+              const query = `UPDATE fans SET ${updateFields.join(', ')} WHERE id = ?`;
+
+              db.run(query, values, function (err) {
+                if (err) {
+                  console.error(err.message);
+                  return res.status(500).json({ message: 'Server error' });
+                }
+
+                // Get updated fan
+                db.get(
+                  `SELECT f.*, u.username, u.profile_image as user_profile_image
+                   FROM fans f
+                   JOIN users u ON f.user_id = u.id
+                   WHERE f.id = ?`,
+                  [req.params.id],
+                  (err, updatedFan) => {
+                    if (err) {
+                      console.error(err.message);
+                      return res.status(500).json({ message: 'Server error' });
+                    }
+
+                    if (!updatedFan) {
+                      return res.status(404).json({ message: 'Updated fan not found' });
+                    }
+
+                    res.json(updatedFan);
+                  }
+                );
+              });
+            }
+          );
+          return; // prevent falling through
         }
 
-        // Build update fields
-        const updateFields = [];
-        const values = [];
+        // Owner: proceed with update
+        const updateFields = [] as string[];
+        const values = [] as any[];
 
         if (title) {
           updateFields.push('title = ?');
@@ -313,7 +385,29 @@ router.delete('/:id', auth, (req, res) => {
       }
 
       if (fan.user_id !== req.user?.id) {
-        return res.status(403).json({ message: 'Not authorized' });
+        // Not owner: allow admins to delete
+        db.get(
+          'SELECT is_admin FROM users WHERE id = ?',
+          [req.user?.id],
+          (uErr: Error | null, user: { is_admin: number } | undefined) => {
+            if (uErr) {
+              console.error('Error checking admin status:', uErr.message);
+              return res.status(500).json({ message: 'Server error' });
+            }
+            if (!user || user.is_admin !== 1) {
+              return res.status(403).json({ message: 'Not authorized' });
+            }
+            // Admin: proceed to delete
+            db.run('DELETE FROM fans WHERE id = ?', [req.params.id], function (err) {
+              if (err) {
+                console.error(err.message);
+                return res.status(500).json({ message: 'Server error' });
+              }
+              return res.json({ message: 'Fan deleted' });
+            });
+          }
+        );
+        return;
       }
 
       // Delete fan (cascade will delete associated media and comments)
