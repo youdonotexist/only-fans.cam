@@ -150,7 +150,7 @@ router.post(
         try {
             // Check if user exists
             db.get(
-                'SELECT * FROM users WHERE email = ?',
+                'SELECT * FROM users WHERE email = ? COLLATE NOCASE',
                 [email],
                 async (err: Error | null, user: User | undefined) => {
                     if (err) {
